@@ -5,11 +5,6 @@
 ##############
 *.class
 
-# Package Files #
-*.jar
-*.war
-*.ear
-
 
 #################
 # Eclipse Files #
@@ -24,8 +19,6 @@ tmp/**/*
 *.swp
 *~.nib
 local.properties
-.classpath
-.loadpath
 
 # External tool builders
 .externalToolBuilders/
