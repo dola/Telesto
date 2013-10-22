@@ -1,0 +1,37 @@
+{
+    "emit": {
+        "types": {
+            "byte": "buffer.put({field});",
+            "boolean": "putBoolean(buffer, {field});",
+            "short": "buffer.putShort({field});",
+            "int": "buffer.putInt({field});",
+            "long": "buffer.putLong({field});",
+            "float": "buffer.putFloat({field});",
+            "double": "buffer.putDouble({field});",
+            "String": "putString(buffer, {field});"
+        },
+        "structures": {
+
+        }
+    },
+    "parse": {
+        "types": {
+            "byte": "{field} = buffer.get();",
+            "boolean": "{field} = getBoolean(buffer);",
+            "short": "{field} = buffer.getShort();",
+            "int": "{field} = buffer.getInt();",
+            "long": "{field} = buffer.getLong();",
+            "float": "{field} = buffer.getFloat();",
+            "double": "{field} = buffer.getDouble();",
+            "String": "{field} = getString(buffer);"
+        },
+        "structures": {
+            
+        }
+    },
+    "fields": "public {type} {field};",
+    "assign": "this.{field} = {field};",
+    "message_list": "packets[{id}] = new {name}();",
+    "name": "{name}Packet",
+    "superclass_name": "Packet"
+}

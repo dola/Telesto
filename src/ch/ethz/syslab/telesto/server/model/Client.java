@@ -1,15 +1,39 @@
 package ch.ethz.syslab.telesto.server.model;
 
 import java.nio.ByteBuffer;
-import java.nio.channels.SocketChannel;
 
 public class Client {
-    public SocketChannel channel;
-    public ByteBuffer buffer;
+    public static final int BUFFER_SIZE = 32768;
+    public ByteBuffer writeBuffer;
+    public ByteBuffer readBuffer;
+    private boolean gettingHandled = false;
+    private boolean active = true;
+    public int id;
 
-    public Client(SocketChannel channel) {
-        this.channel = channel;
-        buffer = ByteBuffer.allocate(32768);
+    public Client() {
+        writeBuffer = ByteBuffer.allocateDirect(BUFFER_SIZE);
+        readBuffer = writeBuffer.duplicate();
     }
 
+    public synchronized boolean acquire() {
+        if (gettingHandled || !active) {
+            return false;
+        } else {
+            gettingHandled = true;
+            return true;
+        }
+    }
+
+    public void release() {
+        gettingHandled = false;
+    }
+
+    public void disconnect() {
+        active = false;
+    }
+
+    @Override
+    public String toString() {
+        return String.format("Client(%d)", id);
+    }
 }
