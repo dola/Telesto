@@ -33,7 +33,7 @@ public class ProtocolTest {
         buffer.flip();
         Packet packet = Packet.create(buffer);
         assertTrue(packet instanceof PingPacket);
-        assertEquals(0, packet.messageId);
+        assertEquals(0, packet.packetId);
     }
 
     @Test

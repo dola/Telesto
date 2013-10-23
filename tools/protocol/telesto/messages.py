@@ -73,7 +73,7 @@ with protocol.version(0):
 
     class GetQueuesResponse(Message):
         method_id = 0x2a
-        # TODO
+        queues = List(Int())
 
     class GetActiveQueues(Message):
         method_id = 0x2b
@@ -87,18 +87,22 @@ with protocol.version(0):
 
     class GetMessagesResponse(Message):
         method_id = 0x2e
-        # TODO
+        messages = List(TelestoMessage())
 
     # Messages
     class PutMessage(Message):
         method_id = 0x31
-        # TODO
+        message = TelestoMessage()
 
     class ReadMessage(Message):
         method_id = 0x33
         queue_id = Int()
         sender_id = Int()
         mode = Byte()
+
+    class ReadMessageResponse(Message):
+        method_id = 0x34
+        message = TelestoMessage()
 
     # Test
     class ComplexTest(Message):

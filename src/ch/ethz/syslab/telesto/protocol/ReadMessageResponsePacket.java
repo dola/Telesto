@@ -11,20 +11,20 @@ import java.nio.ByteBuffer;
  * 
  * Edit the template at tools/protocol/telesto/templates/packet.java instead.
  */
-public class GetQueueIdResponsePacket extends Packet {
-    public int queueId;
+public class ReadMessageResponsePacket extends Packet {
+    public Message message;
 
-    public GetQueueIdResponsePacket() {
+    public ReadMessageResponsePacket() {
     }
     
-    public GetQueueIdResponsePacket(int packetId, int queueId) {
+    public ReadMessageResponsePacket(int packetId, Message message) {
         this.packetId = packetId;
-        this.queueId = queueId;
+        this.message = message;
     }
 
     @Override
     public byte methodId() {
-        return 38;
+        return 52;
     }
 
     @Override
@@ -33,22 +33,22 @@ public class GetQueueIdResponsePacket extends Packet {
         buffer.position(lengthIndex + 2);
         buffer.put(methodId());
         buffer.putInt(packetId);
-        buffer.putInt(queueId);
+        putMessage(buffer, message);
         buffer.putShort(lengthIndex, (short) (buffer.position() - lengthIndex - 2));
     }
 
     @Override
     public void parse(ByteBuffer buffer) {
         packetId = buffer.getInt();
-        queueId = buffer.getInt();
+        message = getMessage(buffer);
     }
 
     @Override
-    public GetQueueIdResponsePacket newInstance() {
-        return new GetQueueIdResponsePacket();
+    public ReadMessageResponsePacket newInstance() {
+        return new ReadMessageResponsePacket();
     }
     
     public String toString() {
-        return "GetQueueIdResponsePacket";
+        return "ReadMessageResponsePacket";
     }
 }
