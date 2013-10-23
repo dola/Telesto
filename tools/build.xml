@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<project default="complete build" name="Create Runnable Jar for Telesto">
+	<property name="version-file" value="bin/ch/ethz/syslab/telesto/VERSION" />
+	<property name="build.sysclasspath" value="last" />
+
+	<path id="project-classpath">
+		<fileset dir="./lib" includes="*.jar" />
+	</path>
+
+	<target name="clean release">
+		<delete dir="release" />
+		<delete file="${version-file}" />
+	</target>
+
+	<target name="clean build">
+		<delete dir="bin-ant" />
+	</target>
+
+	<target name="compile" depends="clean build">
+		<mkdir dir="bin-ant" />
+		<javac srcdir="src" destdir="bin-ant" debug="on" target="1.7" source="1.7" excludes="ch/ethz/syslab/telesto/test/*">
+			<classpath refid="project-classpath" />
+			<compilerarg value="-Xlint:none" />
+		</javac>
+	</target>
+
+	<target name="set version">
+		<exec executable="tools/update-version.sh" osfamily="unix">
+			<arg file="${version-file}" />
+		</exec>
+
+		<exec executable="cmd" osfamily="winnt">
+			<arg value="/c" />
+			<arg file="tools/update-version.bat" />
+			<arg file="${version-file}" />
+		</exec>
+	</target>
+
+	<target name="build jar" depends="clean release, compile, set version">
+		<mkdir dir="release" />
+		<jar destfile="release/Telesto.raw.jar">
+			<manifest>
+				<attribute name="Main-Class" value="ch.ethz.syslab.telesto.server.network.ConnectionHandler" />
+				<attribute name="Class-Path" value="." />
+			</manifest>
+
+			<fileset dir="bin-ant" />
+			<zipfileset excludes="META-INF/**" src="lib/postgresql-9.2-1003.jdbc4.jar" />
+		</jar>
+		<antcall target="clean build" />
+	</target>
+
+	<target name="optimize">
+		<taskdef resource="proguard/ant/task.properties" classpath="lib/proguard.jar" />
+		<proguard obfuscate="false" optimizationpasses="3">
+			<injar path="release/Telesto.raw.jar" />
+			<outjar path="release/Telesto.jar" />
+			<libraryjar path="${java.home}/lib/rt.jar" />
+			<libraryjar path="${java.home}/lib/jce.jar" />
+			<dontnote filter="org.postgresql.ssl.jdbc4.AbstractJdbc4MakeSSL" />
+			<keep name="ch.ethz.syslab.telesto.server.network.ConnectionHandler" />
+		</proguard>
+	</target>
+
+	<target name="complete build" depends="build jar, optimize, clean build" />
+</project>
