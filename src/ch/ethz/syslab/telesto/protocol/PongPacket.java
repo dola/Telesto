@@ -7,19 +7,18 @@ import java.nio.ByteBuffer;
  * 
  * Edit the template at tools/protocol/telesto/templates/packet.java instead
  */
-public class /*{name}*/ extends /*{superclass}*/ {
-    /*{fields}*/
+public class PongPacket extends Packet {
 
-    public /*{name}*/() {
+    public PongPacket() {
     }
     
-    public /*{name}*/(/*{constructorargs}*/) {
-        /*{constructor}*/
+    public PongPacket(int messageId) {
+        this.messageId = messageId;
     }
 
     @Override
     public byte methodId() {
-        return /*{methodid}*/;
+        return 0x02;
     }
 
     @Override
@@ -27,21 +26,21 @@ public class /*{name}*/ extends /*{superclass}*/ {
         int lengthIndex = buffer.position();
         buffer.position(lengthIndex + 2);
         buffer.put(methodId());
-        /*{emit}*/
+        buffer.putInt(messageId);
         buffer.putShort(lengthIndex, (short) (buffer.position() - lengthIndex - 2));
     }
 
     @Override
     public void parse(ByteBuffer buffer) {
-        /*{parse}*/
+        messageId = buffer.getInt();
     }
 
     @Override
-    public /*{name}*/ newInstance() {
-        return new /*{name}*/();
+    public PongPacket newInstance() {
+        return new PongPacket();
     }
     
     public String toString() {
-        return "/*{name}*/";
+        return "PongPacket";
     }
 }

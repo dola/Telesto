@@ -7,18 +7,24 @@ import java.nio.ByteBuffer;
  * 
  * Edit the template at tools/protocol/telesto/templates/packet.java instead
  */
-public class PingPacket extends Packet {
+public class ReadMessagePacket extends Packet {
+    public int queueId;
+    public int senderId;
+    public byte mode;
 
-    public PingPacket() {
+    public ReadMessagePacket() {
     }
     
-    public PingPacket(int messageId) {
+    public ReadMessagePacket(int messageId, int queueId, int senderId, byte mode) {
         this.messageId = messageId;
+        this.queueId = queueId;
+        this.senderId = senderId;
+        this.mode = mode;
     }
 
     @Override
     public byte methodId() {
-        return 0x01;
+        return 0x33;
     }
 
     @Override
@@ -27,20 +33,26 @@ public class PingPacket extends Packet {
         buffer.position(lengthIndex + 2);
         buffer.put(methodId());
         buffer.putInt(messageId);
+        buffer.putInt(queueId);
+        buffer.putInt(senderId);
+        buffer.put(mode);
         buffer.putShort(lengthIndex, (short) (buffer.position() - lengthIndex - 2));
     }
 
     @Override
     public void parse(ByteBuffer buffer) {
         messageId = buffer.getInt();
+        queueId = buffer.getInt();
+        senderId = buffer.getInt();
+        mode = buffer.get();
     }
 
     @Override
-    public PingPacket newInstance() {
-        return new PingPacket();
+    public ReadMessagePacket newInstance() {
+        return new ReadMessagePacket();
     }
     
     public String toString() {
-        return "PingPacket";
+        return "ReadMessagePacket";
     }
 }

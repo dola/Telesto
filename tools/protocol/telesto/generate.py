@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 import re
 import os
@@ -130,17 +131,23 @@ def main():
         if name.endswith(superclass):
             os.unlink(os.path.join(args.output, name))
 
+    count = 0
     for message in protocol[0]:
         if message is None:
             continue
-        code = generate_class(template['packet'], template, message)
-        filename = generate_name(template, message)[0] + ".java"
+        count += 1
 
+        filename = generate_name(template, message)[0] + ".java"
+        print "Generating {filename}...".format(filename=filename)
+        code = generate_class(template['packet'], template, message)
         with open(os.path.join(args.output, filename), "w") as f:
             f.write(code)
 
+    print "Generating {filename}...".format(filename=superclass)
     with open(os.path.join(args.output, superclass), "w") as f:
         f.write(generate_class(template['superclass'], template, protocol[0]))
+
+    print "\nGenerated {n} packets.".format(n=count)
 
 
 GENERATION_FUNCTIONS = {

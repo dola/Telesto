@@ -8,7 +8,7 @@ import java.nio.ByteBuffer;
 
 import org.junit.Test;
 
-import ch.ethz.syslab.telesto.protocol.ComplexPacket;
+import ch.ethz.syslab.telesto.protocol.ComplexTestPacket;
 import ch.ethz.syslab.telesto.protocol.Packet;
 import ch.ethz.syslab.telesto.protocol.Packet.UnknownMethodException;
 import ch.ethz.syslab.telesto.protocol.PingPacket;
@@ -39,10 +39,10 @@ public class ProtocolTest {
     @Test
     public void emitComplexPacket() {
         ByteBuffer buffer = ByteBuffer.allocate(1024);
-        new ComplexPacket(1, (byte) 2, true, (short) 3, 4, 5, 6, 7, "string").emit(buffer);
+        new ComplexTestPacket(1, (byte) 2, true, (short) 3, 4, 5, 6, 7, "string").emit(buffer);
         buffer.flip();
         assertEquals(41, buffer.getShort());
-        assertEquals(127, buffer.get());
+        assertEquals(0x71, buffer.get());
         assertEquals(1, buffer.getInt());
         assertEquals(2, buffer.get());
         assertEquals(1, buffer.get());

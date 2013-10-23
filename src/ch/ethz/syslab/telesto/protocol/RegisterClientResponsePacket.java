@@ -7,19 +7,20 @@ import java.nio.ByteBuffer;
  * 
  * Edit the template at tools/protocol/telesto/templates/packet.java instead
  */
-public class /*{name}*/ extends /*{superclass}*/ {
-    /*{fields}*/
+public class RegisterClientResponsePacket extends Packet {
+    public int clientId;
 
-    public /*{name}*/() {
+    public RegisterClientResponsePacket() {
     }
     
-    public /*{name}*/(/*{constructorargs}*/) {
-        /*{constructor}*/
+    public RegisterClientResponsePacket(int messageId, int clientId) {
+        this.messageId = messageId;
+        this.clientId = clientId;
     }
 
     @Override
     public byte methodId() {
-        return /*{methodid}*/;
+        return 0x12;
     }
 
     @Override
@@ -27,21 +28,23 @@ public class /*{name}*/ extends /*{superclass}*/ {
         int lengthIndex = buffer.position();
         buffer.position(lengthIndex + 2);
         buffer.put(methodId());
-        /*{emit}*/
+        buffer.putInt(messageId);
+        buffer.putInt(clientId);
         buffer.putShort(lengthIndex, (short) (buffer.position() - lengthIndex - 2));
     }
 
     @Override
     public void parse(ByteBuffer buffer) {
-        /*{parse}*/
+        messageId = buffer.getInt();
+        clientId = buffer.getInt();
     }
 
     @Override
-    public /*{name}*/ newInstance() {
-        return new /*{name}*/();
+    public RegisterClientResponsePacket newInstance() {
+        return new RegisterClientResponsePacket();
     }
     
     public String toString() {
-        return "/*{name}*/";
+        return "RegisterClientResponsePacket";
     }
 }

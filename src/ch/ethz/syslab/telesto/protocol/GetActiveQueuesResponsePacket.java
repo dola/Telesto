@@ -7,19 +7,18 @@ import java.nio.ByteBuffer;
  * 
  * Edit the template at tools/protocol/telesto/templates/packet.java instead
  */
-public class /*{name}*/ extends /*{superclass}*/ {
-    /*{fields}*/
+public class GetActiveQueuesResponsePacket extends Packet {
 
-    public /*{name}*/() {
+    public GetActiveQueuesResponsePacket() {
     }
     
-    public /*{name}*/(/*{constructorargs}*/) {
-        /*{constructor}*/
+    public GetActiveQueuesResponsePacket(int messageId) {
+        this.messageId = messageId;
     }
 
     @Override
     public byte methodId() {
-        return /*{methodid}*/;
+        return 0x2c;
     }
 
     @Override
@@ -27,21 +26,21 @@ public class /*{name}*/ extends /*{superclass}*/ {
         int lengthIndex = buffer.position();
         buffer.position(lengthIndex + 2);
         buffer.put(methodId());
-        /*{emit}*/
+        buffer.putInt(messageId);
         buffer.putShort(lengthIndex, (short) (buffer.position() - lengthIndex - 2));
     }
 
     @Override
     public void parse(ByteBuffer buffer) {
-        /*{parse}*/
+        messageId = buffer.getInt();
     }
 
     @Override
-    public /*{name}*/ newInstance() {
-        return new /*{name}*/();
+    public GetActiveQueuesResponsePacket newInstance() {
+        return new GetActiveQueuesResponsePacket();
     }
     
     public String toString() {
-        return "/*{name}*/";
+        return "GetActiveQueuesResponsePacket";
     }
 }

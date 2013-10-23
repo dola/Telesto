@@ -7,19 +7,22 @@ import java.nio.ByteBuffer;
  * 
  * Edit the template at tools/protocol/telesto/templates/packet.java instead
  */
-public class /*{name}*/ extends /*{superclass}*/ {
-    /*{fields}*/
+public class ErrorPacket extends Packet {
+    public byte errorCode;
+    public String details;
 
-    public /*{name}*/() {
+    public ErrorPacket() {
     }
     
-    public /*{name}*/(/*{constructorargs}*/) {
-        /*{constructor}*/
+    public ErrorPacket(int messageId, byte errorCode, String details) {
+        this.messageId = messageId;
+        this.errorCode = errorCode;
+        this.details = details;
     }
 
     @Override
     public byte methodId() {
-        return /*{methodid}*/;
+        return 0x05;
     }
 
     @Override
@@ -27,21 +30,25 @@ public class /*{name}*/ extends /*{superclass}*/ {
         int lengthIndex = buffer.position();
         buffer.position(lengthIndex + 2);
         buffer.put(methodId());
-        /*{emit}*/
+        buffer.putInt(messageId);
+        buffer.put(errorCode);
+        putString(buffer, details);
         buffer.putShort(lengthIndex, (short) (buffer.position() - lengthIndex - 2));
     }
 
     @Override
     public void parse(ByteBuffer buffer) {
-        /*{parse}*/
+        messageId = buffer.getInt();
+        errorCode = buffer.get();
+        details = getString(buffer);
     }
 
     @Override
-    public /*{name}*/ newInstance() {
-        return new /*{name}*/();
+    public ErrorPacket newInstance() {
+        return new ErrorPacket();
     }
     
     public String toString() {
-        return "/*{name}*/";
+        return "ErrorPacket";
     }
 }
