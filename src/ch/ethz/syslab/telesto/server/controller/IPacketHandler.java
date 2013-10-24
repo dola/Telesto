@@ -8,18 +8,18 @@ import ch.ethz.syslab.telesto.protocol.*;
  * Edit the template at tools/protocol/telesto/templates/handler.java instead.
  */
 public interface IPacketHandler {
-   public abstract void handle(Packet packet);
-   public abstract void handle(PingPacket packet);
-   public abstract void handle(RegisterClientPacket packet);
-   public abstract void handle(IdentifyClientPacket packet);
-   public abstract void handle(CreateQueuePacket packet);
-   public abstract void handle(DeleteQueuePacket packet);
-   public abstract void handle(GetQueueIdPacket packet);
-   public abstract void handle(GetQueueNamePacket packet);
-   public abstract void handle(GetQueuesPacket packet);
-   public abstract void handle(GetActiveQueuesPacket packet);
-   public abstract void handle(GetMessagesPacket packet);
-   public abstract void handle(PutMessagePacket packet);
-   public abstract void handle(ReadMessagePacket packet);
-   public abstract void handle(ComplexTestPacket packet);
+   public abstract Packet handle(Packet packet) throws PacketProcessingException;
+   public abstract Packet handle(PingPacket packet) throws PacketProcessingException;
+   public abstract Packet handle(RegisterClientPacket packet) throws PacketProcessingException;
+   public abstract Packet handle(IdentifyClientPacket packet) throws PacketProcessingException;
+   public abstract Packet handle(CreateQueuePacket packet) throws PacketProcessingException;
+   public abstract Packet handle(DeleteQueuePacket packet) throws PacketProcessingException;
+   public abstract Packet handle(GetQueueIdPacket packet) throws PacketProcessingException;
+   public abstract Packet handle(GetQueueNamePacket packet) throws PacketProcessingException;
+   public abstract Packet handle(GetQueuesPacket packet) throws PacketProcessingException;
+   public abstract Packet handle(GetActiveQueuesPacket packet) throws PacketProcessingException;
+   public abstract Packet handle(GetMessagesPacket packet) throws PacketProcessingException;
+   public abstract Packet handle(PutMessagePacket packet) throws PacketProcessingException;
+   public abstract Packet handle(ReadMessagePacket packet) throws PacketProcessingException;
+   public abstract Packet handle(ComplexTestPacket packet) throws PacketProcessingException;
 }

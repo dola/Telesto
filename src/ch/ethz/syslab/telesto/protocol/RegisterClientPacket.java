@@ -12,13 +12,15 @@ import java.nio.ByteBuffer;
  * Edit the template at tools/protocol/telesto/templates/packet.java instead.
  */
 public class RegisterClientPacket extends Packet {
+    public String clientName;
     public byte mode;
 
     public RegisterClientPacket() {
     }
     
-    public RegisterClientPacket(int packetId, byte mode) {
+    public RegisterClientPacket(int packetId, String clientName, byte mode) {
         this.packetId = packetId;
+        this.clientName = clientName;
         this.mode = mode;
     }
 
@@ -33,6 +35,7 @@ public class RegisterClientPacket extends Packet {
         buffer.position(lengthIndex + 2);
         buffer.put(methodId());
         buffer.putInt(packetId);
+        putString(buffer, clientName);
         buffer.put(mode);
         buffer.putShort(lengthIndex, (short) (buffer.position() - lengthIndex - 2));
     }
@@ -40,6 +43,7 @@ public class RegisterClientPacket extends Packet {
     @Override
     public void parse(ByteBuffer buffer) {
         packetId = buffer.getInt();
+        clientName = getString(buffer);
         mode = buffer.get();
     }
 

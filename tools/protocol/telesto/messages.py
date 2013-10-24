@@ -29,6 +29,7 @@ with protocol.version(0):
     # Handshake
     class RegisterClient(ClientMessage):
         method_id = 0x11
+        client_name = String()
         mode = Byte()
 
     class RegisterClientResponse(ServerMessage):
