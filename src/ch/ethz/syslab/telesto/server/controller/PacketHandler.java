@@ -1,9 +1,5 @@
 package ch.ethz.syslab.telesto.server.controller;
 
-import java.sql.CallableStatement;
-import java.sql.SQLException;
-import java.sql.Types;
-
 import ch.ethz.syslab.telesto.protocol.ComplexTestPacket;
 import ch.ethz.syslab.telesto.protocol.CreateQueuePacket;
 import ch.ethz.syslab.telesto.protocol.DeleteQueuePacket;
@@ -18,7 +14,9 @@ import ch.ethz.syslab.telesto.protocol.PingPacket;
 import ch.ethz.syslab.telesto.protocol.PutMessagePacket;
 import ch.ethz.syslab.telesto.protocol.ReadMessagePacket;
 import ch.ethz.syslab.telesto.protocol.RegisterClientPacket;
+import ch.ethz.syslab.telesto.protocol.RegisterClientResponsePacket;
 import ch.ethz.syslab.telesto.server.db.Database;
+import ch.ethz.syslab.telesto.server.db.StoredProcedure;
 
 public class PacketHandler implements IPacketHandler {
 
@@ -42,26 +40,11 @@ public class PacketHandler implements IPacketHandler {
 
     @Override
     public Packet handle(RegisterClientPacket packet) throws PacketProcessingException {
+        // TODO: should return whole information; i.e. [client_id, client_name, operation_mode]
 
-        CallableStatement stm = db.prepareCall("request_id", 2, true);
+        int clientId = db.callSimpleProcedure(StoredProcedure.REQUEST_ID, packet.clientName, packet.mode);
 
-        try {
-            stm.registerOutParameter(1, Types.INTEGER);
-
-            stm.setObject(2, packet.clientName, Types.VARCHAR);
-
-            stm.setString(2, packet.clientName);
-            stm.setByte(3, packet.mode);
-
-            stm.execute();
-            stm.getResultSet();
-
-        } catch (SQLException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-
-        return null;
+        return new RegisterClientResponsePacket(packet.packetId + 1, clientId);
     }
 
     @Override
