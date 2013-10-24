@@ -1,166 +1,98 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-import re
 import os
-import json
 import argparse
-import pkg_resources
+
+import jinja2
 
 from telesto.messages import protocol
 
 
-BLOCK_TEMPLATE = re.compile("(\n|^)(\s*)/\*\{(\w+)\}\*/")
-INLINE_TEMPLATE = re.compile("/\*\{(\w+)\}\*/")
+SUPERCLASS = "Packet"
+HANDLER = "PacketHandler"
 
 
-def load_template():
-    template = json.load(pkg_resources.resource_stream(
-        __name__, "templates/template.json"
-    ))
-    template["packet"] = pkg_resources.resource_string(
-        __name__, "templates/packet.java"
-    )
-    template["superclass"] = pkg_resources.resource_string(
-        __name__, "templates/superclass.java"
-    )
-    return template
-
-
-def generate_name(template, message):
-    return (template['name'].format(name=message.__name__),)
-
-
-def generate_method_id(template, message):
-    return ("0x%02x" % message.method_id,)
-
-
-def generate_superclass_name(template, message=None):
-    return (template['superclass_name'],)
-
-
-def generate_fields(template, message):
-    return aggregate_lines(
-        format_lines(template['fields'], field=field.java_name(name),
-                     type=field.java_type)
-        for name, field in message._fields.iteritems()
-        if name != "message_id"
-    )
-
-
-def generate_emit(template, message):
-    return aggregate_lines(
-        format_lines(template['emit']['types'][field.java_type],
-                     field=field.java_name(name))
-        for name, field in message._fields.iteritems()
-    )
-
-
-def generate_parse(template, message):
-    return aggregate_lines(
-        format_lines(template['parse']['types'][field.java_type],
-                     field=field.java_name(name))
-        for name, field in message._fields.iteritems()
-    )
-
-def generate_constructor(template, message):
-    return aggregate_lines(
-        format_lines(template['assign'], field=field.java_name(name))
-        for name, field in message._fields.iteritems()
-    )
-
-
-def generate_constructor_args(template, message):
-    return (", ".join("{type} {field}".format(
-        field=field.java_name(name), type=field.java_type
-    ) for name, field in message._fields.iteritems()),)
-
-
-def generate_part(template, message, part):
-    return GENERATION_FUNCTIONS[part](template, message)
-
-
-def format_lines(lines, **kwargs):
-    if isinstance(lines, basestring):
-        lines = [lines]
-    return [line.format(**kwargs) for line in lines]
-
-
-def aggregate_lines(lines):
-    return [line for sublines in lines for line in sublines]
-
-
-def generate_class(file_template, template, message):
-    def replace_block(match):
-        indent = len(match.group(2))
-        variable = match.group(3)
-        code = generate_part(template, message, variable)
-        return "".join("\n" + " " * indent + line for line in code)
-
-    def replace_inline(match):
-        variable = match.group(1)
-        code = generate_part(template, message, variable)
-        return "\n".join(line for line in code)
-
-    class_ = file_template
-    class_ = BLOCK_TEMPLATE.sub(replace_block, class_)
-    class_ = INLINE_TEMPLATE.sub(replace_inline, class_)
-    return class_
-
-
-def generate_message_list(template, messages):
-    return aggregate_lines(format_lines(
-        template['message_list'], id=message.method_id,
-        name=generate_name(template, message)[0]
-    ) for message in messages if message is not None)
-
-
-def main():
+def parse_args():
     parser = argparse.ArgumentParser(description="Generate packet classes.")
-    parser.add_argument("output", metavar="DIR", type=str, default=None,
-                        help="Folder to store java files in.")
+    parser.add_argument("protocol", metavar="DIR", type=str, default=None,
+                        help="Folder to store protocol classes in.")
+    parser.add_argument("handler", metavar="DIR", type=str, default=None,
+                        help="Folder to store handling classes in.")
 
     args = parser.parse_args()
 
-    if not os.path.isdir(args.output):
+    if not os.path.isdir(args.protocol):
         parser.error("No such dictionary: {dir}".format(dir=args.output))
 
-    template = load_template()
+    if not os.path.isdir(args.handler):
+        parser.error("No such dictionary: {dir}".format(dir=args.output))
 
-    superclass = generate_superclass_name(template)[0] + ".java"
-    for name in os.listdir(args.output):
-        if name.endswith(superclass):
-            os.unlink(os.path.join(args.output, name))
+    return args
 
-    count = 0
+
+def cleanup(folder):
+    for name in os.listdir(folder):
+        if name.endswith("Packet.java"):
+            os.unlink(os.path.join(folder, name))
+
+
+def generate_packet_class(folder, template, message):
+    if message is None:
+        return
+
+    print "Generating {}{}...".format(message.__name__, SUPERCLASS)
+
+    code = template.render(message=message, superclass=SUPERCLASS)
+
+    path = os.path.join(folder, message.__name__ + SUPERCLASS + ".java")
+    with open(path, "w") as f:
+        f.write(code)
+
+
+def generate_superclass(folder, template, messages):
+    print "Generating {}...".format(SUPERCLASS)
+
+    code = template.render(messages=messages, superclass=SUPERCLASS)
+
+    path = os.path.join(folder, SUPERCLASS + ".java")
+    with open(path, "w") as f:
+        f.write(code)
+
+
+def generate_handler(folder, template, messages):
+    print "Generating {}...".format(HANDLER)
+
+    code = template.render(messages=messages, handler=HANDLER,
+                           superclass=SUPERCLASS)
+
+    path = os.path.join(folder, HANDLER + ".java")
+    with open(path, "w") as f:
+        f.write(code)
+
+
+def main():
+    args = parse_args()
+
+    cleanup(args.protocol)
+
+    env = jinja2.Environment(
+        loader=jinja2.PackageLoader(__name__, 'templates'),
+        extensions=["jinja2.ext.do"]
+    )
+    packet_template = env.get_template("packet.java")
+
     for message in protocol[0]:
-        if message is None:
-            continue
-        count += 1
+        generate_packet_class(args.protocol, packet_template, message)
 
-        filename = generate_name(template, message)[0] + ".java"
-        print "Generating {filename}...".format(filename=filename)
-        code = generate_class(template['packet'], template, message)
-        with open(os.path.join(args.output, filename), "w") as f:
-            f.write(code)
+    generate_superclass(args.protocol, env.get_template("superclass.java"),
+                        protocol[0])
 
-    print "Generating {filename}...".format(filename=superclass)
-    with open(os.path.join(args.output, superclass), "w") as f:
-        f.write(generate_class(template['superclass'], template, protocol[0]))
+    generate_handler(args.handler, env.get_template("handler.java"),
+                     protocol[0])
 
-    print "\nGenerated {n} packets.".format(n=count)
-
-
-GENERATION_FUNCTIONS = {
-    "methodid": generate_method_id,
-    "name": generate_name,
-    "fields": generate_fields,
-    "emit": generate_emit,
-    "parse": generate_parse,
-    "constructor": generate_constructor,
-    "constructorargs": generate_constructor_args,
-    "superclass": generate_superclass_name,
-    "messages": generate_message_list
-}
+    print "\nGenerated {} packet classes.".format(
+        sum(1 for m in protocol[0] if m)
+    )
 
 
 if __name__ == "__main__":

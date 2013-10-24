@@ -101,7 +101,7 @@ class Message(object):
     def emit(self):
         for name, field in self._fields.iteritems():
             field.prepare(getattr(self, name), self)
-        return (struct.pack(">B", self.message_id) +
+        return (struct.pack(">B", self.packet_id) +
                 "".join(field.emit(getattr(self, name), self)
                         for name, field in self._fields.iteritems()))
 
@@ -121,7 +121,7 @@ class Message(object):
         else:
             direction = ""
         return "\n".join((
-            "%s0x%02x %s" % (direction, self.message_id, self._name),
+            "%s0x%02x %s" % (direction, self.packet_id, self._name),
             fields
         ))
 
@@ -134,12 +134,14 @@ class Message(object):
         cls._name = cls._NAME_PATTERN.sub(
             lambda g: "%s %s" % (g.group(1), g.group(2)), cls.__name__
         )
-        cls._fields = collections.OrderedDict(message_id=Int())
+        cls._fields = collections.OrderedDict(packet_id=Int())
         cls._fields.update(sorted(
             ((name, field) for name, field in cls.__dict__.iteritems()
              if isinstance(field, MessageField)),
             key=lambda i: i[1]._order_id
         ))
+        for name, field in cls._fields.iteritems():
+            field.name = name
 
     @classmethod
     def _str(cls):
@@ -147,7 +149,7 @@ class Message(object):
             fields = "\n".join(
                 "  %s (%s)" % (name, field)
                 for name, field in cls._fields.iteritems()
-                if name != "message_id"
+                if name != "packet_id"
             )
         else:
             fields = "  -- empty --"
@@ -178,6 +180,10 @@ class MessageField(object):
     def __init__(self):
         self._order_id = MessageField._NEXT_ID
         MessageField._NEXT_ID += 1
+
+    @property
+    def java_name(self):
+        return re.sub("_(\w)", lambda m: m.group(1).upper(), self.name)
 
     @classmethod
     def parse(cls, stream, message):
@@ -228,10 +234,6 @@ class MessageField(object):
         if isinstance(field, basestring):
             setattr(message, field, value)
 
-    @staticmethod
-    def java_name(name):
-        return re.sub("_(\w)", lambda m: m.group(1).upper(), name)
-
     def __str__(self):
         return self.__class__.__name__
 
@@ -256,10 +258,23 @@ def simple_type_field(name, format):
 
 
 class List(MessageField):
-    def __init__(self, field, size):
-        self._size = size
+    def __init__(self, field):
+        self._size = Int()
         self._field = field
         super(List, self).__init__()
+
+    @property
+    def name(self):
+        return self._name
+
+    @name.setter
+    def name(self, name):
+        self._name = name
+        self._field.name = name
+
+    @property
+    def java_type(self):
+        return "{}[]".format(self._field.java_type)
 
     def parse(self, stream, message=None):
         return [
@@ -292,13 +307,26 @@ class String(MessageField):
     java_type = "String"
     @classmethod
     def parse(cls, stream, message=None):
-        return unicode(stream.read(2 * Short.parse(stream)),
-                       encoding="utf-16-be")
+        raise NotImplementedError
 
     @classmethod
     def emit(cls, value, message=None):
-        return Short.emit(len(value)) + value.encode("utf-16-be")
+        raise NotImplementedError
 
     def format(self, value):
         return value.encode("utf8")
+
+
+class TelestoMessage(MessageField):
+    java_type = "Message"
+    @classmethod
+    def parse(cls, stream, message=None):
+        raise NotImplementedError
+
+    @classmethod
+    def emit(cls, value, message=None):
+        raise NotImplementedError
+
+    def format(self, value):
+        raise NotImplementedError
 
