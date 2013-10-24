@@ -16,5 +16,5 @@ setup(
     author_email="simarti@ethz.ch, dominicl@ethz.ch",
     description="Protocol code generator for Telesto Messaging Passing System",
     keywords="telesto protocol code generator message passing system",
-    install_requires=("gevent",)
+    install_requires=("jinja2",)
 )
