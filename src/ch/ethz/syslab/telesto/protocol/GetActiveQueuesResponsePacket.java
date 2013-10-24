@@ -4,8 +4,7 @@ package ch.ethz.syslab.telesto.protocol;
 
 import java.nio.ByteBuffer;
 
-import ch.ethz.syslab.telesto.protocol.model.*;
-
+import ch.ethz.syslab.telesto.protocol.model.Queue;
 
 
 /* 
@@ -14,12 +13,14 @@ import ch.ethz.syslab.telesto.protocol.model.*;
  * Edit the template at tools/protocol/telesto/templates/packet.java instead.
  */
 public class GetActiveQueuesResponsePacket extends Packet {
+    public Queue[] queues;
 
     public GetActiveQueuesResponsePacket() {
     }
     
-    public GetActiveQueuesResponsePacket(int packetId) {
+    public GetActiveQueuesResponsePacket(int packetId, Queue[] queues) {
         this.packetId = packetId;
+        this.queues = queues;
     }
 
     @Override
@@ -33,12 +34,20 @@ public class GetActiveQueuesResponsePacket extends Packet {
         buffer.position(lengthIndex + 2);
         buffer.put(methodId());
         buffer.putInt(packetId);
+        buffer.putInt(queues.length);
+        for (int i = 0; i < queues.length; i++) {
+            putQueue(buffer, queues[i]);
+        }
         buffer.putShort(lengthIndex, (short) (buffer.position() - lengthIndex - 2));
     }
 
     @Override
     public void parse(ByteBuffer buffer) {
         packetId = buffer.getInt();
+        queues = new Queue[buffer.getInt()];
+        for (int i = 0; i < queues.length; i++) {
+            queues[i] = getQueue(buffer);
+        }
     }
 
     @Override

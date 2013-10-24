@@ -4,8 +4,7 @@ package ch.ethz.syslab.telesto.protocol;
 
 import java.nio.ByteBuffer;
 
-import ch.ethz.syslab.telesto.protocol.model.*;
-
+import ch.ethz.syslab.telesto.protocol.model.Message;
 
 
 /* 

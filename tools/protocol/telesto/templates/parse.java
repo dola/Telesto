@@ -30,6 +30,10 @@
     getMessage(buffer);
 {%- endmacro %}
 
+{% macro queue(field) -%}
+    getQueue(buffer);
+{%- endmacro %}
+
 {% macro list(field) -%}
     {%- import "parse.java" as _self -%}
 
@@ -49,5 +53,6 @@
     'Double': common,
     'String': string,
     'TelestoMessage': message,
+    'TelestoQueue': queue,
     'List': list
 } %}

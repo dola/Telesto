@@ -80,7 +80,7 @@ with protocol.version(0):
 
     class GetActiveQueuesResponse(ServerMessage):
         method_id = 0x2c
-        # TODO
+        queues = List(TelestoQueue())
 
     class GetMessages(ClientMessage):
         method_id = 0x2d

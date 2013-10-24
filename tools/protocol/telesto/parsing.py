@@ -130,6 +130,13 @@ class Message(object):
         return True
 
     @classmethod
+    def contains_type(cls, field_type):
+        for field in cls._fields.itervalues():
+            if field.contains_type(field_type):
+                return True
+        return False
+
+    @classmethod
     def _do_magic(cls):
         cls._name = cls._NAME_PATTERN.sub(
             lambda g: "%s %s" % (g.group(1), g.group(2)), cls.__name__
@@ -234,6 +241,9 @@ class MessageField(object):
         if isinstance(field, basestring):
             setattr(message, field, value)
 
+    def contains_type(self, field_type):
+        return self.__class__.__name__ == field_type
+
     def __str__(self):
         return self.__class__.__name__
 
@@ -287,6 +297,10 @@ class List(MessageField):
                 "".join(self._emit_subfield(self._field, entry, message)
                         for entry in value))
 
+    def contains_type(self, field_type):
+        return (super(List, self).contains_type(field_type) or
+                self._field.contains_type(field_type))
+
 
 Byte = simple_type_field("Byte", "b")
 Short = simple_type_field("Short", "h")
@@ -330,3 +344,16 @@ class TelestoMessage(MessageField):
     def format(self, value):
         raise NotImplementedError
 
+
+class TelestoQueue(MessageField):
+    java_type = "Queue"
+    @classmethod
+    def parse(cls, stream, message=None):
+        raise NotImplementedError
+
+    @classmethod
+    def emit(cls, value, message=None):
+        raise NotImplementedError
+
+    def format(self, value):
+        raise NotImplementedError

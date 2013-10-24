@@ -24,6 +24,11 @@
     putMessage(buffer, {{ field.java_name }}{{ suffix }});
 {%- endmacro %}
 
+{% macro queue(field, suffix="") -%}
+    putQueue(buffer, {{ field.java_name }}{{ suffix }});
+{%- endmacro %}
+
+
 {% macro list(field, suffix="") -%}
     {%- import "emit.java" as _self -%}
 
@@ -43,5 +48,6 @@
     'Double': common,
     'String': string,
     'TelestoMessage': message,
+    'TelestoQueue': queue,
     'List': list
 } %}

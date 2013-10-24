@@ -4,7 +4,12 @@ package ch.ethz.syslab.telesto.protocol;
 
 import java.nio.ByteBuffer;
 
-import ch.ethz.syslab.telesto.protocol.model.*;
+{% if message.contains_type("TelestoMessage") -%}
+import ch.ethz.syslab.telesto.protocol.model.Message;
+{% endif -%}
+{% if message.contains_type("TelestoQueue") -%}
+import ch.ethz.syslab.telesto.protocol.model.Queue;
+{% endif -%}
 
 {% set name = message.__name__ + superclass %}
 
