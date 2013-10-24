@@ -95,8 +95,10 @@ public class DBTests {
     public void testSelectingProcedure2() throws PacketProcessingException {
         String queueName = "first Queue";
 
-        List<DatabaseResultEntry> result = db.callSelectingProcedure(StoredProcedure.CREATE_QUEUE, queueName);
+        @SuppressWarnings("unchecked")
+        List<QueueRow> result = (List<QueueRow>) (List<?>) db.callSelectingProcedure(StoredProcedure.CREATE_QUEUE, queueName);
+
         assertEquals(result.size(), 1);
-        assertEquals(((QueueRow) result.get(0)).getQueueName(), queueName);
+        assertEquals(result.get(0).getQueueName(), queueName);
     }
 }
