@@ -8,8 +8,8 @@ import ch.ethz.syslab.telesto.protocol.*;
  * Edit the template at tools/protocol/telesto/templates/handler.java instead.
  */
 public interface {{ handler }} {
-   public abstract void handle(Packet packet);
+   public abstract Packet handle(Packet packet) throws PacketProcessingException;
    {%- for message in messages if message and message._accept_from('client') %}
-   public abstract void handle({{ message.__name__ }}{{ superclass }} packet);
+   public abstract Packet handle({{ message.__name__ }}{{ superclass }} packet) throws PacketProcessingException;
    {%- endfor %}
 }
