@@ -12,95 +12,95 @@ Message.message_id = Int()
 
 with protocol.version(0):
     # Global Messages
-    class Ping(Message):
+    class Ping(ClientMessage):
         method_id = 0x01
 
-    class Pong(Message):
+    class Pong(ServerMessage):
         method_id = 0x02
 
-    class Success(Message):
+    class Success(ServerMessage):
         method_id = 0x03
 
-    class Error(Message):
+    class Error(ServerMessage):
         method_id = 0x05
         error_code = Byte()
         details = String()
 
     # Handshake
-    class RegisterClient(Message):
+    class RegisterClient(ClientMessage):
         method_id = 0x11
         mode = Byte()
 
-    class RegisterClientResponse(Message):
+    class RegisterClientResponse(ServerMessage):
         method_id = 0x12
         client_id = Int()
 
-    class IdentifyClient(Message):
+    class IdentifyClient(ClientMessage):
         method_id = 0x13
         client_id = Int()
 
     # Queues
-    class CreateQueue(Message):
+    class CreateQueue(ClientMessage):
         method_id = 0x21
         name = String()
 
-    class CreateQueueResponse(Message):
+    class CreateQueueResponse(ServerMessage):
         method_id = 0x22
         queue_id = Int()
 
-    class DeleteQueue(Message):
+    class DeleteQueue(ClientMessage):
         method_id = 0x23
         queue_id = Int()
 
-    class GetQueueId(Message):
+    class GetQueueId(ClientMessage):
         method_id = 0x25
         name = String()
 
-    class GetQueueIdResponse(Message):
+    class GetQueueIdResponse(ServerMessage):
         method_id = 0x26
         queue_id = Int()
 
-    class GetQueueName(Message):
+    class GetQueueName(ClientMessage):
         method_id = 0x27
         queue_id = Int()
 
-    class GetQueueNameResponse(Message):
+    class GetQueueNameResponse(ServerMessage):
         method_id = 0x28
         name = String()
 
-    class GetQueues(Message):
+    class GetQueues(ClientMessage):
         method_id = 0x29
 
-    class GetQueuesResponse(Message):
+    class GetQueuesResponse(ServerMessage):
         method_id = 0x2a
         queues = List(Int())
 
-    class GetActiveQueues(Message):
+    class GetActiveQueues(ClientMessage):
         method_id = 0x2b
 
-    class GetActiveQueuesResponse(Message):
+    class GetActiveQueuesResponse(ServerMessage):
         method_id = 0x2c
         # TODO
 
-    class GetMessages(Message):
+    class GetMessages(ClientMessage):
         method_id = 0x2d
 
-    class GetMessagesResponse(Message):
+    class GetMessagesResponse(ServerMessage):
         method_id = 0x2e
         messages = List(TelestoMessage())
 
     # Messages
-    class PutMessage(Message):
+    class PutMessage(ClientMessage):
         method_id = 0x31
         message = TelestoMessage()
 
-    class ReadMessage(Message):
+    class ReadMessage(ClientMessage):
         method_id = 0x33
         queue_id = Int()
         sender_id = Int()
         mode = Byte()
 
-    class ReadMessageResponse(Message):
+    class ReadMessageResponse(ServerMessage):
         method_id = 0x34
         message = TelestoMessage()
 

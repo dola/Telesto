@@ -9,7 +9,7 @@ from telesto.messages import protocol
 
 
 SUPERCLASS = "Packet"
-HANDLER = "PacketHandler"
+HANDLER = "IPacketHandler"
 
 
 def parse_args():

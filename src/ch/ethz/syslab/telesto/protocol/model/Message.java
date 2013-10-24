@@ -1,5 +1,4 @@
-package ch.ethz.syslab.telesto.protocol;
-
+package ch.ethz.syslab.telesto.protocol.model;
 
 public class Message {
     public int id;
