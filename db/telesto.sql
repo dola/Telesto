@@ -4,7 +4,7 @@
 
 -- Dumped from database version 9.3.1
 -- Dumped by pg_dump version 9.3.1
--- Started on 2013-10-25 01:49:32
+-- Started on 2013-10-25 03:15:10
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -13,19 +13,8 @@ SET standard_conforming_strings = on;
 SET check_function_bodies = false;
 SET client_min_messages = warning;
 
-
 --
--- Create User
--- Name: telesto; Password: blubbi
---
-
-CREATE ROLE telesto LOGIN ENCRYPTED PASSWORD 'md58c65d72f40d9b73c6049c4b87136975a'
-  CREATEDB
-   VALID UNTIL 'infinity';
-
-
---
--- TOC entry 1970 (class 1262 OID 16394)
+-- TOC entry 1975 (class 1262 OID 16394)
 -- Name: telesto; Type: DATABASE; Schema: -; Owner: telesto
 --
 
@@ -52,7 +41,7 @@ CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
 
 
 --
--- TOC entry 1973 (class 0 OID 0)
+-- TOC entry 1978 (class 0 OID 0)
 -- Dependencies: 176
 -- Name: EXTENSION plpgsql; Type: COMMENT; Schema: -; Owner: 
 --
@@ -63,7 +52,7 @@ COMMENT ON EXTENSION plpgsql IS 'PL/pgSQL procedural language';
 SET search_path = public, pg_catalog;
 
 --
--- TOC entry 191 (class 1255 OID 16467)
+-- TOC entry 193 (class 1255 OID 16467)
 -- Name: create_queue(character varying); Type: FUNCTION; Schema: public; Owner: telesto
 --
 
@@ -77,7 +66,77 @@ $$;
 ALTER FUNCTION public.create_queue(p_queue_name character varying) OWNER TO telesto;
 
 --
--- TOC entry 190 (class 1255 OID 16464)
+-- TOC entry 199 (class 1255 OID 16468)
+-- Name: delete_queue(integer); Type: FUNCTION; Schema: public; Owner: telesto
+--
+
+CREATE FUNCTION delete_queue(p_queue_id integer) RETURNS void
+    LANGUAGE sql
+    AS $$  
+    DELETE FROM queues WHERE queue_id = p_queue_id;
+$$;
+
+
+ALTER FUNCTION public.delete_queue(p_queue_id integer) OWNER TO telesto;
+
+--
+-- TOC entry 195 (class 1255 OID 16476)
+-- Name: get_active_queues(integer); Type: FUNCTION; Schema: public; Owner: telesto
+--
+
+CREATE FUNCTION get_active_queues(p_client_id integer) RETURNS TABLE(queue_id integer, queue_name character varying)
+    LANGUAGE sql
+    AS $$  
+    SELECT q.queue_id, q.queue_name FROM messages m JOIN queues q ON q.queue_id = m.queue_id WHERE coalesce(m.receiver_id, p_client_id) = p_client_id;
+$$;
+
+
+ALTER FUNCTION public.get_active_queues(p_client_id integer) OWNER TO telesto;
+
+--
+-- TOC entry 200 (class 1255 OID 16477)
+-- Name: get_messages_from_queue(integer); Type: FUNCTION; Schema: public; Owner: telesto
+--
+
+CREATE FUNCTION get_messages_from_queue(p_queue_id integer) RETURNS TABLE(message_id integer, queue_id integer, sender_id integer, receiver_id integer, context integer, priority smallint, time_of_arrival timestamp without time zone, message character varying)
+    LANGUAGE sql
+    AS $$  
+    SELECT m.message_id, m.queue_id, m.sender_id, m.receiver_id, m.context, m.priority, m.time_of_arrival, m.message FROM messages m WHERE m.queue_id = p_queue_id;
+$$;
+
+
+ALTER FUNCTION public.get_messages_from_queue(p_queue_id integer) OWNER TO telesto;
+
+--
+-- TOC entry 189 (class 1255 OID 16469)
+-- Name: get_queue_id(character varying); Type: FUNCTION; Schema: public; Owner: telesto
+--
+
+CREATE FUNCTION get_queue_id(p_queue_name character varying) RETURNS TABLE(queue_id integer, queue_name character varying)
+    LANGUAGE sql
+    AS $$  
+    SELECT queue_id, queue_name FROM queues WHERE queue_name = p_queue_name;
+$$;
+
+
+ALTER FUNCTION public.get_queue_id(p_queue_name character varying) OWNER TO telesto;
+
+--
+-- TOC entry 191 (class 1255 OID 16471)
+-- Name: get_queue_name(integer); Type: FUNCTION; Schema: public; Owner: telesto
+--
+
+CREATE FUNCTION get_queue_name(p_queue_id integer) RETURNS TABLE(queue_id integer, queue_name character varying)
+    LANGUAGE sql
+    AS $$  
+    SELECT queue_id, queue_name FROM queues WHERE queue_id = p_queue_id;
+$$;
+
+
+ALTER FUNCTION public.get_queue_name(p_queue_id integer) OWNER TO telesto;
+
+--
+-- TOC entry 192 (class 1255 OID 16464)
 -- Name: identify(integer); Type: FUNCTION; Schema: public; Owner: telesto
 --
 
@@ -91,7 +150,100 @@ $$;
 ALTER FUNCTION public.identify(p_client_id integer) OWNER TO telesto;
 
 --
--- TOC entry 189 (class 1255 OID 16461)
+-- TOC entry 194 (class 1255 OID 16472)
+-- Name: list_queues(); Type: FUNCTION; Schema: public; Owner: telesto
+--
+
+CREATE FUNCTION list_queues() RETURNS TABLE(queue_id integer, queue_name character varying)
+    LANGUAGE sql
+    AS $$  
+    SELECT queue_id, queue_name FROM queues;
+$$;
+
+
+ALTER FUNCTION public.list_queues() OWNER TO telesto;
+
+--
+-- TOC entry 197 (class 1255 OID 16479)
+-- Name: put_message(integer, integer, integer, integer, smallint, character varying); Type: FUNCTION; Schema: public; Owner: telesto
+--
+
+CREATE FUNCTION put_message(p_queue_id integer, p_sender_id integer, p_receiver_id integer, p_context integer, p_priority smallint, p_message character varying) RETURNS void
+    LANGUAGE sql
+    AS $$  
+    INSERT INTO messages (message_id, queue_id, sender_id, receiver_id, context, priority, time_of_arrival, message) VALUES (
+	DEFAULT, p_queue_id, p_sender_id, p_receiver_id, p_context, p_priority, DEFAULT, p_message);
+$$;
+
+
+ALTER FUNCTION public.put_message(p_queue_id integer, p_sender_id integer, p_receiver_id integer, p_context integer, p_priority smallint, p_message character varying) OWNER TO telesto;
+
+--
+-- TOC entry 201 (class 1255 OID 16481)
+-- Name: put_messages(integer[], integer, integer, integer, smallint, character varying); Type: FUNCTION; Schema: public; Owner: telesto
+--
+
+CREATE FUNCTION put_messages(p_queue_ids integer[], p_sender_id integer, p_receiver_id integer, p_context integer, p_priority smallint, p_message character varying) RETURNS void
+    LANGUAGE plpgsql
+    AS $$  
+DECLARE
+	p_queue_id integer;
+BEGIN
+	FOREACH p_queue_id IN ARRAY p_queue_ids
+	LOOP 
+	    INSERT INTO messages (message_id, queue_id, sender_id, receiver_id, context, priority, time_of_arrival, message) VALUES (
+		DEFAULT, p_queue_id, p_sender_id, p_receiver_id, p_context, p_priority, DEFAULT, p_message);
+	END LOOP;
+END
+$$;
+
+
+ALTER FUNCTION public.put_messages(p_queue_ids integer[], p_sender_id integer, p_receiver_id integer, p_context integer, p_priority smallint, p_message character varying) OWNER TO telesto;
+
+--
+-- TOC entry 196 (class 1255 OID 16482)
+-- Name: read_message_by_priority(integer, integer, integer); Type: FUNCTION; Schema: public; Owner: telesto
+--
+
+CREATE FUNCTION read_message_by_priority(p_queue_id integer, p_sender_id integer, p_receiver_id integer) RETURNS TABLE(message_id integer, queue_id integer, sender_id integer, receiver_id integer, context integer, priority smallint, time_of_arrival timestamp without time zone, message character varying)
+    LANGUAGE sql
+    AS $$  
+	DELETE FROM messages m WHERE m.message_id = (
+		SELECT m.message_id FROM messages m 
+		WHERE 	m.queue_id = p_queue_id 
+		AND 	coalesce(m.sender_id, p_sender_id) = p_sender_id 
+		AND 	coalesce(m.receiver_id, p_receiver_id) = p_receiver_id 
+		ORDER BY m.priority DESC 
+		LIMIT 1
+	) RETURNING m.message_id, m.queue_id, m.sender_id, m.receiver_id, m.context, m.priority, m.time_of_arrival, m.message;
+$$;
+
+
+ALTER FUNCTION public.read_message_by_priority(p_queue_id integer, p_sender_id integer, p_receiver_id integer) OWNER TO telesto;
+
+--
+-- TOC entry 198 (class 1255 OID 16483)
+-- Name: read_message_by_timestamp(integer, integer, integer); Type: FUNCTION; Schema: public; Owner: telesto
+--
+
+CREATE FUNCTION read_message_by_timestamp(p_queue_id integer, p_sender_id integer, p_receiver_id integer) RETURNS TABLE(message_id integer, queue_id integer, sender_id integer, receiver_id integer, context integer, priority smallint, time_of_arrival timestamp without time zone, message character varying)
+    LANGUAGE sql
+    AS $$  
+	DELETE FROM messages m WHERE m.message_id = (
+		SELECT m.message_id FROM messages m 
+		WHERE 	m.queue_id = p_queue_id 
+		AND 	coalesce(m.sender_id, p_sender_id) = p_sender_id 
+		AND 	coalesce(m.receiver_id, p_receiver_id) = p_receiver_id 
+		ORDER BY m.time_of_arrival DESC 
+		LIMIT 1
+	) RETURNING m.message_id, m.queue_id, m.sender_id, m.receiver_id, m.context, m.priority, m.time_of_arrival, m.message;
+$$;
+
+
+ALTER FUNCTION public.read_message_by_timestamp(p_queue_id integer, p_sender_id integer, p_receiver_id integer) OWNER TO telesto;
+
+--
+-- TOC entry 190 (class 1255 OID 16461)
 -- Name: request_id(character varying, integer); Type: FUNCTION; Schema: public; Owner: telesto
 --
 
@@ -141,7 +293,7 @@ CREATE TABLE messages (
     receiver_id integer,
     context integer,
     priority smallint,
-    time_of_arrival timestamp without time zone,
+    time_of_arrival timestamp without time zone DEFAULT now(),
     message character varying(2000)
 );
 
@@ -164,7 +316,7 @@ CREATE SEQUENCE messages_message_id_seq
 ALTER TABLE public.messages_message_id_seq OWNER TO telesto;
 
 --
--- TOC entry 1976 (class 0 OID 0)
+-- TOC entry 1981 (class 0 OID 0)
 -- Dependencies: 172
 -- Name: messages_message_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: telesto
 --
@@ -201,7 +353,7 @@ CREATE SEQUENCE queue_queue_id_seq
 ALTER TABLE public.queue_queue_id_seq OWNER TO telesto;
 
 --
--- TOC entry 1978 (class 0 OID 0)
+-- TOC entry 1983 (class 0 OID 0)
 -- Dependencies: 170
 -- Name: queue_queue_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: telesto
 --
@@ -225,7 +377,7 @@ CREATE SEQUENCE users_user_id_seq
 ALTER TABLE public.users_user_id_seq OWNER TO telesto;
 
 --
--- TOC entry 1979 (class 0 OID 0)
+-- TOC entry 1984 (class 0 OID 0)
 -- Dependencies: 174
 -- Name: users_user_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: telesto
 --
@@ -234,7 +386,7 @@ ALTER SEQUENCE users_user_id_seq OWNED BY clients.client_id;
 
 
 --
--- TOC entry 1842 (class 2604 OID 16420)
+-- TOC entry 1853 (class 2604 OID 16420)
 -- Name: client_id; Type: DEFAULT; Schema: public; Owner: telesto
 --
 
@@ -242,7 +394,7 @@ ALTER TABLE ONLY clients ALTER COLUMN client_id SET DEFAULT nextval('users_user_
 
 
 --
--- TOC entry 1841 (class 2604 OID 16409)
+-- TOC entry 1851 (class 2604 OID 16409)
 -- Name: message_id; Type: DEFAULT; Schema: public; Owner: telesto
 --
 
@@ -250,7 +402,7 @@ ALTER TABLE ONLY messages ALTER COLUMN message_id SET DEFAULT nextval('messages_
 
 
 --
--- TOC entry 1840 (class 2604 OID 16401)
+-- TOC entry 1850 (class 2604 OID 16401)
 -- Name: queue_id; Type: DEFAULT; Schema: public; Owner: telesto
 --
 
@@ -258,105 +410,7 @@ ALTER TABLE ONLY queues ALTER COLUMN queue_id SET DEFAULT nextval('queue_queue_i
 
 
 --
--- TOC entry 1965 (class 0 OID 16417)
--- Dependencies: 175
--- Data for Name: clients; Type: TABLE DATA; Schema: public; Owner: telesto
---
-
-COPY clients (client_id, client_name, operation_mode) FROM stdin;
-1	abc	1
-2	123	5
-3	123	5
-4	123	5
-5	123	5
-15	bla	3
-17	bla	3
-18	bla	3
-19	bla	3
-20	bla	3
-24	bla	1
-25	bla	1
-28	abc	1
-29	blubberi	1
-30	dola	1
-31	dola	1
-32	dola	1
-33	dola	1
-34	dola	1
-35	dola	1
-36	dola	1
-37	dola	1
-38	dola	1
-39	dola	1
-40	dola	1
-41	dola	1
-42	dola	1
-43	dola	1
-44	dola	1
-45	dola	1
-46	dola	1
-47	dola	1
-48	dola	1
-49	dola	1
-50	dola	1
-51	dola	1
-52	dola	1
-53	dola	1
-54	dola	1
-\.
-
-
---
--- TOC entry 1963 (class 0 OID 16406)
--- Dependencies: 173
--- Data for Name: messages; Type: TABLE DATA; Schema: public; Owner: telesto
---
-
-COPY messages (message_id, queue_id, sender_id, receiver_id, context, priority, time_of_arrival, message) FROM stdin;
-\.
-
-
---
--- TOC entry 1980 (class 0 OID 0)
--- Dependencies: 172
--- Name: messages_message_id_seq; Type: SEQUENCE SET; Schema: public; Owner: telesto
---
-
-SELECT pg_catalog.setval('messages_message_id_seq', 1, false);
-
-
---
--- TOC entry 1981 (class 0 OID 0)
--- Dependencies: 170
--- Name: queue_queue_id_seq; Type: SEQUENCE SET; Schema: public; Owner: telesto
---
-
-SELECT pg_catalog.setval('queue_queue_id_seq', 2, true);
-
-
---
--- TOC entry 1961 (class 0 OID 16398)
--- Dependencies: 171
--- Data for Name: queues; Type: TABLE DATA; Schema: public; Owner: telesto
---
-
-COPY queues (queue_id, queue_name) FROM stdin;
-1	first Queue
-2	first Queue
-\.
-
-
---
--- TOC entry 1982 (class 0 OID 0)
--- Dependencies: 174
--- Name: users_user_id_seq; Type: SEQUENCE SET; Schema: public; Owner: telesto
---
-
-SELECT pg_catalog.setval('users_user_id_seq', 54, true);
-
-
---
--- TOC entry 1850 (class 2606 OID 16414)
+-- TOC entry 1861 (class 2606 OID 16414)
 -- Name: pk_message_id; Type: CONSTRAINT; Schema: public; Owner: telesto; Tablespace: 
 --
 
@@ -365,7 +419,7 @@ ALTER TABLE ONLY messages
 
 
 --
--- TOC entry 1844 (class 2606 OID 16424)
+-- TOC entry 1855 (class 2606 OID 16424)
 -- Name: pk_queue_id; Type: CONSTRAINT; Schema: public; Owner: telesto; Tablespace: 
 --
 
@@ -374,7 +428,7 @@ ALTER TABLE ONLY queues
 
 
 --
--- TOC entry 1852 (class 2606 OID 16422)
+-- TOC entry 1863 (class 2606 OID 16422)
 -- Name: pk_user_id; Type: CONSTRAINT; Schema: public; Owner: telesto; Tablespace: 
 --
 
@@ -383,7 +437,7 @@ ALTER TABLE ONLY clients
 
 
 --
--- TOC entry 1845 (class 1259 OID 16428)
+-- TOC entry 1856 (class 1259 OID 16428)
 -- Name: idx_receiver_queue_priority; Type: INDEX; Schema: public; Owner: telesto; Tablespace: 
 --
 
@@ -391,7 +445,7 @@ CREATE INDEX idx_receiver_queue_priority ON messages USING btree (receiver_id, q
 
 
 --
--- TOC entry 1846 (class 1259 OID 16427)
+-- TOC entry 1857 (class 1259 OID 16427)
 -- Name: idx_receiver_queue_priority_sender; Type: INDEX; Schema: public; Owner: telesto; Tablespace: 
 --
 
@@ -399,7 +453,7 @@ CREATE INDEX idx_receiver_queue_priority_sender ON messages USING btree (receive
 
 
 --
--- TOC entry 1847 (class 1259 OID 16431)
+-- TOC entry 1858 (class 1259 OID 16431)
 -- Name: idx_receiver_queue_time; Type: INDEX; Schema: public; Owner: telesto; Tablespace: 
 --
 
@@ -407,7 +461,7 @@ CREATE INDEX idx_receiver_queue_time ON messages USING btree (receiver_id, queue
 
 
 --
--- TOC entry 1848 (class 1259 OID 16432)
+-- TOC entry 1859 (class 1259 OID 16432)
 -- Name: idx_receiver_queue_time_sender; Type: INDEX; Schema: public; Owner: telesto; Tablespace: 
 --
 
@@ -415,7 +469,7 @@ CREATE INDEX idx_receiver_queue_time_sender ON messages USING btree (receiver_id
 
 
 --
--- TOC entry 1972 (class 0 OID 0)
+-- TOC entry 1977 (class 0 OID 0)
 -- Dependencies: 6
 -- Name: public; Type: ACL; Schema: -; Owner: telesto
 --
@@ -427,7 +481,7 @@ GRANT ALL ON SCHEMA public TO PUBLIC;
 
 
 --
--- TOC entry 1974 (class 0 OID 0)
+-- TOC entry 1979 (class 0 OID 0)
 -- Dependencies: 175
 -- Name: clients; Type: ACL; Schema: public; Owner: telesto
 --
@@ -439,7 +493,7 @@ GRANT ALL ON TABLE clients TO PUBLIC;
 
 
 --
--- TOC entry 1975 (class 0 OID 0)
+-- TOC entry 1980 (class 0 OID 0)
 -- Dependencies: 173
 -- Name: messages; Type: ACL; Schema: public; Owner: telesto
 --
@@ -451,7 +505,7 @@ GRANT ALL ON TABLE messages TO PUBLIC;
 
 
 --
--- TOC entry 1977 (class 0 OID 0)
+-- TOC entry 1982 (class 0 OID 0)
 -- Dependencies: 171
 -- Name: queues; Type: ACL; Schema: public; Owner: telesto
 --
@@ -463,7 +517,7 @@ GRANT ALL ON TABLE queues TO PUBLIC;
 
 
 --
--- TOC entry 1508 (class 826 OID 16395)
+-- TOC entry 1518 (class 826 OID 16395)
 -- Name: DEFAULT PRIVILEGES FOR TABLES; Type: DEFAULT ACL; Schema: -; Owner: postgres
 --
 
@@ -473,7 +527,7 @@ ALTER DEFAULT PRIVILEGES FOR ROLE postgres GRANT ALL ON TABLES  TO postgres;
 ALTER DEFAULT PRIVILEGES FOR ROLE postgres GRANT ALL ON TABLES  TO PUBLIC;
 
 
--- Completed on 2013-10-25 01:49:32
+-- Completed on 2013-10-25 03:15:10
 
 --
 -- PostgreSQL database dump complete
