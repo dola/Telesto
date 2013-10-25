@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 
+import java.sql.Array;
 import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -89,6 +90,25 @@ public class DBTests {
     public void testSelectingProcedure1() throws PacketProcessingException {
         List<DatabaseResultEntry> result = db.callSelectingProcedure(StoredProcedure.IDENTIFY, 54);
         assertEquals(result.size(), 1);
+    }
+
+    @Test
+    public void testMessageInsert() throws PacketProcessingException {
+        // queue_id, sender_id, receiver_id, context, priority, message
+        db.callProcedure(StoredProcedure.PUT_MESSAGE, 1, 1, null, null, 10, "hallo");
+    }
+
+    @Test
+    public void testMultiMessageInsert() throws PacketProcessingException {
+        // queue_id, sender_id, receiver_id, context, priority, message
+        try {
+            // todo: nicht auf eigener Connection...
+            Array queueIds = db.getConnection().createArrayOf("int4", new Integer[] { 1, 2, 3 });
+            db.callProcedure(StoredProcedure.PUT_MESSAGES, queueIds, 1, null, null, 10, "ich bin in Queue 1, 2 und 3");
+        } catch (SQLException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
     }
 
     @Test
