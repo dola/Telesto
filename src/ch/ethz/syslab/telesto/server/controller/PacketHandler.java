@@ -16,7 +16,7 @@ import ch.ethz.syslab.telesto.protocol.ReadMessagePacket;
 import ch.ethz.syslab.telesto.protocol.RegisterClientPacket;
 import ch.ethz.syslab.telesto.protocol.RegisterClientResponsePacket;
 import ch.ethz.syslab.telesto.server.db.Database;
-import ch.ethz.syslab.telesto.server.db.StoredProcedure;
+import ch.ethz.syslab.telesto.server.db.procedure.ClientProcedure;
 
 public class PacketHandler implements IPacketHandler {
 
@@ -42,7 +42,7 @@ public class PacketHandler implements IPacketHandler {
     public Packet handle(RegisterClientPacket packet) throws PacketProcessingException {
         // TODO: should return whole information; i.e. [client_id, client_name, operation_mode]
 
-        int clientId = db.callSimpleProcedure(StoredProcedure.REQUEST_ID, packet.clientName, packet.mode);
+        int clientId = db.callSimpleProcedure(ClientProcedure.REQUEST_ID, packet.clientName, packet.mode);
 
         return new RegisterClientResponsePacket(packet.packetId + 1, clientId);
     }

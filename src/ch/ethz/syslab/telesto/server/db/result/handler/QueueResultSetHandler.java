@@ -3,6 +3,7 @@ package ch.ethz.syslab.telesto.server.db.result.handler;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.List;
 
 import ch.ethz.syslab.telesto.server.db.result.DatabaseResultEntry;
 import ch.ethz.syslab.telesto.server.db.result.QueueRow;
@@ -10,7 +11,7 @@ import ch.ethz.syslab.telesto.server.db.result.QueueRow;
 public class QueueResultSetHandler implements IResultSetHandler {
 
     @Override
-    public ArrayList<DatabaseResultEntry> handleResultSet(ResultSet dbResults) throws SQLException {
+    public List<DatabaseResultEntry> handleResultSet(ResultSet dbResults) throws SQLException {
         // QueueRow:
         // [queue_id, queue_name]
 

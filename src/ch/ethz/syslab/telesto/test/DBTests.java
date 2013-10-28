@@ -18,7 +18,9 @@ import org.postgresql.ds.PGPoolingDataSource;
 import ch.ethz.syslab.telesto.server.config.CONFIG;
 import ch.ethz.syslab.telesto.server.controller.PacketProcessingException;
 import ch.ethz.syslab.telesto.server.db.Database;
-import ch.ethz.syslab.telesto.server.db.StoredProcedure;
+import ch.ethz.syslab.telesto.server.db.procedure.ClientProcedure;
+import ch.ethz.syslab.telesto.server.db.procedure.MessageProcedure;
+import ch.ethz.syslab.telesto.server.db.procedure.QueueProcedure;
 import ch.ethz.syslab.telesto.server.db.result.DatabaseResultEntry;
 import ch.ethz.syslab.telesto.server.db.result.QueueRow;
 
@@ -81,21 +83,21 @@ public class DBTests {
 
     @Test
     public void testSimpleProcedure() throws PacketProcessingException {
-        int id = db.callSimpleProcedure(StoredProcedure.REQUEST_ID, "dola", 1);
+        int id = db.callSimpleProcedure(ClientProcedure.REQUEST_ID, "dola", 1);
         System.out.println(id);
         assertNotEquals(0, id);
     }
 
     @Test
     public void testSelectingProcedure1() throws PacketProcessingException {
-        List<DatabaseResultEntry> result = db.callSelectingProcedure(StoredProcedure.IDENTIFY, 54);
+        List<DatabaseResultEntry> result = db.callSelectingProcedure(ClientProcedure.IDENTIFY, 54);
         assertEquals(result.size(), 1);
     }
 
     @Test
     public void testMessageInsert() throws PacketProcessingException {
         // queue_id, sender_id, receiver_id, context, priority, message
-        db.callProcedure(StoredProcedure.PUT_MESSAGE, 1, 1, null, null, 10, "hallo");
+        db.callProcedure(MessageProcedure.PUT_MESSAGE, 1, 1, null, null, 10, "hallo");
     }
 
     @Test
@@ -104,7 +106,7 @@ public class DBTests {
         try {
             // todo: nicht auf eigener Connection...
             Array queueIds = db.getConnection().createArrayOf("int4", new Integer[] { 1, 2, 3 });
-            db.callProcedure(StoredProcedure.PUT_MESSAGES, queueIds, 1, null, null, 10, "ich bin in Queue 1, 2 und 3");
+            db.callProcedure(MessageProcedure.PUT_MESSAGES, queueIds, 1, null, null, 10, "ich bin in Queue 1, 2 und 3");
         } catch (SQLException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
@@ -115,8 +117,7 @@ public class DBTests {
     public void testSelectingProcedure2() throws PacketProcessingException {
         String queueName = "first Queue";
 
-        @SuppressWarnings("unchecked")
-        List<QueueRow> result = (List<QueueRow>) (List<?>) db.callSelectingProcedure(StoredProcedure.CREATE_QUEUE, queueName);
+        List<QueueRow> result = db.callQueueProcedure(QueueProcedure.CREATE_QUEUE, queueName);
 
         assertEquals(result.size(), 1);
         assertEquals(result.get(0).getQueueName(), queueName);
