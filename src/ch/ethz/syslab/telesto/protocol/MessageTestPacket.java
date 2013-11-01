@@ -4,6 +4,7 @@ package ch.ethz.syslab.telesto.protocol;
 
 import java.nio.ByteBuffer;
 
+import ch.ethz.syslab.telesto.model.Message;
 
 
 /* 
@@ -11,24 +12,24 @@ import java.nio.ByteBuffer;
  * 
  * Edit the template at tools/protocol/telesto/templates/packet.java instead.
  */
-public class GetQueueIdPacket extends Packet {
-    public String name;
+public class MessageTestPacket extends Packet {
+    public Message message;
 
-    public GetQueueIdPacket() {
+    public MessageTestPacket() {
     }
 
-    public GetQueueIdPacket(String name) {
-        this.name = name;
+    public MessageTestPacket(Message message) {
+        this.message = message;
     }
     
-    public GetQueueIdPacket(int packetId, String name) {
+    public MessageTestPacket(int packetId, Message message) {
         this.packetId = packetId;
-        this.name = name;
+        this.message = message;
     }
 
     @Override
     public byte methodId() {
-        return 37;
+        return 114;
     }
 
     @Override
@@ -37,22 +38,22 @@ public class GetQueueIdPacket extends Packet {
         buffer.position(lengthIndex + 2);
         buffer.put(methodId());
         buffer.putInt(packetId);
-        putString(buffer, name);
+        putMessage(buffer, message);
         buffer.putShort(lengthIndex, (short) (buffer.position() - lengthIndex - 2));
     }
 
     @Override
     public void parse(ByteBuffer buffer) {
         packetId = buffer.getInt();
-        name = getString(buffer);
+        message = getMessage(buffer);
     }
 
     @Override
-    public GetQueueIdPacket newInstance() {
-        return new GetQueueIdPacket();
+    public MessageTestPacket newInstance() {
+        return new MessageTestPacket();
     }
     
     public String toString() {
-        return "GetQueueIdPacket";
+        return "MessageTestPacket";
     }
 }

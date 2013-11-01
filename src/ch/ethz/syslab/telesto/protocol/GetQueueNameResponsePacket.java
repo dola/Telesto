@@ -16,6 +16,10 @@ public class GetQueueNameResponsePacket extends Packet {
 
     public GetQueueNameResponsePacket() {
     }
+
+    public GetQueueNameResponsePacket(String name) {
+        this.name = name;
+    }
     
     public GetQueueNameResponsePacket(int packetId, String name) {
         this.packetId = packetId;

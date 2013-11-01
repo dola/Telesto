@@ -4,8 +4,10 @@ import java.nio.BufferUnderflowException;
 import java.nio.ByteBuffer;
 import java.util.concurrent.ArrayBlockingQueue;
 
+import ch.ethz.syslab.telesto.protocol.ErrorPacket;
 import ch.ethz.syslab.telesto.protocol.Packet;
 import ch.ethz.syslab.telesto.protocol.Packet.UnknownMethodException;
+import ch.ethz.syslab.telesto.server.controller.PacketProcessingException;
 import ch.ethz.syslab.telesto.server.model.Client;
 import ch.ethz.syslab.telesto.util.Log;
 
@@ -33,7 +35,13 @@ public class DataHandler extends Thread {
                 if (dataRemaining(client)) {
                     clientQueue.add(client);
                 }
-                // TODO: Do something with received packet
+                Packet response;
+                try {
+                    response = client.packetHandler.handle(packet);
+                } catch (PacketProcessingException e) {
+                    response = new ErrorPacket((byte) 0, e.getMessage());
+                }
+                // TODO: Send response
             }
         }
     }

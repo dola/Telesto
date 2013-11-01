@@ -4,7 +4,7 @@ package ch.ethz.syslab.telesto.protocol;
 
 import java.nio.ByteBuffer;
 
-import ch.ethz.syslab.telesto.protocol.model.Queue;
+import ch.ethz.syslab.telesto.model.Queue;
 
 
 /* 
@@ -16,6 +16,10 @@ public class GetActiveQueuesResponsePacket extends Packet {
     public Queue[] queues;
 
     public GetActiveQueuesResponsePacket() {
+    }
+
+    public GetActiveQueuesResponsePacket(Queue[] queues) {
+        this.queues = queues;
     }
     
     public GetActiveQueuesResponsePacket(int packetId, Queue[] queues) {

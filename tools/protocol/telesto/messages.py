@@ -117,6 +117,14 @@ with protocol.version(0):
         double_field = Double()
         string_field = String()
 
+    class MessageTest(Message):
+        method_id = 0x72
+        message = TelestoMessage()
+
+    class QueueTest(Message):
+        method_id = 0x73
+        queue = TelestoQueue()
+
 
 if __name__ == "__main__":
     print protocol

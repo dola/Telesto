@@ -16,6 +16,10 @@ public class CreateQueuePacket extends Packet {
 
     public CreateQueuePacket() {
     }
+
+    public CreateQueuePacket(String name) {
+        this.name = name;
+    }
     
     public CreateQueuePacket(int packetId, String name) {
         this.packetId = packetId;

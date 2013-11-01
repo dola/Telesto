@@ -18,6 +18,12 @@ public class ReadMessagePacket extends Packet {
 
     public ReadMessagePacket() {
     }
+
+    public ReadMessagePacket(int queueId, int senderId, byte mode) {
+        this.queueId = queueId;
+        this.senderId = senderId;
+        this.mode = mode;
+    }
     
     public ReadMessagePacket(int packetId, int queueId, int senderId, byte mode) {
         this.packetId = packetId;

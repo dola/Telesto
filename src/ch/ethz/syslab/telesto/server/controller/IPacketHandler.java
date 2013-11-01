@@ -22,4 +22,6 @@ public interface IPacketHandler {
    public abstract Packet handle(PutMessagePacket packet) throws PacketProcessingException;
    public abstract Packet handle(ReadMessagePacket packet) throws PacketProcessingException;
    public abstract Packet handle(ComplexTestPacket packet) throws PacketProcessingException;
+   public abstract Packet handle(MessageTestPacket packet) throws PacketProcessingException;
+   public abstract Packet handle(QueueTestPacket packet) throws PacketProcessingException;
 }

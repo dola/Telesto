@@ -17,6 +17,11 @@ public class ErrorPacket extends Packet {
 
     public ErrorPacket() {
     }
+
+    public ErrorPacket(byte errorCode, String details) {
+        this.errorCode = errorCode;
+        this.details = details;
+    }
     
     public ErrorPacket(int packetId, byte errorCode, String details) {
         this.packetId = packetId;

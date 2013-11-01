@@ -4,7 +4,7 @@ package ch.ethz.syslab.telesto.protocol;
 
 import java.nio.ByteBuffer;
 
-import ch.ethz.syslab.telesto.protocol.model.Message;
+import ch.ethz.syslab.telesto.model.Message;
 
 
 /* 
@@ -16,6 +16,10 @@ public class PutMessagePacket extends Packet {
     public Message message;
 
     public PutMessagePacket() {
+    }
+
+    public PutMessagePacket(Message message) {
+        this.message = message;
     }
     
     public PutMessagePacket(int packetId, Message message) {

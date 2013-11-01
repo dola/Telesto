@@ -5,13 +5,18 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.nio.ByteBuffer;
+import java.sql.Timestamp;
 
 import org.junit.Test;
 
+import ch.ethz.syslab.telesto.model.Message;
+import ch.ethz.syslab.telesto.model.Queue;
 import ch.ethz.syslab.telesto.protocol.ComplexTestPacket;
+import ch.ethz.syslab.telesto.protocol.MessageTestPacket;
 import ch.ethz.syslab.telesto.protocol.Packet;
 import ch.ethz.syslab.telesto.protocol.Packet.UnknownMethodException;
 import ch.ethz.syslab.telesto.protocol.PingPacket;
+import ch.ethz.syslab.telesto.protocol.QueueTestPacket;
 
 public class ProtocolTest {
 
@@ -55,6 +60,37 @@ public class ProtocolTest {
         byte[] stringBytes = new byte[6];
         buffer.get(stringBytes);
         assertArrayEquals("string".getBytes(Packet.CHARSET), stringBytes);
+    }
+
+    @Test
+    public void messagePacket() throws UnknownMethodException {
+        ByteBuffer buffer = ByteBuffer.allocate(1024);
+        Message message = new Message(1, 2, 3, 4, 5, (byte) 6, new Timestamp(7), "8");
+        new MessageTestPacket(0, message).emit(buffer);
+        buffer.flip();
+        buffer.getShort();
+        MessageTestPacket packet = (MessageTestPacket) Packet.create(buffer);
+        assertEquals(0, packet.packetId);
+        assertEquals(message, packet.message);
+        assertEquals(message.queueId, packet.message.queueId);
+        assertEquals(message.senderId, packet.message.senderId);
+        assertEquals(message.receiverId, packet.message.receiverId);
+        assertEquals(message.priority, packet.message.priority);
+        assertEquals(message.timeOfArrival, packet.message.timeOfArrival);
+        assertEquals(message.message, packet.message.message);
+    }
+
+    @Test
+    public void queuePacket() throws UnknownMethodException {
+        ByteBuffer buffer = ByteBuffer.allocate(1024);
+        Queue queue = new Queue(1, "Hello Queue");
+        new QueueTestPacket(0, queue).emit(buffer);
+        buffer.flip();
+        buffer.getShort();
+        QueueTestPacket packet = (QueueTestPacket) Packet.create(buffer);
+        assertEquals(0, packet.packetId);
+        assertEquals(queue, packet.queue);
+        assertEquals(queue.name, packet.queue.name);
     }
 
     @Test

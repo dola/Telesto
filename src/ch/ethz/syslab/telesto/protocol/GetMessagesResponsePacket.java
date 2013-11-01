@@ -4,7 +4,7 @@ package ch.ethz.syslab.telesto.protocol;
 
 import java.nio.ByteBuffer;
 
-import ch.ethz.syslab.telesto.protocol.model.Message;
+import ch.ethz.syslab.telesto.model.Message;
 
 
 /* 
@@ -16,6 +16,10 @@ public class GetMessagesResponsePacket extends Packet {
     public Message[] messages;
 
     public GetMessagesResponsePacket() {
+    }
+
+    public GetMessagesResponsePacket(Message[] messages) {
+        this.messages = messages;
     }
     
     public GetMessagesResponsePacket(int packetId, Message[] messages) {

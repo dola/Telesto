@@ -11,20 +11,20 @@ import java.util.Map;
 
 import org.postgresql.ds.PGPoolingDataSource;
 
+import ch.ethz.syslab.telesto.model.Client;
+import ch.ethz.syslab.telesto.model.Message;
+import ch.ethz.syslab.telesto.model.Queue;
 import ch.ethz.syslab.telesto.server.config.CONFIG;
 import ch.ethz.syslab.telesto.server.controller.PacketProcessingException;
 import ch.ethz.syslab.telesto.server.db.procedure.ClientProcedure;
 import ch.ethz.syslab.telesto.server.db.procedure.MessageProcedure;
 import ch.ethz.syslab.telesto.server.db.procedure.QueueProcedure;
 import ch.ethz.syslab.telesto.server.db.procedure.StoredProcedure;
-import ch.ethz.syslab.telesto.server.db.result.ClientRow;
+import ch.ethz.syslab.telesto.server.db.result.ClientResultSetHandler;
 import ch.ethz.syslab.telesto.server.db.result.DatabaseResultEntry;
-import ch.ethz.syslab.telesto.server.db.result.MessageRow;
-import ch.ethz.syslab.telesto.server.db.result.QueueRow;
-import ch.ethz.syslab.telesto.server.db.result.handler.ClientResultSetHandler;
-import ch.ethz.syslab.telesto.server.db.result.handler.IResultSetHandler;
-import ch.ethz.syslab.telesto.server.db.result.handler.MessageResultSetHandler;
-import ch.ethz.syslab.telesto.server.db.result.handler.QueueResultSetHandler;
+import ch.ethz.syslab.telesto.server.db.result.IResultSetHandler;
+import ch.ethz.syslab.telesto.server.db.result.MessageResultSetHandler;
+import ch.ethz.syslab.telesto.server.db.result.QueueResultSetHandler;
 import ch.ethz.syslab.telesto.util.Log;
 
 public class Database {
@@ -215,13 +215,13 @@ public class Database {
     // USE EVERYTHING BELOW THIS:
     // TODO: optimize methods below share more code
 
-    public List<MessageRow> callMessageProcedure(MessageProcedure proc, Object... arguments) throws PacketProcessingException {
+    public List<Message> callMessageProcedure(MessageProcedure proc, Object... arguments) throws PacketProcessingException {
         if (!proc.hasReturnValue()) {
             throw new PacketProcessingException("Procedure has to have return value to be usable with this method");
         }
 
         CallableStatement statement = null;
-        List<MessageRow> result = new ArrayList<>();
+        List<Message> result = new ArrayList<>();
 
         try {
             statement = prepareCallableStatement(proc, arguments);
@@ -233,7 +233,7 @@ public class Database {
                 // MessageRow:
                 // [message_id, queue_id, sender_id, receiver_id, context, priority, time_of_arrival, message]
                 while (dbResults.next()) {
-                    MessageRow r = new MessageRow(dbResults.getInt(1),
+                    Message r = new Message(dbResults.getInt(1),
                             dbResults.getInt(2),
                             dbResults.getInt(3),
                             dbResults.getInt(4),
@@ -260,13 +260,13 @@ public class Database {
         return result;
     }
 
-    public List<QueueRow> callQueueProcedure(QueueProcedure proc, Object... arguments) throws PacketProcessingException {
+    public List<Queue> callQueueProcedure(QueueProcedure proc, Object... arguments) throws PacketProcessingException {
         if (!proc.hasReturnValue()) {
             throw new PacketProcessingException("Procedure has to have return value to be usable with this method");
         }
 
         CallableStatement statement = null;
-        List<QueueRow> result = new ArrayList<>();
+        List<Queue> result = new ArrayList<>();
 
         try {
             statement = prepareCallableStatement(proc, arguments);
@@ -279,7 +279,7 @@ public class Database {
                 // [queue_id, queue_name]
 
                 while (dbResults.next()) {
-                    QueueRow r = new QueueRow(dbResults.getInt(1), dbResults.getString(2));
+                    Queue r = new Queue(dbResults.getInt(1), dbResults.getString(2));
                     result.add(r);
                 }
             }
@@ -299,13 +299,13 @@ public class Database {
         return result;
     }
 
-    public List<ClientRow> callClientProcedure(ClientProcedure proc, Object... arguments) throws PacketProcessingException {
+    public List<Client> callClientProcedure(ClientProcedure proc, Object... arguments) throws PacketProcessingException {
         if (!proc.hasReturnValue()) {
             throw new PacketProcessingException("Procedure has to have return value to be usable with this method");
         }
 
         CallableStatement statement = null;
-        List<ClientRow> result = new ArrayList<>();
+        List<Client> result = new ArrayList<>();
 
         try {
             statement = prepareCallableStatement(proc, arguments);
@@ -318,7 +318,7 @@ public class Database {
                 // [client_id, client_name, operation_mode]
 
                 while (dbResults.next()) {
-                    ClientRow r = new ClientRow(dbResults.getInt(1), dbResults.getString(2), dbResults.getByte(3));
+                    Client r = new Client(dbResults.getInt(1), dbResults.getString(2), dbResults.getByte(3));
                     result.add(r);
                 }
 

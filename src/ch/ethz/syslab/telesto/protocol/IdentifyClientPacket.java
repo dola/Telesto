@@ -16,6 +16,10 @@ public class IdentifyClientPacket extends Packet {
 
     public IdentifyClientPacket() {
     }
+
+    public IdentifyClientPacket(int clientId) {
+        this.clientId = clientId;
+    }
     
     public IdentifyClientPacket(int packetId, int clientId) {
         this.packetId = packetId;

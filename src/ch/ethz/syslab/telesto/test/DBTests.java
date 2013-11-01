@@ -15,6 +15,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.postgresql.ds.PGPoolingDataSource;
 
+import ch.ethz.syslab.telesto.model.Queue;
 import ch.ethz.syslab.telesto.server.config.CONFIG;
 import ch.ethz.syslab.telesto.server.controller.PacketProcessingException;
 import ch.ethz.syslab.telesto.server.db.Database;
@@ -22,7 +23,6 @@ import ch.ethz.syslab.telesto.server.db.procedure.ClientProcedure;
 import ch.ethz.syslab.telesto.server.db.procedure.MessageProcedure;
 import ch.ethz.syslab.telesto.server.db.procedure.QueueProcedure;
 import ch.ethz.syslab.telesto.server.db.result.DatabaseResultEntry;
-import ch.ethz.syslab.telesto.server.db.result.QueueRow;
 
 public class DBTests {
 
@@ -117,9 +117,9 @@ public class DBTests {
     public void testSelectingProcedure2() throws PacketProcessingException {
         String queueName = "first Queue";
 
-        List<QueueRow> result = db.callQueueProcedure(QueueProcedure.CREATE_QUEUE, queueName);
+        List<Queue> result = db.callQueueProcedure(QueueProcedure.CREATE_QUEUE, queueName);
 
         assertEquals(result.size(), 1);
-        assertEquals(result.get(0).getQueueName(), queueName);
+        assertEquals(result.get(0).name, queueName);
     }
 }

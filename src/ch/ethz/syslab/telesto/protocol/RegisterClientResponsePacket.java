@@ -16,6 +16,10 @@ public class RegisterClientResponsePacket extends Packet {
 
     public RegisterClientResponsePacket() {
     }
+
+    public RegisterClientResponsePacket(int clientId) {
+        this.clientId = clientId;
+    }
     
     public RegisterClientResponsePacket(int packetId, int clientId) {
         this.packetId = packetId;

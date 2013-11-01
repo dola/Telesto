@@ -23,6 +23,17 @@ public class ComplexTestPacket extends Packet {
 
     public ComplexTestPacket() {
     }
+
+    public ComplexTestPacket(byte byteField, boolean booleanField, short shortField, int intField, long longField, float floatField, double doubleField, String stringField) {
+        this.byteField = byteField;
+        this.booleanField = booleanField;
+        this.shortField = shortField;
+        this.intField = intField;
+        this.longField = longField;
+        this.floatField = floatField;
+        this.doubleField = doubleField;
+        this.stringField = stringField;
+    }
     
     public ComplexTestPacket(int packetId, byte byteField, boolean booleanField, short shortField, int intField, long longField, float floatField, double doubleField, String stringField) {
         this.packetId = packetId;

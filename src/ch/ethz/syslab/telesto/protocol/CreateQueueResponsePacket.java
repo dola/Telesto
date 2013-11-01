@@ -16,6 +16,10 @@ public class CreateQueueResponsePacket extends Packet {
 
     public CreateQueueResponsePacket() {
     }
+
+    public CreateQueueResponsePacket(int queueId) {
+        this.queueId = queueId;
+    }
     
     public CreateQueueResponsePacket(int packetId, int queueId) {
         this.packetId = packetId;

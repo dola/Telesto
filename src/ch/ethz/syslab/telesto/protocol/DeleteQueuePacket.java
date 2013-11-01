@@ -16,6 +16,10 @@ public class DeleteQueuePacket extends Packet {
 
     public DeleteQueuePacket() {
     }
+
+    public DeleteQueuePacket(int queueId) {
+        this.queueId = queueId;
+    }
     
     public DeleteQueuePacket(int packetId, int queueId) {
         this.packetId = packetId;

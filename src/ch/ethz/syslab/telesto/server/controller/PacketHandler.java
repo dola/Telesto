@@ -9,9 +9,11 @@ import ch.ethz.syslab.telesto.protocol.GetQueueIdPacket;
 import ch.ethz.syslab.telesto.protocol.GetQueueNamePacket;
 import ch.ethz.syslab.telesto.protocol.GetQueuesPacket;
 import ch.ethz.syslab.telesto.protocol.IdentifyClientPacket;
+import ch.ethz.syslab.telesto.protocol.MessageTestPacket;
 import ch.ethz.syslab.telesto.protocol.Packet;
 import ch.ethz.syslab.telesto.protocol.PingPacket;
 import ch.ethz.syslab.telesto.protocol.PutMessagePacket;
+import ch.ethz.syslab.telesto.protocol.QueueTestPacket;
 import ch.ethz.syslab.telesto.protocol.ReadMessagePacket;
 import ch.ethz.syslab.telesto.protocol.RegisterClientPacket;
 import ch.ethz.syslab.telesto.protocol.RegisterClientResponsePacket;
@@ -109,6 +111,18 @@ public class PacketHandler implements IPacketHandler {
 
     @Override
     public Packet handle(ComplexTestPacket packet) throws PacketProcessingException {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public Packet handle(MessageTestPacket packet) throws PacketProcessingException {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public Packet handle(QueueTestPacket packet) throws PacketProcessingException {
         // TODO Auto-generated method stub
         return null;
     }

@@ -4,6 +4,7 @@ public final class CONFIG {
 
     private CONFIG() {
         // don't allow instantiation
+        throw new UnsupportedOperationException();
     }
 
     /* DB CONFIG */

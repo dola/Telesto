@@ -5,10 +5,10 @@ package ch.ethz.syslab.telesto.protocol;
 import java.nio.ByteBuffer;
 
 {% if message.contains_type("TelestoMessage") -%}
-import ch.ethz.syslab.telesto.protocol.model.Message;
+import ch.ethz.syslab.telesto.model.Message;
 {% endif -%}
 {% if message.contains_type("TelestoQueue") -%}
-import ch.ethz.syslab.telesto.protocol.model.Queue;
+import ch.ethz.syslab.telesto.model.Queue;
 {% endif -%}
 
 {% set name = message.__name__ + superclass %}
@@ -25,6 +25,18 @@ public class {{ name }} extends {{ superclass }} {
 
     public {{ name }}() {
     }
+    {%- if message._fields.__len__() > 1 %}
+
+    {% set args = [] -%}
+    {%- for field in message._fields.itervalues() if field.name != "packet_id" -%}
+        {%- do args.append("%s %s" % (field.java_type, field.java_name)) -%}
+    {%- endfor -%}
+    public {{ name }}({{ args|join(", ") }}) {
+        {%- for field in message._fields.itervalues() if field.name != "packet_id" %}
+        this.{{ field.java_name }} = {{ field.java_name }};
+        {%- endfor %}
+    }
+    {%- endif %}
     
     {% set args = [] -%}
     {%- for field in message._fields.itervalues() -%}

@@ -16,6 +16,10 @@ public class GetQueueNamePacket extends Packet {
 
     public GetQueueNamePacket() {
     }
+
+    public GetQueueNamePacket(int queueId) {
+        this.queueId = queueId;
+    }
     
     public GetQueueNamePacket(int packetId, int queueId) {
         this.packetId = packetId;

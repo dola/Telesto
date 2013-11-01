@@ -17,6 +17,11 @@ public class RegisterClientPacket extends Packet {
 
     public RegisterClientPacket() {
     }
+
+    public RegisterClientPacket(String clientName, byte mode) {
+        this.clientName = clientName;
+        this.mode = mode;
+    }
     
     public RegisterClientPacket(int packetId, String clientName, byte mode) {
         this.packetId = packetId;

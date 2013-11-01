@@ -16,6 +16,10 @@ public class GetQueuesResponsePacket extends Packet {
 
     public GetQueuesResponsePacket() {
     }
+
+    public GetQueuesResponsePacket(int[] queues) {
+        this.queues = queues;
+    }
     
     public GetQueuesResponsePacket(int packetId, int[] queues) {
         this.packetId = packetId;

@@ -2,10 +2,13 @@ package ch.ethz.syslab.telesto.server.model;
 
 import java.nio.ByteBuffer;
 
+import ch.ethz.syslab.telesto.server.controller.IPacketHandler;
+
 public class Client {
     public static final int BUFFER_SIZE = 32768;
     public ByteBuffer writeBuffer;
     public ByteBuffer readBuffer;
+    public IPacketHandler packetHandler;
     private boolean gettingHandled = false;
     private boolean active = true;
     public int id;
