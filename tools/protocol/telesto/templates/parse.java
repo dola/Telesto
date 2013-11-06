@@ -34,6 +34,10 @@
     getQueue(buffer);
 {%- endmacro %}
 
+{% macro error(field) -%}
+    ErrorType.values()[buffer.get()];
+{%- endmacro %}
+
 {% macro list(field) -%}
     {%- import "parse.java" as _self -%}
 
@@ -54,5 +58,6 @@
     'String': string,
     'TelestoMessage': message,
     'TelestoQueue': queue,
+    'TelestoErrorType': error,
     'List': list
 } %}

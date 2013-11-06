@@ -4,6 +4,7 @@ package ch.ethz.syslab.telesto.protocol;
 
 import java.nio.ByteBuffer;
 
+import ch.ethz.syslab.telesto.util.ErrorType;
 
 
 /* 
@@ -12,20 +13,20 @@ import java.nio.ByteBuffer;
  * Edit the template at tools/protocol/telesto/templates/packet.java instead.
  */
 public class ErrorPacket extends Packet {
-    public byte errorCode;
+    public ErrorType errorType;
     public String details;
 
     public ErrorPacket() {
     }
 
-    public ErrorPacket(byte errorCode, String details) {
-        this.errorCode = errorCode;
+    public ErrorPacket(ErrorType errorType, String details) {
+        this.errorType = errorType;
         this.details = details;
     }
     
-    public ErrorPacket(int packetId, byte errorCode, String details) {
+    public ErrorPacket(int packetId, ErrorType errorType, String details) {
         this.packetId = packetId;
-        this.errorCode = errorCode;
+        this.errorType = errorType;
         this.details = details;
     }
 
@@ -40,7 +41,7 @@ public class ErrorPacket extends Packet {
         buffer.position(lengthIndex + 2);
         buffer.put(methodId());
         buffer.putInt(packetId);
-        buffer.put(errorCode);
+        buffer.put((byte) errorType.ordinal());
         putString(buffer, details);
         buffer.putShort(lengthIndex, (short) (buffer.position() - lengthIndex - 2));
     }
@@ -48,7 +49,7 @@ public class ErrorPacket extends Packet {
     @Override
     public void parse(ByteBuffer buffer) {
         packetId = buffer.getInt();
-        errorCode = buffer.get();
+        errorType = ErrorType.values()[buffer.get()];
         details = getString(buffer);
     }
 

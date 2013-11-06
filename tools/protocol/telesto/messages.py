@@ -23,7 +23,7 @@ with protocol.version(0):
 
     class Error(ServerMessage):
         method_id = 0x05
-        error_code = Byte()
+        error_type = TelestoErrorType()
         details = String()
 
     # Handshake

@@ -1,24 +1,23 @@
 package ch.ethz.syslab.telesto.server.network;
 
 import java.nio.BufferUnderflowException;
-import java.nio.ByteBuffer;
 import java.util.concurrent.ArrayBlockingQueue;
 
 import ch.ethz.syslab.telesto.protocol.ErrorPacket;
 import ch.ethz.syslab.telesto.protocol.Packet;
 import ch.ethz.syslab.telesto.protocol.Packet.UnknownMethodException;
 import ch.ethz.syslab.telesto.server.controller.PacketProcessingException;
-import ch.ethz.syslab.telesto.server.model.Client;
+import ch.ethz.syslab.telesto.util.ErrorType;
 import ch.ethz.syslab.telesto.util.Log;
 
 public class DataHandler extends Thread {
 
     static private Log LOGGER = new Log(DataHandler.class);
 
-    private ArrayBlockingQueue<Client> clientQueue;
+    private ArrayBlockingQueue<Connection> clientQueue;
     private int id;
 
-    public DataHandler(ArrayBlockingQueue<Client> clientQueue, int id) {
+    public DataHandler(ArrayBlockingQueue<Connection> clientQueue, int id) {
         this.clientQueue = clientQueue;
         this.id = id;
     }
@@ -26,32 +25,38 @@ public class DataHandler extends Thread {
     @Override
     public void run() {
         while (true) {
-            Client client = nextClient();
-            Packet packet = parseNextPacket(client);
-            client.release();
+            Connection connection = nextClient();
+            Packet packet = parseNextPacket(connection);
+            connection.release(); // TODO: we probably want to acquire/release the double buffer instead of the
+                                  // connection
             if (packet != null) {
                 LOGGER.info("Received packet %s (%d)", packet, id);
-                rewindBuffer(client);
-                if (dataRemaining(client)) {
-                    clientQueue.add(client);
+                connection.doubleReadBuffer.cleanup();
+                if (connection.doubleReadBuffer.dataRemaining()) {
+                    clientQueue.add(connection);
                 }
                 Packet response;
                 try {
-                    response = client.packetHandler.handle(packet);
+                    response = connection.packetHandler.handle(packet);
                 } catch (PacketProcessingException e) {
-                    response = new ErrorPacket((byte) 0, e.getMessage());
+                    LOGGER.info("Error while processing packet '%s': %s", packet, e.getMessage());
+                    response = new ErrorPacket(e.type, e.getMessage());
+                } catch (Exception e) {
+                    LOGGER.info("Unexpected error while processing packet '%s': %s", packet, e.getMessage());
+                    response = new ErrorPacket(ErrorType.INTERNAL_ERROR, e.getMessage());
                 }
-                // TODO: Send response
+                if (response == null) {
+                    LOGGER.info("Packet handler for '%s' returned null", packet);
+                    response = new ErrorPacket(ErrorType.INTERNAL_ERROR, "No response from packet handler");
+                }
+                send(connection, response);
+                connection.cleanup();
             }
         }
     }
 
-    private boolean dataRemaining(Client client) {
-        return client.writeBuffer.position() != client.readBuffer.position();
-    }
-
-    private Client nextClient() {
-        Client client = null;
+    private Connection nextClient() {
+        Connection client = null;
         while (client == null) {
             try {
                 client = clientQueue.take();
@@ -67,31 +72,31 @@ public class DataHandler extends Thread {
         return client;
     }
 
-    private Packet parseNextPacket(Client client) {
-        ByteBuffer readBuffer = client.readBuffer;
-        int position = readBuffer.mark().position();
-        int bytesAvailable = client.writeBuffer.position() - position;
+    private Packet parseNextPacket(Connection client) {
+        DoubleBuffer buffer = client.doubleReadBuffer;
+        buffer.prepare();
 
+        int bytesAvailable = buffer.bytesAvailable();
         if (bytesAvailable < 7) {
-            LOGGER.fine("Received incomplete packet (%d bytes)", bytesAvailable);
+            LOGGER.fine("Received incomplete packet data (%d bytes)", bytesAvailable);
             return null;
         }
 
-        client.readBuffer.limit(position + 2);
-        int packetSize = readBuffer.getShort();
+        client.doubleReadBuffer.limit(2);
+        int packetSize = buffer.readBuffer.getShort();
 
         if (bytesAvailable < packetSize + 2) {
-            LOGGER.fine("Received incomplete packet (%d bytes)", bytesAvailable);
-            readBuffer.reset();
+            LOGGER.fine("Received incomplete packet data (%d bytes)", bytesAvailable);
+            buffer.readBuffer.reset();
             return null;
         }
 
-        LOGGER.fine("Received packet (%d bytes)", packetSize);
-        client.readBuffer.limit(position + packetSize + 2);
+        LOGGER.fine("Received packet data (%d bytes)", packetSize);
+        client.doubleReadBuffer.limit(packetSize + 2);
 
         Packet packet;
         try {
-            packet = Packet.create(readBuffer);
+            packet = Packet.create(buffer.readBuffer);
         } catch (UnknownMethodException e) {
             LOGGER.warning(e.getMessage());
             client.disconnect();
@@ -102,8 +107,8 @@ public class DataHandler extends Thread {
             return null;
         }
 
-        if (readBuffer.position() - position - 2 != packetSize) {
-            LOGGER.warning("Packet length (%d) did not match header (%d).", readBuffer.position() - position - 2, packetSize);
+        if (buffer.bytesRead() - 2 != packetSize) {
+            LOGGER.warning("Packet length (%d) did not match header (%d).", buffer.bytesRead() - 2, packetSize);
             client.disconnect();
             return null;
         }
@@ -111,15 +116,8 @@ public class DataHandler extends Thread {
         return packet;
     }
 
-    private void rewindBuffer(Client client) {
-        if (client.writeBuffer.position() * 4 > Client.BUFFER_SIZE * 3 && client.readBuffer.position() * 4 > Client.BUFFER_SIZE) {
-            LOGGER.fine("Rewinding buffer for %s", client);
-            synchronized (client.writeBuffer) {
-                client.readBuffer.limit(client.writeBuffer.position());
-                client.readBuffer.compact();
-                client.writeBuffer.position(client.readBuffer.position());
-                client.readBuffer.flip();
-            }
-        }
+    private void send(Connection connection, Packet response) {
+        // TODO Auto-generated method stub
+
     }
 }

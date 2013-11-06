@@ -28,6 +28,9 @@
     putQueue(buffer, {{ field.java_name }}{{ suffix }});
 {%- endmacro %}
 
+{% macro error(field, suffix="") -%}
+    buffer.put((byte) {{ field.java_name }}{{ suffix }}.ordinal());
+{%- endmacro %}
 
 {% macro list(field, suffix="") -%}
     {%- import "emit.java" as _self -%}
@@ -49,5 +52,6 @@
     'String': string,
     'TelestoMessage': message,
     'TelestoQueue': queue,
+    'TelestoErrorType': error,
     'List': list
 } %}

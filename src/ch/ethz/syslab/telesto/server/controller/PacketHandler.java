@@ -12,6 +12,7 @@ import ch.ethz.syslab.telesto.protocol.IdentifyClientPacket;
 import ch.ethz.syslab.telesto.protocol.MessageTestPacket;
 import ch.ethz.syslab.telesto.protocol.Packet;
 import ch.ethz.syslab.telesto.protocol.PingPacket;
+import ch.ethz.syslab.telesto.protocol.PongPacket;
 import ch.ethz.syslab.telesto.protocol.PutMessagePacket;
 import ch.ethz.syslab.telesto.protocol.QueueTestPacket;
 import ch.ethz.syslab.telesto.protocol.ReadMessagePacket;
@@ -36,8 +37,7 @@ public class PacketHandler implements IPacketHandler {
 
     @Override
     public Packet handle(PingPacket packet) throws PacketProcessingException {
-        // TODO Auto-generated method stub
-        return null;
+        return new PongPacket();
     }
 
     @Override

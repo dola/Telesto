@@ -357,3 +357,17 @@ class TelestoQueue(MessageField):
 
     def format(self, value):
         raise NotImplementedError
+
+
+class TelestoErrorType(MessageField):
+    java_type = "ErrorType"
+    @classmethod
+    def parse(cls, stream, message=None):
+        raise NotImplementedError
+
+    @classmethod
+    def emit(cls, value, message=None):
+        raise NotImplementedError
+
+    def format(self, value):
+        raise NotImplementedError

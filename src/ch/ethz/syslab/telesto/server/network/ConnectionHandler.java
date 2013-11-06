@@ -9,12 +9,12 @@ import java.nio.channels.SocketChannel;
 import java.util.Iterator;
 import java.util.concurrent.ArrayBlockingQueue;
 
-import ch.ethz.syslab.telesto.server.model.Client;
+import ch.ethz.syslab.telesto.server.config.CONFIG;
 import ch.ethz.syslab.telesto.util.Log;
 
 public class ConnectionHandler extends Thread {
     public static final void main(String[] args) throws IOException {
-        new ConnectionHandler(new InetSocketAddress("localhost", 8889), 8).start();
+        new ConnectionHandler(new InetSocketAddress(CONFIG.MW_HOST, CONFIG.MW_PORT), CONFIG.MW_WORKER_POOL_SIZE).start();
     }
 
     private static Log LOGGER = new Log(ConnectionHandler.class);
@@ -22,7 +22,7 @@ public class ConnectionHandler extends Thread {
     private ServerSocketChannel socket;
     private DataHandler[] workers;
     private Selector selector = Selector.open();
-    private ArrayBlockingQueue<Client> clientQueue = new ArrayBlockingQueue<Client>(100);
+    private ArrayBlockingQueue<Connection> clientQueue = new ArrayBlockingQueue<Connection>(100);
 
     ConnectionHandler(InetSocketAddress address, int workerCount) throws IOException {
         LOGGER.config("Listening on %s:%d", address.getHostName(), address.getPort());
@@ -76,12 +76,12 @@ public class ConnectionHandler extends Thread {
 
     private void read(SelectionKey key) throws IOException {
         SocketChannel channel = (SocketChannel) key.channel();
-        Client client = (Client) key.attachment();
+        Connection client = (Connection) key.attachment();
         int bytesRead;
 
         // This prevents read operations while the buffer is being rewound
-        synchronized (client.writeBuffer) {
-            bytesRead = channel.read(client.writeBuffer);
+        synchronized (client.doubleReadBuffer.writeBuffer) {
+            bytesRead = channel.read(client.doubleReadBuffer.writeBuffer);
         }
         if (bytesRead > 0) {
             LOGGER.fine("Read %s bytes from; %s", bytesRead, channel.getRemoteAddress());
@@ -100,6 +100,6 @@ public class ConnectionHandler extends Thread {
         }
         LOGGER.info("Accepted new connection from %s", channel.getRemoteAddress());
         channel.configureBlocking(false);
-        channel.register(selector, SelectionKey.OP_READ, new Client());
+        channel.register(selector, SelectionKey.OP_READ, new Connection());
     }
 }

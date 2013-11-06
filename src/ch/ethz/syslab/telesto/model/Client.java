@@ -4,8 +4,8 @@ import ch.ethz.syslab.telesto.server.db.result.DatabaseResultEntry;
 
 public class Client implements DatabaseResultEntry {
 
-    public int clientId;
-    public String clientName;
+    public int id;
+    public String name;
     public byte operationMode;
 
     public Client() {
@@ -13,8 +13,8 @@ public class Client implements DatabaseResultEntry {
     }
 
     public Client(int clientId, String clientName, byte operationMode) {
-        this.clientId = clientId;
-        this.clientName = clientName;
+        id = clientId;
+        name = clientName;
         this.operationMode = operationMode;
     }
 }

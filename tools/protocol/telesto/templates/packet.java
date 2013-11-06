@@ -10,6 +10,9 @@ import ch.ethz.syslab.telesto.model.Message;
 {% if message.contains_type("TelestoQueue") -%}
 import ch.ethz.syslab.telesto.model.Queue;
 {% endif -%}
+{% if message.contains_type("TelestoErrorType") -%}
+import ch.ethz.syslab.telesto.util.ErrorType;
+{% endif -%}
 
 {% set name = message.__name__ + superclass %}
 
