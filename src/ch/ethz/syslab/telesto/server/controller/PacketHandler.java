@@ -8,7 +8,6 @@ import ch.ethz.syslab.telesto.protocol.GetMessagesPacket;
 import ch.ethz.syslab.telesto.protocol.GetQueueIdPacket;
 import ch.ethz.syslab.telesto.protocol.GetQueueNamePacket;
 import ch.ethz.syslab.telesto.protocol.GetQueuesPacket;
-import ch.ethz.syslab.telesto.protocol.IdentifyClientPacket;
 import ch.ethz.syslab.telesto.protocol.MessageTestPacket;
 import ch.ethz.syslab.telesto.protocol.Packet;
 import ch.ethz.syslab.telesto.protocol.PingPacket;
@@ -16,12 +15,9 @@ import ch.ethz.syslab.telesto.protocol.PongPacket;
 import ch.ethz.syslab.telesto.protocol.PutMessagePacket;
 import ch.ethz.syslab.telesto.protocol.QueueTestPacket;
 import ch.ethz.syslab.telesto.protocol.ReadMessagePacket;
-import ch.ethz.syslab.telesto.protocol.RegisterClientPacket;
-import ch.ethz.syslab.telesto.protocol.RegisterClientResponsePacket;
 import ch.ethz.syslab.telesto.server.db.Database;
-import ch.ethz.syslab.telesto.server.db.procedure.ClientProcedure;
 
-public class PacketHandler implements IPacketHandler {
+public class PacketHandler implements IServerPacketHandler {
 
     private Database db;
 
@@ -38,21 +34,6 @@ public class PacketHandler implements IPacketHandler {
     @Override
     public Packet handle(PingPacket packet) throws PacketProcessingException {
         return new PongPacket();
-    }
-
-    @Override
-    public Packet handle(RegisterClientPacket packet) throws PacketProcessingException {
-        // TODO: should return whole information; i.e. [client_id, client_name, operation_mode]
-
-        int clientId = db.callSimpleProcedure(ClientProcedure.REQUEST_ID, packet.clientName, packet.mode);
-
-        return new RegisterClientResponsePacket(packet.packetId + 1, clientId);
-    }
-
-    @Override
-    public Packet handle(IdentifyClientPacket packet) throws PacketProcessingException {
-        // TODO Auto-generated method stub
-        return null;
     }
 
     @Override

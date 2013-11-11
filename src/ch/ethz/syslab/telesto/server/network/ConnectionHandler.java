@@ -76,19 +76,19 @@ public class ConnectionHandler extends Thread {
 
     private void read(SelectionKey key) throws IOException {
         SocketChannel channel = (SocketChannel) key.channel();
-        Connection client = (Connection) key.attachment();
+        Connection connection = (Connection) key.attachment();
         int bytesRead;
 
         // This prevents read operations while the buffer is being rewound
-        synchronized (client.doubleReadBuffer.writeBuffer) {
-            bytesRead = channel.read(client.doubleReadBuffer.writeBuffer);
+        synchronized (connection.doubleReadBuffer.writeBuffer) {
+            bytesRead = channel.read(connection.doubleReadBuffer.writeBuffer);
         }
         if (bytesRead > 0) {
             LOGGER.fine("Read %s bytes from; %s", bytesRead, channel.getRemoteAddress());
-            clientQueue.add(client);
+            clientQueue.add(connection);
         } else if (bytesRead < 0) {
             LOGGER.info("Disconnected %s", channel.getRemoteAddress());
-            key.cancel();
+            connection.disconnect();
         }
     }
 
@@ -100,6 +100,7 @@ public class ConnectionHandler extends Thread {
         }
         LOGGER.info("Accepted new connection from %s", channel.getRemoteAddress());
         channel.configureBlocking(false);
-        channel.register(selector, SelectionKey.OP_READ, new Connection());
+        Connection connection = new Connection(channel);
+        connection.selectionKey = channel.register(selector, SelectionKey.OP_READ, connection);
     }
 }

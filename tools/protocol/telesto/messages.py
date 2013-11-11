@@ -13,6 +13,7 @@ Message.message_id = Int()
 with protocol.version(0):
     # Global Messages
     class Ping(ClientMessage):
+        IS_LOGIN_MESSAGE = True
         method_id = 0x01
 
     class Pong(ServerMessage):
@@ -28,6 +29,8 @@ with protocol.version(0):
 
     # Handshake
     class RegisterClient(ClientMessage):
+        IS_LOGIN_MESSAGE = True
+        IS_REGULAR_MESSAGE = False
         method_id = 0x11
         client_name = String()
         mode = Byte()
@@ -37,8 +40,14 @@ with protocol.version(0):
         client_id = Int()
 
     class IdentifyClient(ClientMessage):
+        IS_LOGIN_MESSAGE = True
+        IS_REGULAR_MESSAGE = False
         method_id = 0x13
         client_id = Int()
+
+    class IdentifyClientResponse(ServerMessage):
+        method_id = 0x14
+        mode = Byte()
 
     # Queues
     class CreateQueue(ClientMessage):

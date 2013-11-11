@@ -84,6 +84,8 @@ class ProtocolVersion(list):
 
 class Message(object):
     _NAME_PATTERN = re.compile("(.)([A-Z])")
+    IS_LOGIN_MESSAGE = False
+    IS_REGULAR_MESSAGE = True
     method_id = None
 
     def __init__(self, stream=None, side=None, **kwargs):

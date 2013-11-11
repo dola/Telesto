@@ -9,7 +9,6 @@ from telesto.messages import protocol
 
 
 SUPERCLASS = "Packet"
-HANDLER = "IPacketHandler"
 
 
 def parse_args():
@@ -60,14 +59,20 @@ def generate_superclass(folder, template, messages):
 
 
 def generate_handler(folder, template, messages):
-    print "Generating {}...".format(HANDLER)
+    for handler, condition in (
+        ("IClientPacketHandler", lambda m: m._accept_from('server')),
+        ("IServerLoginPacketHandler", lambda m: m.IS_LOGIN_MESSAGE),
+        ("IServerPacketHandler", lambda m: m._accept_from('client') and
+                                           m.IS_REGULAR_MESSAGE)
+    ):
+        print "Generating {}...".format(handler)
 
-    code = template.render(messages=messages, handler=HANDLER,
-                           superclass=SUPERCLASS)
+        code = template.render(messages=messages, handler=handler,
+                               superclass=SUPERCLASS, condition=condition)
 
-    path = os.path.join(folder, HANDLER + ".java")
-    with open(path, "w") as f:
-        f.write(code)
+        path = os.path.join(folder, handler + ".java")
+        with open(path, "w") as f:
+            f.write(code)
 
 
 def main():

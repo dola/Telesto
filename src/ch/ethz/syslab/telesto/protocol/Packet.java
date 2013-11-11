@@ -105,6 +105,7 @@ public abstract class Packet {
        packets[17] = new RegisterClientPacket();
        packets[18] = new RegisterClientResponsePacket();
        packets[19] = new IdentifyClientPacket();
+       packets[20] = new IdentifyClientResponsePacket();
        packets[33] = new CreateQueuePacket();
        packets[34] = new CreateQueueResponsePacket();
        packets[35] = new DeleteQueuePacket();

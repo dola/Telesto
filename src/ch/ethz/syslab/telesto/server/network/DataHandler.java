@@ -1,5 +1,6 @@
 package ch.ethz.syslab.telesto.server.network;
 
+import java.io.IOException;
 import java.nio.BufferUnderflowException;
 import java.util.concurrent.ArrayBlockingQueue;
 
@@ -49,7 +50,12 @@ public class DataHandler extends Thread {
                     LOGGER.info("Packet handler for '%s' returned null", packet);
                     response = new ErrorPacket(ErrorType.INTERNAL_ERROR, "No response from packet handler");
                 }
-                send(connection, response);
+                try {
+                    send(connection, response);
+                } catch (IOException e) {
+                    LOGGER.warning(e, "Failed to send %s to %s", response, connection);
+                    connection.disconnect();
+                }
                 connection.cleanup();
             }
         }
@@ -116,8 +122,8 @@ public class DataHandler extends Thread {
         return packet;
     }
 
-    private void send(Connection connection, Packet response) {
-        // TODO Auto-generated method stub
-
+    private void send(Connection connection, Packet response) throws IOException {
+        response.emit(connection.doubleWriteBuffer.writeBuffer);
+        connection.socket.write(connection.doubleWriteBuffer.readBuffer);
     }
 }
