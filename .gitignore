@@ -1,6 +1,7 @@
 logging.properties
 release/**
 bin-ant/**
+log/**
 
 ##############
 # Java Files #
