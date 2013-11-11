@@ -38,4 +38,9 @@ public class Message implements DatabaseResultEntry {
             return false;
         }
     }
+
+    @Override
+    public int hashCode() {
+        return id;
+    }
 }

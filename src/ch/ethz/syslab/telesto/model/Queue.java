@@ -20,4 +20,9 @@ public class Queue implements DatabaseResultEntry {
             return false;
         }
     }
+
+    @Override
+    public int hashCode() {
+        return id;
+    }
 }
