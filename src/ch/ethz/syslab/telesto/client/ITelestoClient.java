@@ -11,62 +11,67 @@ import ch.ethz.syslab.telesto.model.ReadMode;
 
 public interface ITelestoClient {
     /**
-     * Registers the client with the specified {@link ClientMode} an gets the complete {@link Client} instance
+     * Registers the client with the specified {@link ClientMode} and name and returns the complete {@link Client}
+     * instance
      * 
+     * @param name
+     *            the name of the new client
+     * @param mode
+     *            the client mode to use
      * @return the {@link Client} object representing the new client
      * @throws ProcessingException
      */
-    Client connect(ClientMode mode) throws ProcessingException;
+    Client connect(String name, ClientMode mode) throws ProcessingException;
 
     /**
      * Connect using the given client id. The returned Client instance contains the {@link ClientMode} of the identified
      * client which has to be considered for future API calls in order to avoid raising errors.
      * 
-     * @param id
+     * @param queueId
      *            client id to identify the client
      * @return the {@link Client} object representing the new client
      * @throws ProcessingException
      */
-    Client connect(int id) throws ProcessingException;
+    Client connect(int queueId) throws ProcessingException;
 
     /**
      * creates a new queue with the given name. The name must be unique.
      * 
-     * @param name
+     * @param queueName
      *            a unique name for the queue to be generated
      * @return the representing {@link Queue} instance
      * @throws ProcessingException
      */
-    Queue createQueue(String name) throws ProcessingException;
+    Queue createQueue(String queueName) throws ProcessingException;
 
     /**
      * remove a queue including all its messages from the system
      * 
-     * @param id
+     * @param queueId
      *            the id of the queue to delete
      * @throws ProcessingException
      */
-    void deleteQueue(int id) throws ProcessingException;
+    void deleteQueue(int queueId) throws ProcessingException;
 
     /**
      * retrieve the {@link Queue} by its name
      * 
-     * @param name
+     * @param queueName
      *            the name of the queue
      * @return a full {@link Queue} object representing the requested queue
      * @throws ProcessingException
      */
-    Queue getQueueByName(String name) throws ProcessingException;
+    Queue getQueueByName(String queueName) throws ProcessingException;
 
     /**
      * retrieve the {@link Queue} by its id
      * 
-     * @param id
+     * @param queueId
      *            the id of the queue
      * @return a full {@link Queue} object representing the requested queue
      * @throws ProcessingException
      */
-    Queue getQueueById(int id) throws ProcessingException;
+    Queue getQueueById(int queueId) throws ProcessingException;
 
     /**
      * retrieve a list of all queues in the system
@@ -134,7 +139,7 @@ public interface ITelestoClient {
      * @see {@link #putMessage(Message)}
      * @see {@link #sendRequestResponseMessage(Message)}
      */
-    void putMessage(Message message, int[] queueId) throws ProcessingException;
+    void putMessage(Message message, int[] queueIds) throws ProcessingException;
 
     /**
      * send a Message that waits for a response. This method is blocking until the response arrives.
