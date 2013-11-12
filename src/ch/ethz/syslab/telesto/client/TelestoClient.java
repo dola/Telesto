@@ -3,6 +3,8 @@ package ch.ethz.syslab.telesto.client;
 import java.util.List;
 
 import ch.ethz.syslab.telesto.client.exception.ProcessingException;
+import ch.ethz.syslab.telesto.model.Client;
+import ch.ethz.syslab.telesto.model.ClientMode;
 import ch.ethz.syslab.telesto.model.Message;
 import ch.ethz.syslab.telesto.model.Queue;
 import ch.ethz.syslab.telesto.model.ReadMode;
@@ -13,15 +15,15 @@ public class TelestoClient implements ITelestoClient {
     }
 
     @Override
-    public int connect() throws ProcessingException {
+    public Client connect(ClientMode mode) throws ProcessingException {
         // TODO Auto-generated method stub
-        return 0;
+        return null;
     }
 
     @Override
-    public void connect(int id) throws ProcessingException {
+    public Client connect(int id) throws ProcessingException {
         // TODO Auto-generated method stub
-
+        return null;
     }
 
     @Override

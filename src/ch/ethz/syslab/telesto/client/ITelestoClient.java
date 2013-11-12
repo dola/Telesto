@@ -3,27 +3,31 @@ package ch.ethz.syslab.telesto.client;
 import java.util.List;
 
 import ch.ethz.syslab.telesto.client.exception.ProcessingException;
+import ch.ethz.syslab.telesto.model.Client;
+import ch.ethz.syslab.telesto.model.ClientMode;
 import ch.ethz.syslab.telesto.model.Message;
 import ch.ethz.syslab.telesto.model.Queue;
 import ch.ethz.syslab.telesto.model.ReadMode;
 
 public interface ITelestoClient {
     /**
-     * first registers the client to get new id
+     * Registers the client with the specified {@link ClientMode} an gets the complete {@link Client} instance
      * 
-     * @return the new unique client id
+     * @return the {@link Client} object representing the new client
      * @throws ProcessingException
      */
-    int connect() throws ProcessingException;
+    Client connect(ClientMode mode) throws ProcessingException;
 
     /**
-     * Connect using the given client id
+     * Connect using the given client id. The returned Client instance contains the {@link ClientMode} of the identified
+     * client which has to be considered for future API calls in order to avoid raising errors.
      * 
      * @param id
      *            client id to identify the client
+     * @return the {@link Client} object representing the new client
      * @throws ProcessingException
      */
-    void connect(int id) throws ProcessingException;
+    Client connect(int id) throws ProcessingException;
 
     /**
      * creates a new queue with the given name. The name must be unique.
