@@ -9,9 +9,9 @@ import java.nio.channels.SocketChannel;
 import java.util.Iterator;
 import java.util.concurrent.ArrayBlockingQueue;
 
+import ch.ethz.syslab.telesto.common.config.CONFIG;
 import ch.ethz.syslab.telesto.common.network.Connection;
 import ch.ethz.syslab.telesto.common.util.Log;
-import ch.ethz.syslab.telesto.server.config.CONFIG;
 
 public class ConnectionHandler extends Thread {
     public static final void main(String[] args) throws IOException {

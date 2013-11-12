@@ -4,13 +4,13 @@ import java.io.IOException;
 import java.nio.BufferUnderflowException;
 import java.nio.channels.SocketChannel;
 
+import ch.ethz.syslab.telesto.common.config.CONFIG;
 import ch.ethz.syslab.telesto.common.model.Client;
 import ch.ethz.syslab.telesto.common.protocol.Packet;
 import ch.ethz.syslab.telesto.common.protocol.Packet.UnknownMethodException;
 import ch.ethz.syslab.telesto.common.protocol.handler.PacketProcessingException;
 import ch.ethz.syslab.telesto.common.protocol.handler.ProtocolHandler;
 import ch.ethz.syslab.telesto.common.util.Log;
-import ch.ethz.syslab.telesto.server.config.CONFIG;
 import ch.ethz.syslab.telesto.server.controller.ServerAuthenticationProtocolHandler;
 
 public class Connection {
@@ -19,8 +19,8 @@ public class Connection {
     private DoubleBuffer receivingBuffer = new DoubleBuffer(CONFIG.MW_READ_BUFFER_SIZE);;
     private DoubleBuffer sendingBuffer = new DoubleBuffer(CONFIG.MW_READ_BUFFER_SIZE);;
     private ProtocolHandler packetHandler = new ServerAuthenticationProtocolHandler(null);
-    private boolean connected = true;
-    private SocketChannel socket;
+    protected boolean connected = true;
+    protected SocketChannel socket;
     public Client client;
 
     public Connection(SocketChannel socket) {
@@ -102,9 +102,13 @@ public class Connection {
         return packet.getHandled(packetHandler);
     }
 
-    public void send(Packet response) throws IOException {
-        response.emit(sendingBuffer.writeView);
-        socket.write(sendingBuffer.readView);
+    public void send(Packet packet) throws IOException {
+        synchronized (sendingBuffer) {
+            packet.emit(sendingBuffer.writeView);
+            sendingBuffer.readView.limit(sendingBuffer.writeView.position());
+            socket.write(sendingBuffer.readView);
+            sendingBuffer.cleanup();
+        }
     }
 
     public int readFromChannel() throws IOException {

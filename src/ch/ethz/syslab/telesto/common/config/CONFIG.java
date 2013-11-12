@@ -1,4 +1,4 @@
-package ch.ethz.syslab.telesto.server.config;
+package ch.ethz.syslab.telesto.common.config;
 
 public final class CONFIG {
 
@@ -24,5 +24,6 @@ public final class CONFIG {
 
     /* CLIENT CONFIG */
     public static int CLI_WRITE_BUFFER_SIZE = 32768;
+    public static String CLI_MW_HOST = "localhost";
 
 }

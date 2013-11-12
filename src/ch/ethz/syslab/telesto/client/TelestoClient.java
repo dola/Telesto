@@ -1,8 +1,10 @@
 package ch.ethz.syslab.telesto.client;
 
+import java.io.IOException;
 import java.util.List;
 
 import ch.ethz.syslab.telesto.client.exception.ProcessingException;
+import ch.ethz.syslab.telesto.client.network.ClientConnection;
 import ch.ethz.syslab.telesto.common.model.Client;
 import ch.ethz.syslab.telesto.common.model.ClientMode;
 import ch.ethz.syslab.telesto.common.model.Message;
@@ -17,13 +19,24 @@ import ch.ethz.syslab.telesto.common.protocol.GetQueueNamePacket;
 import ch.ethz.syslab.telesto.common.protocol.GetQueuesPacket;
 import ch.ethz.syslab.telesto.common.protocol.IdentifyClientPacket;
 import ch.ethz.syslab.telesto.common.protocol.Packet;
+import ch.ethz.syslab.telesto.common.protocol.PingPacket;
 import ch.ethz.syslab.telesto.common.protocol.PutMessagePacket;
 import ch.ethz.syslab.telesto.common.protocol.ReadMessagePacket;
 import ch.ethz.syslab.telesto.common.protocol.RegisterClientPacket;
 
 public class TelestoClient implements ITelestoClient {
+    ClientConnection connection;
 
-    public TelestoClient() {
+    public TelestoClient() throws IOException {
+        connection = new ClientConnection();
+    }
+
+    @Override
+    public long ping() throws ProcessingException, IOException {
+        long start = System.nanoTime();
+        connection.send(new PingPacket());
+        connection.receivePacket();
+        return System.nanoTime() - start;
     }
 
     @Override

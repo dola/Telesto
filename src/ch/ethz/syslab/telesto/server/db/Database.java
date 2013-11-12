@@ -11,12 +11,12 @@ import java.util.Map;
 
 import org.postgresql.ds.PGPoolingDataSource;
 
+import ch.ethz.syslab.telesto.common.config.CONFIG;
 import ch.ethz.syslab.telesto.common.model.Client;
 import ch.ethz.syslab.telesto.common.model.Message;
 import ch.ethz.syslab.telesto.common.model.Queue;
 import ch.ethz.syslab.telesto.common.protocol.handler.PacketProcessingException;
 import ch.ethz.syslab.telesto.common.util.Log;
-import ch.ethz.syslab.telesto.server.config.CONFIG;
 import ch.ethz.syslab.telesto.server.db.procedure.ClientProcedure;
 import ch.ethz.syslab.telesto.server.db.procedure.MessageProcedure;
 import ch.ethz.syslab.telesto.server.db.procedure.QueueProcedure;

@@ -1,5 +1,6 @@
 package ch.ethz.syslab.telesto.client;
 
+import java.io.IOException;
 import java.util.List;
 
 import ch.ethz.syslab.telesto.client.exception.ProcessingException;
@@ -213,5 +214,14 @@ public interface ITelestoClient {
      * @see {@link #retrieveMessage(int, ReadMode)}
      */
     Message retrieveMessage(int queueId, int sender, ReadMode mode) throws ProcessingException;
+
+    /**
+     * bounce an empty packet off the middleware to measure latency.
+     * 
+     * @return
+     * 
+     * @throws ProcessingException
+     */
+    long ping() throws ProcessingException, IOException;
 
 }

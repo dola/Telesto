@@ -2,7 +2,7 @@ package ch.ethz.syslab.telesto.common.network;
 
 import java.nio.ByteBuffer;
 
-import ch.ethz.syslab.telesto.server.config.CONFIG;
+import ch.ethz.syslab.telesto.common.config.CONFIG;
 
 public class DoubleBuffer {
     public ByteBuffer writeView;
