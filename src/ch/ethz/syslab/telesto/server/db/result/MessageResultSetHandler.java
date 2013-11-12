@@ -5,7 +5,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import ch.ethz.syslab.telesto.model.Message;
+import ch.ethz.syslab.telesto.common.model.Message;
 
 public class MessageResultSetHandler implements IResultSetHandler {
 

@@ -9,14 +9,14 @@ import java.sql.Timestamp;
 
 import org.junit.Test;
 
-import ch.ethz.syslab.telesto.model.Message;
-import ch.ethz.syslab.telesto.model.Queue;
-import ch.ethz.syslab.telesto.protocol.ComplexTestPacket;
-import ch.ethz.syslab.telesto.protocol.MessageTestPacket;
-import ch.ethz.syslab.telesto.protocol.Packet;
-import ch.ethz.syslab.telesto.protocol.Packet.UnknownMethodException;
-import ch.ethz.syslab.telesto.protocol.PingPacket;
-import ch.ethz.syslab.telesto.protocol.QueueTestPacket;
+import ch.ethz.syslab.telesto.common.model.Message;
+import ch.ethz.syslab.telesto.common.model.Queue;
+import ch.ethz.syslab.telesto.common.protocol.ComplexTestPacket;
+import ch.ethz.syslab.telesto.common.protocol.MessageTestPacket;
+import ch.ethz.syslab.telesto.common.protocol.Packet;
+import ch.ethz.syslab.telesto.common.protocol.PingPacket;
+import ch.ethz.syslab.telesto.common.protocol.QueueTestPacket;
+import ch.ethz.syslab.telesto.common.protocol.Packet.UnknownMethodException;
 
 public class ProtocolTest {
 

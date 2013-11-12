@@ -3,11 +3,12 @@ package ch.ethz.syslab.telesto.server.network;
 import java.io.IOException;
 import java.util.concurrent.ArrayBlockingQueue;
 
-import ch.ethz.syslab.telesto.protocol.ErrorPacket;
-import ch.ethz.syslab.telesto.protocol.Packet;
-import ch.ethz.syslab.telesto.protocol.handler.PacketProcessingException;
-import ch.ethz.syslab.telesto.util.ErrorType;
-import ch.ethz.syslab.telesto.util.Log;
+import ch.ethz.syslab.telesto.common.network.Connection;
+import ch.ethz.syslab.telesto.common.protocol.ErrorPacket;
+import ch.ethz.syslab.telesto.common.protocol.Packet;
+import ch.ethz.syslab.telesto.common.protocol.handler.PacketProcessingException;
+import ch.ethz.syslab.telesto.common.util.ErrorType;
+import ch.ethz.syslab.telesto.common.util.Log;
 
 public class DataHandler extends Thread {
 

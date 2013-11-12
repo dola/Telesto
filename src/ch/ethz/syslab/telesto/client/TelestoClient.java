@@ -3,23 +3,23 @@ package ch.ethz.syslab.telesto.client;
 import java.util.List;
 
 import ch.ethz.syslab.telesto.client.exception.ProcessingException;
-import ch.ethz.syslab.telesto.model.Client;
-import ch.ethz.syslab.telesto.model.ClientMode;
-import ch.ethz.syslab.telesto.model.Message;
-import ch.ethz.syslab.telesto.model.Queue;
-import ch.ethz.syslab.telesto.model.ReadMode;
-import ch.ethz.syslab.telesto.protocol.CreateQueuePacket;
-import ch.ethz.syslab.telesto.protocol.DeleteQueuePacket;
-import ch.ethz.syslab.telesto.protocol.GetActiveQueuesPacket;
-import ch.ethz.syslab.telesto.protocol.GetMessagesPacket;
-import ch.ethz.syslab.telesto.protocol.GetQueueIdPacket;
-import ch.ethz.syslab.telesto.protocol.GetQueueNamePacket;
-import ch.ethz.syslab.telesto.protocol.GetQueuesPacket;
-import ch.ethz.syslab.telesto.protocol.IdentifyClientPacket;
-import ch.ethz.syslab.telesto.protocol.Packet;
-import ch.ethz.syslab.telesto.protocol.PutMessagePacket;
-import ch.ethz.syslab.telesto.protocol.ReadMessagePacket;
-import ch.ethz.syslab.telesto.protocol.RegisterClientPacket;
+import ch.ethz.syslab.telesto.common.model.Client;
+import ch.ethz.syslab.telesto.common.model.ClientMode;
+import ch.ethz.syslab.telesto.common.model.Message;
+import ch.ethz.syslab.telesto.common.model.Queue;
+import ch.ethz.syslab.telesto.common.model.ReadMode;
+import ch.ethz.syslab.telesto.common.protocol.CreateQueuePacket;
+import ch.ethz.syslab.telesto.common.protocol.DeleteQueuePacket;
+import ch.ethz.syslab.telesto.common.protocol.GetActiveQueuesPacket;
+import ch.ethz.syslab.telesto.common.protocol.GetMessagesPacket;
+import ch.ethz.syslab.telesto.common.protocol.GetQueueIdPacket;
+import ch.ethz.syslab.telesto.common.protocol.GetQueueNamePacket;
+import ch.ethz.syslab.telesto.common.protocol.GetQueuesPacket;
+import ch.ethz.syslab.telesto.common.protocol.IdentifyClientPacket;
+import ch.ethz.syslab.telesto.common.protocol.Packet;
+import ch.ethz.syslab.telesto.common.protocol.PutMessagePacket;
+import ch.ethz.syslab.telesto.common.protocol.ReadMessagePacket;
+import ch.ethz.syslab.telesto.common.protocol.RegisterClientPacket;
 
 public class TelestoClient implements ITelestoClient {
 

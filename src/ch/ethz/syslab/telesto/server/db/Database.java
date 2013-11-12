@@ -11,10 +11,11 @@ import java.util.Map;
 
 import org.postgresql.ds.PGPoolingDataSource;
 
-import ch.ethz.syslab.telesto.model.Client;
-import ch.ethz.syslab.telesto.model.Message;
-import ch.ethz.syslab.telesto.model.Queue;
-import ch.ethz.syslab.telesto.protocol.handler.PacketProcessingException;
+import ch.ethz.syslab.telesto.common.model.Client;
+import ch.ethz.syslab.telesto.common.model.Message;
+import ch.ethz.syslab.telesto.common.model.Queue;
+import ch.ethz.syslab.telesto.common.protocol.handler.PacketProcessingException;
+import ch.ethz.syslab.telesto.common.util.Log;
 import ch.ethz.syslab.telesto.server.config.CONFIG;
 import ch.ethz.syslab.telesto.server.db.procedure.ClientProcedure;
 import ch.ethz.syslab.telesto.server.db.procedure.MessageProcedure;
@@ -25,7 +26,6 @@ import ch.ethz.syslab.telesto.server.db.result.DatabaseResultEntry;
 import ch.ethz.syslab.telesto.server.db.result.IResultSetHandler;
 import ch.ethz.syslab.telesto.server.db.result.MessageResultSetHandler;
 import ch.ethz.syslab.telesto.server.db.result.QueueResultSetHandler;
-import ch.ethz.syslab.telesto.util.Log;
 
 public class Database {
     private static Log LOGGER = new Log(Database.class);

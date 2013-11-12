@@ -1,20 +1,20 @@
 {% import "parse.java" as parse %}
 {% import "emit.java" as emit %}
-package ch.ethz.syslab.telesto.protocol;
+package ch.ethz.syslab.telesto.common.protocol;
 
 import java.nio.ByteBuffer;
 
 {% if message.contains_type("TelestoMessage") -%}
-import ch.ethz.syslab.telesto.model.Message;
+import ch.ethz.syslab.telesto.common.model.Message;
 {% endif -%}
 {% if message.contains_type("TelestoQueue") -%}
-import ch.ethz.syslab.telesto.model.Queue;
+import ch.ethz.syslab.telesto.common.model.Queue;
 {% endif -%}
 {% if message.contains_type("TelestoErrorType") -%}
-import ch.ethz.syslab.telesto.util.ErrorType;
+import ch.ethz.syslab.telesto.common.util.ErrorType;
 {% endif -%}
-import ch.ethz.syslab.telesto.protocol.handler.PacketProcessingException;
-import ch.ethz.syslab.telesto.protocol.handler.ProtocolHandler;
+import ch.ethz.syslab.telesto.common.protocol.handler.PacketProcessingException;
+import ch.ethz.syslab.telesto.common.protocol.handler.ProtocolHandler;
 
 {% set name = message.__name__ + superclass %}
 

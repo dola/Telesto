@@ -14,8 +14,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.postgresql.ds.PGPoolingDataSource;
 
-import ch.ethz.syslab.telesto.model.Queue;
-import ch.ethz.syslab.telesto.protocol.handler.PacketProcessingException;
+import ch.ethz.syslab.telesto.common.model.Queue;
+import ch.ethz.syslab.telesto.common.protocol.handler.PacketProcessingException;
 import ch.ethz.syslab.telesto.server.config.CONFIG;
 import ch.ethz.syslab.telesto.server.db.Database;
 import ch.ethz.syslab.telesto.server.db.procedure.ClientProcedure;

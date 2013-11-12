@@ -3,7 +3,7 @@ package ch.ethz.syslab.telesto.profile;
 import java.util.HashMap;
 import java.util.Map;
 
-import ch.ethz.syslab.telesto.util.Log;
+import ch.ethz.syslab.telesto.common.util.Log;
 
 public final class SimpleProfiler {
     private static Log LOGGER = new Log(SimpleProfiler.class);

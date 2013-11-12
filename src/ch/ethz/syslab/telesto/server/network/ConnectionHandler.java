@@ -9,8 +9,9 @@ import java.nio.channels.SocketChannel;
 import java.util.Iterator;
 import java.util.concurrent.ArrayBlockingQueue;
 
+import ch.ethz.syslab.telesto.common.network.Connection;
+import ch.ethz.syslab.telesto.common.util.Log;
 import ch.ethz.syslab.telesto.server.config.CONFIG;
-import ch.ethz.syslab.telesto.util.Log;
 
 public class ConnectionHandler extends Thread {
     public static final void main(String[] args) throws IOException {
@@ -97,7 +98,7 @@ public class ConnectionHandler extends Thread {
         }
         LOGGER.info("Accepted new connection from %s", channel.getRemoteAddress());
         channel.configureBlocking(false);
-        Connection connection = new Connection(channel);
-        connection.selectionKey = channel.register(selector, SelectionKey.OP_READ, connection);
+        ServerConnection connection = new ServerConnection(channel);
+        connection.setSelectionKey(channel.register(selector, SelectionKey.OP_READ, connection));
     }
 }

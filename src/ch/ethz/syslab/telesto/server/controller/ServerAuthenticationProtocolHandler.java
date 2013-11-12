@@ -2,16 +2,16 @@ package ch.ethz.syslab.telesto.server.controller;
 
 import java.util.List;
 
-import ch.ethz.syslab.telesto.model.Client;
-import ch.ethz.syslab.telesto.protocol.IdentifyClientPacket;
-import ch.ethz.syslab.telesto.protocol.Packet;
-import ch.ethz.syslab.telesto.protocol.PingPacket;
-import ch.ethz.syslab.telesto.protocol.PongPacket;
-import ch.ethz.syslab.telesto.protocol.RegisterClientPacket;
-import ch.ethz.syslab.telesto.protocol.RegisterClientResponsePacket;
-import ch.ethz.syslab.telesto.protocol.handler.IServerAuthenticationProtocolHandler;
-import ch.ethz.syslab.telesto.protocol.handler.PacketProcessingException;
-import ch.ethz.syslab.telesto.protocol.handler.ProtocolHandler;
+import ch.ethz.syslab.telesto.common.model.Client;
+import ch.ethz.syslab.telesto.common.protocol.IdentifyClientPacket;
+import ch.ethz.syslab.telesto.common.protocol.Packet;
+import ch.ethz.syslab.telesto.common.protocol.PingPacket;
+import ch.ethz.syslab.telesto.common.protocol.PongPacket;
+import ch.ethz.syslab.telesto.common.protocol.RegisterClientPacket;
+import ch.ethz.syslab.telesto.common.protocol.RegisterClientResponsePacket;
+import ch.ethz.syslab.telesto.common.protocol.handler.IServerAuthenticationProtocolHandler;
+import ch.ethz.syslab.telesto.common.protocol.handler.PacketProcessingException;
+import ch.ethz.syslab.telesto.common.protocol.handler.ProtocolHandler;
 import ch.ethz.syslab.telesto.server.db.Database;
 import ch.ethz.syslab.telesto.server.db.procedure.ClientProcedure;
 

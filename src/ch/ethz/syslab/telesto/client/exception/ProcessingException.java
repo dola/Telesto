@@ -1,6 +1,6 @@
 package ch.ethz.syslab.telesto.client.exception;
 
-import ch.ethz.syslab.telesto.util.ErrorType;
+import ch.ethz.syslab.telesto.common.util.ErrorType;
 
 public class ProcessingException extends Exception {
     private static final long serialVersionUID = 1L;

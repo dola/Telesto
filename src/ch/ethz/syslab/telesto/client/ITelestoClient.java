@@ -3,11 +3,11 @@ package ch.ethz.syslab.telesto.client;
 import java.util.List;
 
 import ch.ethz.syslab.telesto.client.exception.ProcessingException;
-import ch.ethz.syslab.telesto.model.Client;
-import ch.ethz.syslab.telesto.model.ClientMode;
-import ch.ethz.syslab.telesto.model.Message;
-import ch.ethz.syslab.telesto.model.Queue;
-import ch.ethz.syslab.telesto.model.ReadMode;
+import ch.ethz.syslab.telesto.common.model.Client;
+import ch.ethz.syslab.telesto.common.model.ClientMode;
+import ch.ethz.syslab.telesto.common.model.Message;
+import ch.ethz.syslab.telesto.common.model.Queue;
+import ch.ethz.syslab.telesto.common.model.ReadMode;
 
 public interface ITelestoClient {
     /**

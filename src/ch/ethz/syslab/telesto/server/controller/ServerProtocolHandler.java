@@ -1,23 +1,23 @@
 package ch.ethz.syslab.telesto.server.controller;
 
-import ch.ethz.syslab.telesto.protocol.ComplexTestPacket;
-import ch.ethz.syslab.telesto.protocol.CreateQueuePacket;
-import ch.ethz.syslab.telesto.protocol.DeleteQueuePacket;
-import ch.ethz.syslab.telesto.protocol.GetActiveQueuesPacket;
-import ch.ethz.syslab.telesto.protocol.GetMessagesPacket;
-import ch.ethz.syslab.telesto.protocol.GetQueueIdPacket;
-import ch.ethz.syslab.telesto.protocol.GetQueueNamePacket;
-import ch.ethz.syslab.telesto.protocol.GetQueuesPacket;
-import ch.ethz.syslab.telesto.protocol.MessageTestPacket;
-import ch.ethz.syslab.telesto.protocol.Packet;
-import ch.ethz.syslab.telesto.protocol.PingPacket;
-import ch.ethz.syslab.telesto.protocol.PongPacket;
-import ch.ethz.syslab.telesto.protocol.PutMessagePacket;
-import ch.ethz.syslab.telesto.protocol.QueueTestPacket;
-import ch.ethz.syslab.telesto.protocol.ReadMessagePacket;
-import ch.ethz.syslab.telesto.protocol.handler.IServerProtocolHandler;
-import ch.ethz.syslab.telesto.protocol.handler.PacketProcessingException;
-import ch.ethz.syslab.telesto.protocol.handler.ProtocolHandler;
+import ch.ethz.syslab.telesto.common.protocol.ComplexTestPacket;
+import ch.ethz.syslab.telesto.common.protocol.CreateQueuePacket;
+import ch.ethz.syslab.telesto.common.protocol.DeleteQueuePacket;
+import ch.ethz.syslab.telesto.common.protocol.GetActiveQueuesPacket;
+import ch.ethz.syslab.telesto.common.protocol.GetMessagesPacket;
+import ch.ethz.syslab.telesto.common.protocol.GetQueueIdPacket;
+import ch.ethz.syslab.telesto.common.protocol.GetQueueNamePacket;
+import ch.ethz.syslab.telesto.common.protocol.GetQueuesPacket;
+import ch.ethz.syslab.telesto.common.protocol.MessageTestPacket;
+import ch.ethz.syslab.telesto.common.protocol.Packet;
+import ch.ethz.syslab.telesto.common.protocol.PingPacket;
+import ch.ethz.syslab.telesto.common.protocol.PongPacket;
+import ch.ethz.syslab.telesto.common.protocol.PutMessagePacket;
+import ch.ethz.syslab.telesto.common.protocol.QueueTestPacket;
+import ch.ethz.syslab.telesto.common.protocol.ReadMessagePacket;
+import ch.ethz.syslab.telesto.common.protocol.handler.IServerProtocolHandler;
+import ch.ethz.syslab.telesto.common.protocol.handler.PacketProcessingException;
+import ch.ethz.syslab.telesto.common.protocol.handler.ProtocolHandler;
 import ch.ethz.syslab.telesto.server.db.Database;
 
 public class ServerProtocolHandler extends ProtocolHandler implements IServerProtocolHandler {

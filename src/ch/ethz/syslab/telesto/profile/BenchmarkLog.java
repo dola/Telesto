@@ -6,8 +6,8 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
 
-import ch.ethz.syslab.telesto.util.Log;
-import ch.ethz.syslab.telesto.util.StringUtil;
+import ch.ethz.syslab.telesto.common.util.Log;
+import ch.ethz.syslab.telesto.common.util.StringUtil;
 
 /**
  * A simple implementation of a log for benchmarking tasks that uses a {@link BufferedWriter}. All entries written must

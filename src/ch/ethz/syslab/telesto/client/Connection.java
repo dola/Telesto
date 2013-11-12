@@ -5,9 +5,9 @@ import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
 
-import ch.ethz.syslab.telesto.protocol.Packet;
-import ch.ethz.syslab.telesto.protocol.Packet.UnknownMethodException;
-import ch.ethz.syslab.telesto.protocol.PingPacket;
+import ch.ethz.syslab.telesto.common.protocol.Packet;
+import ch.ethz.syslab.telesto.common.protocol.PingPacket;
+import ch.ethz.syslab.telesto.common.protocol.Packet.UnknownMethodException;
 import ch.ethz.syslab.telesto.server.config.CONFIG;
 
 public class Connection {
