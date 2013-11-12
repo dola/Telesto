@@ -1,4 +1,4 @@
-package ch.ethz.syslab.telesto.server.controller;
+package ch.ethz.syslab.telesto.protocol.handler;
 
 import ch.ethz.syslab.telesto.util.ErrorType;
 

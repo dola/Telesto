@@ -79,10 +79,7 @@ public class ConnectionHandler extends Thread {
         Connection connection = (Connection) key.attachment();
         int bytesRead;
 
-        // This prevents read operations while the buffer is being rewound
-        synchronized (connection.doubleReadBuffer.writeBuffer) {
-            bytesRead = channel.read(connection.doubleReadBuffer.writeBuffer);
-        }
+        bytesRead = connection.readFromChannel();
         if (bytesRead > 0) {
             LOGGER.fine("Read %s bytes from; %s", bytesRead, channel.getRemoteAddress());
             clientQueue.add(connection);

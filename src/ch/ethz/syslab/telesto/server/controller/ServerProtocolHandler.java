@@ -15,20 +15,17 @@ import ch.ethz.syslab.telesto.protocol.PongPacket;
 import ch.ethz.syslab.telesto.protocol.PutMessagePacket;
 import ch.ethz.syslab.telesto.protocol.QueueTestPacket;
 import ch.ethz.syslab.telesto.protocol.ReadMessagePacket;
+import ch.ethz.syslab.telesto.protocol.handler.IServerProtocolHandler;
+import ch.ethz.syslab.telesto.protocol.handler.PacketProcessingException;
+import ch.ethz.syslab.telesto.protocol.handler.ProtocolHandler;
 import ch.ethz.syslab.telesto.server.db.Database;
 
-public class PacketHandler implements IServerPacketHandler {
+public class ServerProtocolHandler extends ProtocolHandler implements IServerProtocolHandler {
 
     private Database db;
 
-    public PacketHandler(Database database) {
+    public ServerProtocolHandler(Database database) {
         db = database;
-    }
-
-    @Override
-    public Packet handle(Packet packet) throws PacketProcessingException {
-        // TODO Auto-generated method stub
-        return null;
     }
 
     @Override

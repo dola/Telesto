@@ -4,6 +4,9 @@ package ch.ethz.syslab.telesto.protocol;
 
 import java.nio.ByteBuffer;
 
+import ch.ethz.syslab.telesto.protocol.handler.PacketProcessingException;
+import ch.ethz.syslab.telesto.protocol.handler.ProtocolHandler;
+
 
 
 /* 
@@ -57,6 +60,10 @@ public class RegisterClientPacket extends Packet {
         return new RegisterClientPacket();
     }
     
+    public Packet getHandled(ProtocolHandler handler) throws PacketProcessingException {
+        return handler.handle((RegisterClientPacket) this);
+    }
+
     public String toString() {
         return "RegisterClientPacket";
     }

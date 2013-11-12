@@ -6,14 +6,16 @@ import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
 
 import ch.ethz.syslab.telesto.protocol.Packet;
+import ch.ethz.syslab.telesto.protocol.Packet.UnknownMethodException;
 import ch.ethz.syslab.telesto.protocol.PingPacket;
 import ch.ethz.syslab.telesto.server.config.CONFIG;
 
 public class Connection {
-    public static final void main(String[] args) throws IOException {
+    public static final void main(String[] args) throws IOException, UnknownMethodException {
         Connection connection = new Connection(new InetSocketAddress("localhost", CONFIG.MW_PORT));
         Packet packet = new PingPacket(1);
         connection.send(packet);
+        System.out.println(connection.receive());
     }
 
     private SocketChannel channel;
@@ -30,5 +32,14 @@ public class Connection {
             channel.write(buffer);
         }
         buffer.compact();
+    }
+
+    Packet receive() throws IOException, UnknownMethodException {
+        channel.read(buffer);
+        buffer.flip();
+        buffer.getShort();
+        Packet packet = Packet.create(buffer);
+        buffer.compact();
+        return packet;
     }
 }

@@ -13,6 +13,8 @@ import ch.ethz.syslab.telesto.model.Queue;
 {% if message.contains_type("TelestoErrorType") -%}
 import ch.ethz.syslab.telesto.util.ErrorType;
 {% endif -%}
+import ch.ethz.syslab.telesto.protocol.handler.PacketProcessingException;
+import ch.ethz.syslab.telesto.protocol.handler.ProtocolHandler;
 
 {% set name = message.__name__ + superclass %}
 
@@ -79,6 +81,10 @@ public class {{ name }} extends {{ superclass }} {
         return new {{ name }}();
     }
     
+    public Packet getHandled(ProtocolHandler handler) throws PacketProcessingException {
+        return handler.handle(({{ name }}) this);
+    }
+
     public String toString() {
         return "{{ name }}";
     }

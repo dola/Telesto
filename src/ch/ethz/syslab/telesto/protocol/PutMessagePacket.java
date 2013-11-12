@@ -5,6 +5,9 @@ package ch.ethz.syslab.telesto.protocol;
 import java.nio.ByteBuffer;
 
 import ch.ethz.syslab.telesto.model.Message;
+import ch.ethz.syslab.telesto.protocol.handler.PacketProcessingException;
+import ch.ethz.syslab.telesto.protocol.handler.ProtocolHandler;
+
 
 
 /* 
@@ -53,6 +56,10 @@ public class PutMessagePacket extends Packet {
         return new PutMessagePacket();
     }
     
+    public Packet getHandled(ProtocolHandler handler) throws PacketProcessingException {
+        return handler.handle((PutMessagePacket) this);
+    }
+
     public String toString() {
         return "PutMessagePacket";
     }

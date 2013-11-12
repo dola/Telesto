@@ -4,6 +4,9 @@ package ch.ethz.syslab.telesto.protocol;
 
 import java.nio.ByteBuffer;
 
+import ch.ethz.syslab.telesto.protocol.handler.PacketProcessingException;
+import ch.ethz.syslab.telesto.protocol.handler.ProtocolHandler;
+
 
 
 /* 
@@ -87,6 +90,10 @@ public class ComplexTestPacket extends Packet {
         return new ComplexTestPacket();
     }
     
+    public Packet getHandled(ProtocolHandler handler) throws PacketProcessingException {
+        return handler.handle((ComplexTestPacket) this);
+    }
+
     public String toString() {
         return "ComplexTestPacket";
     }

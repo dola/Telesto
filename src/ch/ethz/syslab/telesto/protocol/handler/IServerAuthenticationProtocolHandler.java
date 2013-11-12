@@ -1,4 +1,4 @@
-package ch.ethz.syslab.telesto.server.controller;
+package ch.ethz.syslab.telesto.protocol.handler;
 
 import ch.ethz.syslab.telesto.protocol.*;
 
@@ -7,7 +7,7 @@ import ch.ethz.syslab.telesto.protocol.*;
  * 
  * Edit the template at tools/protocol/telesto/templates/handler.java instead.
  */
-public interface IServerLoginPacketHandler extends IPacketHandler {
+public interface IServerAuthenticationProtocolHandler {
    public abstract Packet handle(PingPacket packet) throws PacketProcessingException;
    public abstract Packet handle(RegisterClientPacket packet) throws PacketProcessingException;
    public abstract Packet handle(IdentifyClientPacket packet) throws PacketProcessingException;

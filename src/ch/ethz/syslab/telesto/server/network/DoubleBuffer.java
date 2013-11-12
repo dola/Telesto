@@ -5,43 +5,54 @@ import java.nio.ByteBuffer;
 import ch.ethz.syslab.telesto.server.config.CONFIG;
 
 public class DoubleBuffer {
-    public ByteBuffer writeBuffer;
-    public ByteBuffer readBuffer;
+    public ByteBuffer writeView;
+    public ByteBuffer readView;
+    private boolean acquired;
     private int startPosition = 0;
 
     public DoubleBuffer(int capacity) {
-        writeBuffer = ByteBuffer.allocateDirect(CONFIG.MW_READ_BUFFER_SIZE);
-        readBuffer = writeBuffer.duplicate();
+        writeView = ByteBuffer.allocateDirect(CONFIG.MW_READ_BUFFER_SIZE);
+        readView = writeView.duplicate();
+    }
+
+    public synchronized boolean acquire() {
+        if (acquired) {
+            return false;
+        }
+        acquired = true;
+        return acquired;
+    }
+
+    public void release() {
+        acquired = false;
     }
 
     public void prepare() {
-        startPosition = readBuffer.position();
+        startPosition = readView.position();
     }
 
     public int bytesAvailable() {
-        return writeBuffer.position() - readBuffer.position();
+        return writeView.position() - readView.position();
     }
 
     public void limit(int limit) {
-        readBuffer.limit(readBuffer.position() + limit);
+        readView.limit(readView.position() + limit);
     }
 
     public int bytesRead() {
-        return readBuffer.position() - startPosition;
+        return readView.position() - startPosition;
     }
 
     public boolean dataRemaining() {
-        return writeBuffer.position() != readBuffer.position();
+        return writeView.position() != readView.position();
     }
 
     public void cleanup() {
-        if (writeBuffer.position() * 4 > writeBuffer.capacity() * 3 && readBuffer.position() * 4 > readBuffer.capacity()) {
-            synchronized (writeBuffer) {
-                readBuffer.limit(writeBuffer.position());
-                readBuffer.compact();
-                writeBuffer.position(readBuffer.position());
-                readBuffer.flip();
-            }
+        if (writeView.position() * 4 > writeView.capacity() * 3 && readView.position() * 4 > readView.capacity()) {
+            readView.limit(writeView.position());
+            readView.compact();
+            writeView.position(readView.position());
+            readView.flip();
         }
     }
 }

@@ -4,6 +4,9 @@ package ch.ethz.syslab.telesto.protocol;
 
 import java.nio.ByteBuffer;
 
+import ch.ethz.syslab.telesto.protocol.handler.PacketProcessingException;
+import ch.ethz.syslab.telesto.protocol.handler.ProtocolHandler;
+
 
 
 /* 
@@ -44,6 +47,10 @@ public class PingPacket extends Packet {
         return new PingPacket();
     }
     
+    public Packet getHandled(ProtocolHandler handler) throws PacketProcessingException {
+        return handler.handle((PingPacket) this);
+    }
+
     public String toString() {
         return "PingPacket";
     }

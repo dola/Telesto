@@ -9,20 +9,18 @@ import ch.ethz.syslab.telesto.protocol.PingPacket;
 import ch.ethz.syslab.telesto.protocol.PongPacket;
 import ch.ethz.syslab.telesto.protocol.RegisterClientPacket;
 import ch.ethz.syslab.telesto.protocol.RegisterClientResponsePacket;
+import ch.ethz.syslab.telesto.protocol.handler.IServerAuthenticationProtocolHandler;
+import ch.ethz.syslab.telesto.protocol.handler.PacketProcessingException;
+import ch.ethz.syslab.telesto.protocol.handler.ProtocolHandler;
 import ch.ethz.syslab.telesto.server.db.Database;
 import ch.ethz.syslab.telesto.server.db.procedure.ClientProcedure;
 
-public class AuthenticationPacketHandler implements IServerLoginPacketHandler {
+public class ServerAuthenticationProtocolHandler extends ProtocolHandler implements IServerAuthenticationProtocolHandler {
 
     private Database db;
 
-    public AuthenticationPacketHandler(Database database) {
+    public ServerAuthenticationProtocolHandler(Database database) {
         db = database;
-    }
-
-    @Override
-    public Packet handle(Packet packet) throws PacketProcessingException {
-        throw new PacketProcessingException("Not authenticated");
     }
 
     @Override

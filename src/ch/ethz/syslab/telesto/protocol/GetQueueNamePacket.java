@@ -4,6 +4,9 @@ package ch.ethz.syslab.telesto.protocol;
 
 import java.nio.ByteBuffer;
 
+import ch.ethz.syslab.telesto.protocol.handler.PacketProcessingException;
+import ch.ethz.syslab.telesto.protocol.handler.ProtocolHandler;
+
 
 
 /* 
@@ -52,6 +55,10 @@ public class GetQueueNamePacket extends Packet {
         return new GetQueueNamePacket();
     }
     
+    public Packet getHandled(ProtocolHandler handler) throws PacketProcessingException {
+        return handler.handle((GetQueueNamePacket) this);
+    }
+
     public String toString() {
         return "GetQueueNamePacket";
     }

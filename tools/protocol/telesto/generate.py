@@ -60,10 +60,10 @@ def generate_superclass(folder, template, messages):
 
 def generate_handler(folder, template, messages):
     for handler, condition in (
-        ("IClientPacketHandler", lambda m: m._accept_from('server')),
-        ("IServerLoginPacketHandler", lambda m: m.IS_LOGIN_MESSAGE),
-        ("IServerPacketHandler", lambda m: m._accept_from('client') and
-                                           m.IS_REGULAR_MESSAGE)
+        ("IClientProtocolHandler", lambda m: m._accept_from('server')),
+        ("IServerAuthenticationProtocolHandler", lambda m: m.IS_LOGIN_MESSAGE),
+        ("IServerProtocolHandler", lambda m: m._accept_from('client') and
+                                             m.IS_REGULAR_MESSAGE)
     ):
         print "Generating {}...".format(handler)
 
@@ -73,6 +73,18 @@ def generate_handler(folder, template, messages):
         path = os.path.join(folder, handler + ".java")
         with open(path, "w") as f:
             f.write(code)
+
+
+def generate_abstract_handler(folder, template, messages):
+    handler = "ProtocolHandler"
+    print "Generating {}...".format(handler)
+
+    code = template.render(messages=messages, handler=handler,
+                           superclass=SUPERCLASS)
+
+    path = os.path.join(folder, handler + ".java")
+    with open(path, "w") as f:
+        f.write(code)
 
 
 def main():
@@ -94,6 +106,10 @@ def main():
 
     generate_handler(args.handler, env.get_template("handler.java"),
                      protocol[0])
+
+    generate_abstract_handler(args.handler,
+                              env.get_template("abstracthandler.java"),
+                              protocol[0])
 
     print "\nGenerated {} packet classes.".format(
         sum(1 for m in protocol[0] if m)

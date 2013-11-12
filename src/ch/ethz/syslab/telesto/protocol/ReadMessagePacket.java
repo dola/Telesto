@@ -4,6 +4,9 @@ package ch.ethz.syslab.telesto.protocol;
 
 import java.nio.ByteBuffer;
 
+import ch.ethz.syslab.telesto.protocol.handler.PacketProcessingException;
+import ch.ethz.syslab.telesto.protocol.handler.ProtocolHandler;
+
 
 
 /* 
@@ -62,6 +65,10 @@ public class ReadMessagePacket extends Packet {
         return new ReadMessagePacket();
     }
     
+    public Packet getHandled(ProtocolHandler handler) throws PacketProcessingException {
+        return handler.handle((ReadMessagePacket) this);
+    }
+
     public String toString() {
         return "ReadMessagePacket";
     }
