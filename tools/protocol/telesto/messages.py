@@ -94,6 +94,7 @@ with protocol.version(0):
 
     class GetMessages(ClientMessage):
         method_id = 0x2d
+        queue_id = Int()
 
     class GetMessagesResponse(ServerMessage):
         method_id = 0x2e
