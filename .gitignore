@@ -3,6 +3,7 @@ release/**
 bin-ant/**
 log/**
 telesto.egg-info/**
+config.properties
 
 ##############
 # Java Files #
