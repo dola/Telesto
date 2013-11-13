@@ -11,6 +11,7 @@ import java.util.concurrent.ArrayBlockingQueue;
 
 import ch.ethz.syslab.telesto.common.network.Connection;
 import ch.ethz.syslab.telesto.common.util.Log;
+import ch.ethz.syslab.telesto.profile.BenchmarkLog;
 import ch.ethz.syslab.telesto.server.db.Database;
 
 public class ConnectionHandler extends Thread {
@@ -22,12 +23,13 @@ public class ConnectionHandler extends Thread {
     private DataHandler[] workers;
     private Selector selector = Selector.open();
     private ArrayBlockingQueue<Connection> clientQueue = new ArrayBlockingQueue<Connection>(100);
+    private boolean running = true;
 
-    public ConnectionHandler(InetSocketAddress address, int workerCount) throws IOException {
+    public ConnectionHandler(InetSocketAddress address, int workerCount, BenchmarkLog log) throws IOException {
         // Setting up data workers
         workers = new DataHandler[workerCount];
         for (int i = 0; i < workerCount; i++) {
-            workers[i] = new DataHandler(clientQueue, i);
+            workers[i] = new DataHandler(clientQueue, i, log);
         }
 
         // Setting up selector
@@ -57,16 +59,33 @@ public class ConnectionHandler extends Thread {
         }
     }
 
-    public int getHandledPacketCount() {
-        int sum = 0;
-        for (DataHandler worker : workers) {
-            sum += worker.getHandledPacketCount();
+    public void shutdown() {
+        LOGGER.info("Shutting down IO loop...");
+        running = false;
+        LOGGER.info("Waiting for client queue to be emptied...");
+        while (!clientQueue.isEmpty()) {
+            try {
+                Thread.sleep(50);
+            } catch (InterruptedException e) {
+                // Ignore
+            }
         }
-        return sum;
+        LOGGER.info("Terminating workers...");
+        for (DataHandler worker : workers) {
+            worker.shutdown();
+        }
+        LOGGER.info("Closing connections...");
+        for (SelectionKey key : selector.keys()) {
+            try {
+                key.channel().close();
+            } catch (IOException e) {
+                // Ignore
+            }
+        }
     }
 
     private void eventLoop() throws IOException {
-        while (true) {
+        while (running) {
             int availableChannels = selector.select();
             Iterator<SelectionKey> keyIterator = selector.selectedKeys().iterator();
             LOGGER.finest("Selected channels: %d", availableChannels);

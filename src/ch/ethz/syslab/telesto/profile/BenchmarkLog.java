@@ -52,10 +52,10 @@ public class BenchmarkLog {
      * creates the logFile and opens it for writing. Also ensures that the directory hierarchy is present and generates
      * it otherwise.
      */
-    private void openLogFile() {
+    protected void openLogFile() {
         logFile = new File(FOLDER, name + EXTENSION);
         if (logFile.exists()) {
-            LOGGER.severe("Log File %s already exists at location %s!", name, logFile.getAbsolutePath());
+            LOGGER.warning("Log File %s already exists at location %s!", name, logFile.getAbsolutePath());
         }
         logFile.getParentFile().mkdirs();
         try {
@@ -86,7 +86,7 @@ public class BenchmarkLog {
      * @param entries
      */
     public void addTimedEntry(Object... entries) {
-        String time = Long.toString(System.nanoTime());
+        long time = System.nanoTime();
         if (entries != null && entries.length > 0) {
             entries[0] = StringUtil.joinString(DELIMITER, time, entries[0]);
             addEntry(entries);
@@ -113,7 +113,6 @@ public class BenchmarkLog {
      */
     @Override
     protected void finalize() throws Throwable {
-        super.finalize();
         closeFile();
     }
 

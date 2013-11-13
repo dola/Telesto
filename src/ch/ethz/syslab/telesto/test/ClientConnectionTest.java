@@ -13,6 +13,7 @@ import ch.ethz.syslab.telesto.client.network.ClientConnection;
 import ch.ethz.syslab.telesto.common.config.CONFIG;
 import ch.ethz.syslab.telesto.common.protocol.PingPacket;
 import ch.ethz.syslab.telesto.common.protocol.PongPacket;
+import ch.ethz.syslab.telesto.profile.MockBenchmarkLog;
 
 public class ClientConnectionTest {
 
@@ -20,7 +21,7 @@ public class ClientConnectionTest {
 
     @Before
     public void setup() throws IOException {
-        connection = new ClientConnection();
+        connection = new ClientConnection(new MockBenchmarkLog());
     }
 
     @Test

@@ -9,6 +9,9 @@ import ch.ethz.syslab.telesto.common.protocol.Packet;
 import ch.ethz.syslab.telesto.common.protocol.handler.PacketProcessingException;
 import ch.ethz.syslab.telesto.common.util.ErrorType;
 import ch.ethz.syslab.telesto.common.util.Log;
+import ch.ethz.syslab.telesto.profile.BenchmarkLog;
+import ch.ethz.syslab.telesto.profile.Stopwatch;
+import ch.ethz.syslab.telesto.profile.Stopwatch.Phase;
 
 public class DataHandler extends Thread {
 
@@ -16,17 +19,21 @@ public class DataHandler extends Thread {
 
     private ArrayBlockingQueue<Connection> clientQueue;
     private int id;
-    private int handledPacketCount = 0;
+    private boolean running = true;
+    private Stopwatch stopwatch;
 
-    public DataHandler(ArrayBlockingQueue<Connection> clientQueue, int id) {
+    public DataHandler(ArrayBlockingQueue<Connection> clientQueue, int id, BenchmarkLog log) {
         this.clientQueue = clientQueue;
         this.id = id;
+        stopwatch = new Stopwatch(log);
     }
 
     @Override
     public void run() {
-        while (true) {
+        while (running) {
+            stopwatch.enterPhase(Phase.WAITING);
             Connection connection = nextClient();
+            stopwatch.enterPhase(Phase.PARSING);
             Packet packet = connection.readPacket();
             if (packet != null) {
                 LOGGER.info("Received packet %s (%d)", packet, id);
@@ -34,6 +41,7 @@ public class DataHandler extends Thread {
                     clientQueue.add(connection);
                 }
                 Packet response;
+                stopwatch.enterPhase(Phase.DATABASE);
                 try {
                     response = connection.handle(packet);
                 } catch (PacketProcessingException e) {
@@ -48,19 +56,15 @@ public class DataHandler extends Thread {
                     response = new ErrorPacket(ErrorType.INTERNAL_ERROR, "No response from packet handler");
                 }
                 response.packetId = packet.packetId;
+                stopwatch.enterPhase(Phase.RESPONSE);
                 try {
                     connection.send(response);
                 } catch (IOException e) {
                     LOGGER.warning(e, "Failed to send %s to %s", response, connection);
                     connection.disconnect();
                 }
-                handledPacketCount++;
             }
         }
-    }
-
-    public int getHandledPacketCount() {
-        return handledPacketCount;
     }
 
     private Connection nextClient() {
@@ -74,5 +78,9 @@ public class DataHandler extends Thread {
             }
         }
         return client;
+    }
+
+    public void shutdown() {
+        running = false;
     }
 }

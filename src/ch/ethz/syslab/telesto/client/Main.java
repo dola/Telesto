@@ -4,14 +4,31 @@ import java.io.IOException;
 
 import ch.ethz.syslab.telesto.client.exception.ProcessingException;
 import ch.ethz.syslab.telesto.common.protocol.Packet.UnknownMethodException;
+import ch.ethz.syslab.telesto.common.util.ShutdownLogManager;
+import ch.ethz.syslab.telesto.profile.BenchmarkLog;
 
 public class Main {
+    private static boolean running = true;
+    private static BenchmarkLog log;
+
     public static final void main(String[] args) throws IOException, UnknownMethodException, ProcessingException {
-        TelestoClient client = new TelestoClient();
-        long time = 0;
-        for (int i = 0; i < 100000; i++) {
-            time += client.ping();
+        log = new BenchmarkLog("client");
+        TelestoClient client = new TelestoClient(log);
+
+        Runtime.getRuntime().addShutdownHook(new ShutdownHook());
+
+        while (running) {
+            client.ping();
         }
-        System.out.println(time / 1000000000D);
+
+        log.closeFile();
+    }
+
+    private static class ShutdownHook extends Thread {
+        @Override
+        public void run() {
+            running = false;
+            ShutdownLogManager.resetFinally();
+        }
     }
 }

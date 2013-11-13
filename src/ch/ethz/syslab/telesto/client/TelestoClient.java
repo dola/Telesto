@@ -35,12 +35,17 @@ import ch.ethz.syslab.telesto.common.protocol.ReadMessageResponsePacket;
 import ch.ethz.syslab.telesto.common.protocol.RegisterClientPacket;
 import ch.ethz.syslab.telesto.common.protocol.RegisterClientResponsePacket;
 import ch.ethz.syslab.telesto.common.util.ErrorType;
+import ch.ethz.syslab.telesto.profile.BenchmarkLog;
 
 public class TelestoClient {
     ClientConnection connection;
 
     public TelestoClient() throws IOException {
-        connection = new ClientConnection();
+        this(new BenchmarkLog("client"));
+    }
+
+    public TelestoClient(BenchmarkLog log) throws IOException {
+        connection = new ClientConnection(log);
     }
 
     /**
@@ -342,5 +347,4 @@ public class TelestoClient {
         }
         return response.message;
     }
-
 }
