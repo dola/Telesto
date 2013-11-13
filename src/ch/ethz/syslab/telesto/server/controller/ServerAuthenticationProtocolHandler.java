@@ -14,13 +14,16 @@ import ch.ethz.syslab.telesto.common.protocol.handler.PacketProcessingException;
 import ch.ethz.syslab.telesto.common.protocol.handler.ProtocolHandler;
 import ch.ethz.syslab.telesto.server.db.Database;
 import ch.ethz.syslab.telesto.server.db.procedure.ClientProcedure;
+import ch.ethz.syslab.telesto.server.network.ServerConnection;
 
 public class ServerAuthenticationProtocolHandler extends ProtocolHandler implements IServerAuthenticationProtocolHandler {
 
     private Database db;
+    private ServerConnection connection;
 
-    public ServerAuthenticationProtocolHandler(Database database) {
+    public ServerAuthenticationProtocolHandler(Database database, ServerConnection connection) {
         db = database;
+        this.connection = connection;
     }
 
     @Override

@@ -11,14 +11,13 @@ import ch.ethz.syslab.telesto.common.protocol.Packet.UnknownMethodException;
 import ch.ethz.syslab.telesto.common.protocol.handler.PacketProcessingException;
 import ch.ethz.syslab.telesto.common.protocol.handler.ProtocolHandler;
 import ch.ethz.syslab.telesto.common.util.Log;
-import ch.ethz.syslab.telesto.server.controller.ServerAuthenticationProtocolHandler;
 
 public class Connection {
     private static Log LOGGER = new Log(Connection.class);
 
     private DoubleBuffer receivingBuffer = new DoubleBuffer(CONFIG.MW_READ_BUFFER_SIZE);;
     private DoubleBuffer sendingBuffer = new DoubleBuffer(CONFIG.MW_READ_BUFFER_SIZE);;
-    private ProtocolHandler packetHandler = new ServerAuthenticationProtocolHandler(null);
+    protected ProtocolHandler protocolHandler;
     protected boolean connected = true;
     protected SocketChannel socket;
     public Client client;
@@ -99,7 +98,7 @@ public class Connection {
     }
 
     public Packet handle(Packet packet) throws PacketProcessingException {
-        return packet.getHandled(packetHandler);
+        return packet.getHandled(protocolHandler);
     }
 
     public void send(Packet packet) throws IOException {

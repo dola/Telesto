@@ -1,7 +1,9 @@
 package ch.ethz.syslab.telesto.server.controller;
 
+import ch.ethz.syslab.telesto.common.model.Client;
 import ch.ethz.syslab.telesto.common.protocol.ComplexTestPacket;
 import ch.ethz.syslab.telesto.common.protocol.CreateQueuePacket;
+import ch.ethz.syslab.telesto.common.protocol.DeleteClientPacket;
 import ch.ethz.syslab.telesto.common.protocol.DeleteQueuePacket;
 import ch.ethz.syslab.telesto.common.protocol.GetActiveQueuesPacket;
 import ch.ethz.syslab.telesto.common.protocol.GetMessagesPacket;
@@ -15,6 +17,7 @@ import ch.ethz.syslab.telesto.common.protocol.PongPacket;
 import ch.ethz.syslab.telesto.common.protocol.PutMessagePacket;
 import ch.ethz.syslab.telesto.common.protocol.QueueTestPacket;
 import ch.ethz.syslab.telesto.common.protocol.ReadMessagePacket;
+import ch.ethz.syslab.telesto.common.protocol.ReadResponsePacket;
 import ch.ethz.syslab.telesto.common.protocol.handler.IServerProtocolHandler;
 import ch.ethz.syslab.telesto.common.protocol.handler.PacketProcessingException;
 import ch.ethz.syslab.telesto.common.protocol.handler.ProtocolHandler;
@@ -23,9 +26,11 @@ import ch.ethz.syslab.telesto.server.db.Database;
 public class ServerProtocolHandler extends ProtocolHandler implements IServerProtocolHandler {
 
     private Database db;
+    private Client client;
 
-    public ServerProtocolHandler(Database database) {
+    public ServerProtocolHandler(Database database, Client client) {
         db = database;
+        this.client = client;
     }
 
     @Override
@@ -88,6 +93,12 @@ public class ServerProtocolHandler extends ProtocolHandler implements IServerPro
     }
 
     @Override
+    public Packet handle(ReadResponsePacket packet) throws PacketProcessingException {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
     public Packet handle(ComplexTestPacket packet) throws PacketProcessingException {
         // TODO Auto-generated method stub
         return null;
@@ -105,4 +116,9 @@ public class ServerProtocolHandler extends ProtocolHandler implements IServerPro
         return null;
     }
 
+    @Override
+    public Packet handle(DeleteClientPacket packet) throws PacketProcessingException {
+        // TODO Auto-generated method stub
+        return null;
+    }
 }

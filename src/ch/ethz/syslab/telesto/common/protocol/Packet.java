@@ -110,6 +110,7 @@ public abstract class Packet {
        packets[18] = new RegisterClientResponsePacket();
        packets[19] = new IdentifyClientPacket();
        packets[20] = new IdentifyClientResponsePacket();
+       packets[21] = new DeleteClientPacket();
        packets[33] = new CreateQueuePacket();
        packets[34] = new CreateQueueResponsePacket();
        packets[35] = new DeleteQueuePacket();
@@ -126,6 +127,7 @@ public abstract class Packet {
        packets[49] = new PutMessagePacket();
        packets[51] = new ReadMessagePacket();
        packets[52] = new ReadMessageResponsePacket();
+       packets[53] = new ReadResponsePacket();
        packets[113] = new ComplexTestPacket();
        packets[114] = new MessageTestPacket();
        packets[115] = new QueueTestPacket();}

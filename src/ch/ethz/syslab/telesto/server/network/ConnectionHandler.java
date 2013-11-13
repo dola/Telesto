@@ -12,6 +12,7 @@ import java.util.concurrent.ArrayBlockingQueue;
 import ch.ethz.syslab.telesto.common.config.CONFIG;
 import ch.ethz.syslab.telesto.common.network.Connection;
 import ch.ethz.syslab.telesto.common.util.Log;
+import ch.ethz.syslab.telesto.server.db.Database;
 
 public class ConnectionHandler extends Thread {
     public static final void main(String[] args) throws IOException {
@@ -20,6 +21,7 @@ public class ConnectionHandler extends Thread {
 
     private static Log LOGGER = new Log(ConnectionHandler.class);
 
+    private Database database = new Database();
     private ServerSocketChannel socket;
     private DataHandler[] workers;
     private Selector selector = Selector.open();
@@ -38,6 +40,9 @@ public class ConnectionHandler extends Thread {
         socket = ServerSocketChannel.open().bind(address);
         socket.configureBlocking(false);
         socket.register(selector, SelectionKey.OP_ACCEPT);
+
+        // Setting up database
+        database.initialize();
     }
 
     @Override
@@ -98,7 +103,7 @@ public class ConnectionHandler extends Thread {
         }
         LOGGER.info("Accepted new connection from %s", channel.getRemoteAddress());
         channel.configureBlocking(false);
-        ServerConnection connection = new ServerConnection(channel);
+        ServerConnection connection = new ServerConnection(channel, database);
         connection.setSelectionKey(channel.register(selector, SelectionKey.OP_READ, connection));
     }
 }

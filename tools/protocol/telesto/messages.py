@@ -50,6 +50,9 @@ with protocol.version(0):
         mode = Byte()
         name = String()
 
+    class DeleteClient(ClientMessage):
+        method_id = 0x15
+
     # Queues
     class CreateQueue(ClientMessage):
         method_id = 0x21
@@ -116,6 +119,10 @@ with protocol.version(0):
     class ReadMessageResponse(ServerMessage):
         method_id = 0x34
         message = TelestoMessage()
+
+    class ReadResponse(ClientMessage):
+        method_id = 0x35
+        context = Int()
 
     # Test
     class ComplexTest(Message):

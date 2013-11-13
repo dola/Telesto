@@ -9,6 +9,7 @@ import ch.ethz.syslab.telesto.common.protocol.*;
  */
 public interface IServerProtocolHandler {
    public abstract Packet handle(PingPacket packet) throws PacketProcessingException;
+   public abstract Packet handle(DeleteClientPacket packet) throws PacketProcessingException;
    public abstract Packet handle(CreateQueuePacket packet) throws PacketProcessingException;
    public abstract Packet handle(DeleteQueuePacket packet) throws PacketProcessingException;
    public abstract Packet handle(GetQueueIdPacket packet) throws PacketProcessingException;
@@ -18,6 +19,7 @@ public interface IServerProtocolHandler {
    public abstract Packet handle(GetMessagesPacket packet) throws PacketProcessingException;
    public abstract Packet handle(PutMessagePacket packet) throws PacketProcessingException;
    public abstract Packet handle(ReadMessagePacket packet) throws PacketProcessingException;
+   public abstract Packet handle(ReadResponsePacket packet) throws PacketProcessingException;
    public abstract Packet handle(ComplexTestPacket packet) throws PacketProcessingException;
    public abstract Packet handle(MessageTestPacket packet) throws PacketProcessingException;
    public abstract Packet handle(QueueTestPacket packet) throws PacketProcessingException;

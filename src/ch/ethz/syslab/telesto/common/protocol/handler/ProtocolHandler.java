@@ -49,6 +49,11 @@ public abstract class ProtocolHandler {
         return null;
     }
     
+    public Packet handle(DeleteClientPacket packet) throws PacketProcessingException {
+        unhandledPacket(packet);
+        return null;
+    }
+    
     public Packet handle(CreateQueuePacket packet) throws PacketProcessingException {
         unhandledPacket(packet);
         return null;
@@ -125,6 +130,11 @@ public abstract class ProtocolHandler {
     }
     
     public Packet handle(ReadMessageResponsePacket packet) throws PacketProcessingException {
+        unhandledPacket(packet);
+        return null;
+    }
+    
+    public Packet handle(ReadResponsePacket packet) throws PacketProcessingException {
         unhandledPacket(packet);
         return null;
     }

@@ -31,6 +31,7 @@ import ch.ethz.syslab.telesto.common.protocol.PingPacket;
 import ch.ethz.syslab.telesto.common.protocol.PutMessagePacket;
 import ch.ethz.syslab.telesto.common.protocol.ReadMessagePacket;
 import ch.ethz.syslab.telesto.common.protocol.ReadMessageResponsePacket;
+import ch.ethz.syslab.telesto.common.protocol.ReadResponsePacket;
 import ch.ethz.syslab.telesto.common.protocol.RegisterClientPacket;
 import ch.ethz.syslab.telesto.common.protocol.RegisterClientResponsePacket;
 
@@ -239,7 +240,12 @@ public class TelestoClient {
      * @see {@link #putMessage(Message, int[])}
      */
     public Message sendRequestResponseMessage(Message message) throws ProcessingException {
-        return null;
+        // TODO: Block until message is available
+        Packet packet = new PutMessagePacket(message, new int[0]);
+        connection.sendPacket(packet);
+        packet = new ReadResponsePacket(message.context);
+        ReadMessageResponsePacket response = (ReadMessageResponsePacket) connection.sendPacket(packet);
+        return response.message;
     }
 
     /**
