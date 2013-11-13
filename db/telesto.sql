@@ -263,6 +263,23 @@ $$;
 
 
 --
+-- Name: read_response_message(integer, integer, integer); Type: FUNCTION; Schema: public; Owner: -
+--
+
+CREATE FUNCTION read_response_message(p_queue_id integer, p_receiver_id integer, p_context integer) RETURNS TABLE(message_id integer, queue_id integer, sender_id integer, receiver_id integer, context integer, priority smallint, time_of_arrival timestamp without time zone, message character varying)
+    LANGUAGE sql
+    AS $$  
+	DELETE FROM messages m WHERE m.message_id = (
+		SELECT m.message_id FROM messages m 
+		WHERE 	m.queue_id = p_queue_id 
+		AND 	m.receiver_id = p_receiver_id 
+		AND     m.context = p_context 
+		LIMIT 1
+	) RETURNING m.message_id, m.queue_id, m.sender_id, m.receiver_id, m.context, m.priority, m.time_of_arrival, m.message;
+$$;
+
+
+--
 -- Name: request_id(character varying, integer); Type: FUNCTION; Schema: public; Owner: -
 --
 
