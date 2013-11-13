@@ -16,6 +16,7 @@ public class DataHandler extends Thread {
 
     private ArrayBlockingQueue<Connection> clientQueue;
     private int id;
+    private int handledPacketCount = 0;
 
     public DataHandler(ArrayBlockingQueue<Connection> clientQueue, int id) {
         this.clientQueue = clientQueue;
@@ -53,8 +54,13 @@ public class DataHandler extends Thread {
                     LOGGER.warning(e, "Failed to send %s to %s", response, connection);
                     connection.disconnect();
                 }
+                handledPacketCount++;
             }
         }
+    }
+
+    public int getHandledPacketCount() {
+        return handledPacketCount;
     }
 
     private Connection nextClient() {

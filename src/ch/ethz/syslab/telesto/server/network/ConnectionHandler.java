@@ -62,6 +62,14 @@ public class ConnectionHandler extends Thread {
         }
     }
 
+    public int getHandledPacketCount() {
+        int sum = 0;
+        for (DataHandler worker : workers) {
+            sum += worker.getHandledPacketCount();
+        }
+        return sum;
+    }
+
     private void eventLoop() throws IOException {
         while (true) {
             int availableChannels = selector.select();

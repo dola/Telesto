@@ -5,7 +5,7 @@ import ch.ethz.syslab.telesto.common.util.ErrorType;
 public class ProcessingException extends Exception {
     private static final long serialVersionUID = 1L;
 
-    protected ErrorType type = ErrorType.INTERNAL_ERROR;
+    public ErrorType type = ErrorType.INTERNAL_ERROR;
 
     public ProcessingException(String message) {
         super(message);
