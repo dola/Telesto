@@ -33,4 +33,9 @@ public class PacketProcessingException extends Exception {
         super(message, e);
         this.type = type;
     }
+
+    @Override
+    public String toString() {
+        return super.toString() + ", ErrorCode = " + type;
+    }
 }

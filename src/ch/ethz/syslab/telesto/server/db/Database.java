@@ -4,6 +4,7 @@ import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Types;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -16,13 +17,13 @@ import ch.ethz.syslab.telesto.common.model.Client;
 import ch.ethz.syslab.telesto.common.model.Message;
 import ch.ethz.syslab.telesto.common.model.Queue;
 import ch.ethz.syslab.telesto.common.protocol.handler.PacketProcessingException;
+import ch.ethz.syslab.telesto.common.util.ErrorType;
 import ch.ethz.syslab.telesto.common.util.Log;
 import ch.ethz.syslab.telesto.server.db.procedure.ClientProcedure;
 import ch.ethz.syslab.telesto.server.db.procedure.MessageProcedure;
 import ch.ethz.syslab.telesto.server.db.procedure.QueueProcedure;
 import ch.ethz.syslab.telesto.server.db.procedure.StoredProcedure;
 import ch.ethz.syslab.telesto.server.db.result.ClientResultSetHandler;
-import ch.ethz.syslab.telesto.server.db.result.DatabaseResultEntry;
 import ch.ethz.syslab.telesto.server.db.result.IResultSetHandler;
 import ch.ethz.syslab.telesto.server.db.result.MessageResultSetHandler;
 import ch.ethz.syslab.telesto.server.db.result.QueueResultSetHandler;
@@ -96,7 +97,13 @@ public class Database {
         int argIdx = 0;
         int parameterIndex = proc.hasSingleReturnValue() ? 2 : 1;
         for (int argType : proc.getArgumentTypes()) {
-            statement.setObject(parameterIndex, arguments[argIdx], argType);
+            Object argument = arguments[argIdx];
+            if (argType == Types.ARRAY && Integer.class.isAssignableFrom(argument.getClass().getComponentType())) {
+                // treat arrays specially, note that this only works for integers
+                argument = conn.createArrayOf("int4", (Object[]) argument);
+            }
+
+            statement.setObject(parameterIndex, argument, argType);
 
             parameterIndex++;
             argIdx++;
@@ -109,6 +116,13 @@ public class Database {
         return statement;
     }
 
+    /**
+     * Executes procedure with no return value
+     * 
+     * @param proc
+     * @param arguments
+     * @throws PacketProcessingException
+     */
     public void callProcedure(StoredProcedure proc, Object... arguments) throws PacketProcessingException {
         if (proc.hasReturnValue()) {
             throw new PacketProcessingException("Procedure is not allowed to have a return value to be used with this method");
@@ -126,7 +140,7 @@ public class Database {
         } finally {
             if (statement != null) {
                 try {
-                    statement.close();
+                    statement.getConnection().close();
                 } catch (SQLException e) {
                     // ignore
                 }
@@ -159,11 +173,11 @@ public class Database {
             result = statement.getInt(1);
 
         } catch (SQLException e) {
-            throw new PacketProcessingException("Error during database interaction", e);
+            handleSQLException(e);
         } finally {
             if (statement != null) {
                 try {
-                    statement.close();
+                    statement.getConnection().close();
                 } catch (SQLException e) {
                     // ignore
                 }
@@ -173,46 +187,6 @@ public class Database {
         return result;
     }
 
-    public List<DatabaseResultEntry> callSelectingProcedure(StoredProcedure proc, Object... arguments) throws PacketProcessingException {
-        if (!proc.hasReturnValue()) {
-            throw new PacketProcessingException("Procedure has to have return value to be usable with this method");
-        }
-
-        CallableStatement statement = null;
-        List<DatabaseResultEntry> result = new ArrayList<>();
-
-        try {
-            statement = prepareCallableStatement(proc, arguments);
-
-            if (statement.execute()) {
-                // result set retrieved
-                if (resultSetHandler.containsKey(proc.getReturnType())) {
-                    // find handler for result set
-                    ResultSet dbResults = statement.getResultSet();
-                    result = resultSetHandler.get(proc.getReturnType()).handleResultSet(dbResults);
-                } else {
-                    // no handler registered: should have called other method
-                    LOGGER.warning("No handler registered for prcedure return type %s in procedure %s", proc.getReturnType(), proc.getMethodName());
-                    throw new PacketProcessingException("No DatabaseResultHandler found");
-                }
-            }
-
-        } catch (SQLException e) {
-            throw new PacketProcessingException("Error during database interaction", e);
-        } finally {
-            if (statement != null) {
-                try {
-                    statement.close();
-                } catch (SQLException e) {
-                    // ignore
-                }
-            }
-        }
-
-        return result;
-    }
-
-    // USE EVERYTHING BELOW THIS:
     // TODO: optimize methods below share more code
 
     public List<Message> callMessageProcedure(MessageProcedure proc, Object... arguments) throws PacketProcessingException {
@@ -246,11 +220,11 @@ public class Database {
             }
 
         } catch (SQLException e) {
-            throw new PacketProcessingException("Error during database interaction", e);
+            handleSQLException(e);
         } finally {
             if (statement != null) {
                 try {
-                    statement.close();
+                    statement.getConnection().close();
                 } catch (SQLException e) {
                     // ignore
                 }
@@ -285,11 +259,11 @@ public class Database {
             }
 
         } catch (SQLException e) {
-            throw new PacketProcessingException("Error during database interaction", e);
+            handleSQLException(e);
         } finally {
             if (statement != null) {
                 try {
-                    statement.close();
+                    statement.getConnection().close();
                 } catch (SQLException e) {
                     // ignore
                 }
@@ -325,11 +299,11 @@ public class Database {
             }
 
         } catch (SQLException e) {
-            throw new PacketProcessingException("Error during database interaction", e);
+            handleSQLException(e);
         } finally {
             if (statement != null) {
                 try {
-                    statement.close();
+                    statement.getConnection().close();
                 } catch (SQLException e) {
                     // ignore
                 }
@@ -337,5 +311,53 @@ public class Database {
         }
 
         return result;
+    }
+
+    public List<Integer> callIntegerListProcedure(StoredProcedure proc, Object... arguments) throws PacketProcessingException {
+        if (!proc.hasReturnValue() || proc.getReturnType() != ReturnType.INTEGER_TABLE) {
+            throw new PacketProcessingException("Procedure has to have INTEGER_TABLE return type to be usable with this method");
+        }
+
+        CallableStatement statement = null;
+        List<Integer> result = new ArrayList<>();
+
+        try {
+            statement = prepareCallableStatement(proc, arguments);
+
+            if (statement.execute()) {
+                // result set retrieved
+                ResultSet dbResults = statement.getResultSet();
+
+                // returns [Integer]
+                while (dbResults.next()) {
+                    result.add(dbResults.getInt(1));
+                }
+            }
+
+        } catch (SQLException e) {
+            handleSQLException(e);
+        } finally {
+            if (statement != null) {
+                try {
+                    statement.getConnection().close();
+                } catch (SQLException e) {
+                    // ignore
+                }
+            }
+        }
+
+        return result;
+    }
+
+    private void handleSQLException(SQLException e) throws PacketProcessingException {
+        // checks for specific constraint violations and other common errors
+
+        switch (e.getSQLState()) {
+            case "23505":
+                // unique constraint violation
+                throw new PacketProcessingException(ErrorType.UNIQUE_CONSTRAINT, "a similar entry already exists in the database");
+            default:
+                throw new PacketProcessingException(ErrorType.INTERNAL_ERROR, "Error during database interaction", e);
+        }
     }
 }

@@ -5,6 +5,7 @@ import java.sql.Types;
 public enum ReturnType {
     NONE(Types.NULL, true),
     INTEGER(Types.INTEGER, true),
+    INTEGER_TABLE(Types.OTHER, false),
     CLIENT_TABLE(Types.OTHER, false),
     QUEUE_TABLE(Types.OTHER, false),
     MESSAGE_TABLE(Types.OTHER, false);

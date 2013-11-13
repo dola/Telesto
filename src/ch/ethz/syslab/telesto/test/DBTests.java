@@ -1,11 +1,12 @@
 package ch.ethz.syslab.telesto.test;
 
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
-import java.sql.Array;
 import java.sql.CallableStatement;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Types;
 import java.util.List;
@@ -15,27 +16,30 @@ import org.junit.Test;
 import org.postgresql.ds.PGPoolingDataSource;
 
 import ch.ethz.syslab.telesto.common.config.CONFIG;
+import ch.ethz.syslab.telesto.common.model.Client;
+import ch.ethz.syslab.telesto.common.model.ClientMode;
 import ch.ethz.syslab.telesto.common.model.Queue;
 import ch.ethz.syslab.telesto.common.protocol.handler.PacketProcessingException;
 import ch.ethz.syslab.telesto.server.db.Database;
 import ch.ethz.syslab.telesto.server.db.procedure.ClientProcedure;
 import ch.ethz.syslab.telesto.server.db.procedure.MessageProcedure;
 import ch.ethz.syslab.telesto.server.db.procedure.QueueProcedure;
-import ch.ethz.syslab.telesto.server.db.result.DatabaseResultEntry;
 
 public class DBTests {
 
-    private static int RUNS = 10000;
+    private static int RUNS = 5000;
 
     private Database db;
 
     @Before
-    public void initialize() {
+    public void initialize() throws SQLException {
         db = new Database();
         db.initialize();
-    }
 
-    // change to use setup method for db connection pool
+        PreparedStatement s = db.getConnection().prepareStatement("TRUNCATE clients, queues, messages");
+        s.execute();
+        s.getConnection().close();
+    }
 
     @Test
     public void createConnectionPool() throws SQLException {
@@ -81,34 +85,55 @@ public class DBTests {
     }
 
     @Test
-    public void testSimpleProcedure() throws PacketProcessingException {
-        int id = db.callSimpleProcedure(ClientProcedure.REQUEST_ID, "dola", 1);
-        System.out.println(id);
+    public void testManySimpleProcedures() throws PacketProcessingException {
+        for (int i = 2; i < RUNS; i++) {
+            int id = db.callSimpleProcedure(ClientProcedure.REQUEST_ID, "dola " + i, ClientMode.FULL.getByteValue());
+        }
     }
 
     @Test
-    public void testSelectingProcedure1() throws PacketProcessingException {
-        List<DatabaseResultEntry> result = db.callSelectingProcedure(ClientProcedure.IDENTIFY, 54);
-        assertEquals(result.size(), 1);
+    public void testClientProcedure1() throws PacketProcessingException {
+        int id = db.callSimpleProcedure(ClientProcedure.REQUEST_ID, "dola", ClientMode.FULL.getByteValue());
+
+        List<Client> result = db.callClientProcedure(ClientProcedure.IDENTIFY, id);
+        assertEquals(1, result.size());
+        assertEquals("dola", result.get(0).name);
+        assertEquals(ClientMode.FULL.getByteValue(), result.get(0).operationMode);
+    }
+
+    @Test
+    public void testQueueCreation() throws PacketProcessingException {
+        // queue_id, queue_name
+        for (int i = 1; i < 4; i++) {
+            List<Queue> queues = db.callQueueProcedure(QueueProcedure.CREATE_QUEUE, "queue" + i);
+            assertEquals(1, queues.size());
+            assertEquals("queue" + i, queues.get(0).name);
+        }
     }
 
     @Test
     public void testMessageInsert() throws PacketProcessingException {
+        List<Queue> queues = db.callQueueProcedure(QueueProcedure.CREATE_QUEUE, "messageInsertTestQueue");
+
+        int queueId = queues.get(0).id;
+
         // queue_id, sender_id, receiver_id, context, priority, message
-        db.callProcedure(MessageProcedure.PUT_MESSAGE, 1, 1, null, null, 10, "hallo");
+        int insertedQueueId = db.callSimpleProcedure(MessageProcedure.PUT_MESSAGE, queueId, 1, null, null, 10, "hallo");
+        assertEquals(queueId, insertedQueueId);
     }
 
     @Test
     public void testMultiMessageInsert() throws PacketProcessingException {
-        // queue_id, sender_id, receiver_id, context, priority, message
-        try {
-            // todo: nicht auf eigener Connection...
-            Array queueIds = db.getConnection().createArrayOf("int4", new Integer[] { 1, 2, 3 });
-            db.callProcedure(MessageProcedure.PUT_MESSAGES, queueIds, 1, null, null, 10, "ich bin in Queue 1, 2 und 3");
-        } catch (SQLException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+        Integer[] queuesToInsert = new Integer[3];
+
+        for (int i = 0; i < 3; i++) {
+            List<Queue> queues = db.callQueueProcedure(QueueProcedure.CREATE_QUEUE, "messageInsertTestQueue" + i);
+            queuesToInsert[i] = queues.get(0).id;
         }
+
+        // queue_id, sender_id, receiver_id, context, priority, message
+        List<Integer> queues = db.callIntegerListProcedure(MessageProcedure.PUT_MESSAGES, queuesToInsert, 1, null, null, 10, "ich bin in Queue 1, 2 und 3");
+        assertArrayEquals(queuesToInsert, queues.toArray());
     }
 
     @Test

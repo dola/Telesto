@@ -9,9 +9,9 @@ public enum MessageProcedure implements StoredProcedure {
     GET_MESSAGES_FROM_QUEUE("get_messages_from_queue", new int[] { Types.INTEGER }, ReturnType.MESSAGE_TABLE),
 
     PUT_MESSAGE("put_message", new int[] { Types.INTEGER, Types.INTEGER, Types.INTEGER, Types.INTEGER, Types.SMALLINT, Types.VARCHAR },
-            ReturnType.NONE),
+            ReturnType.INTEGER),
     PUT_MESSAGES("put_messages", new int[] { Types.ARRAY, Types.INTEGER, Types.INTEGER, Types.INTEGER, Types.SMALLINT, Types.VARCHAR },
-            ReturnType.NONE),
+            ReturnType.INTEGER_TABLE),
 
     READ_MESSAGE_BY_PRIORITY("read_message_by_priority", new int[] { Types.INTEGER, Types.INTEGER, Types.INTEGER }, ReturnType.MESSAGE_TABLE),
     READ_MESSAGE_BY_TIMESTAMP("read_message_by_timestamp", new int[] { Types.INTEGER, Types.INTEGER, Types.INTEGER }, ReturnType.MESSAGE_TABLE);
