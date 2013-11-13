@@ -36,7 +36,18 @@ public class ServerAuthenticationProtocolHandler extends ProtocolHandler impleme
 
     @Override
     public Packet handle(RegisterClientPacket packet) throws PacketProcessingException {
-        int clientId = db.callSimpleProcedure(ClientProcedure.REQUEST_ID, packet.clientName, packet.mode);
+        int clientId;
+
+        try {
+            clientId = db.callSimpleProcedure(ClientProcedure.REQUEST_ID, packet.clientName, packet.mode);
+        } catch (PacketProcessingException e) {
+            if (e.type == ErrorType.UNIQUE_CONSTRAINT) {
+                // produce a more specific error message
+                throw new PacketProcessingException(ErrorType.CLIENT_NAME_NOT_UNIQUE, "There is already a client with the given name");
+            }
+            throw e;
+        }
+
         connection.setClient(new Client(clientId, packet.clientName, ClientMode.fromByteValue(packet.mode)));
         return new RegisterClientResponsePacket(clientId);
     }

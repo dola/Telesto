@@ -68,9 +68,18 @@ public class ServerProtocolHandler extends ProtocolHandler implements IServerPro
 
     @Override
     public Packet handle(CreateQueuePacket packet) throws PacketProcessingException {
-        List<Queue> queues = db.callQueueProcedure(QueueProcedure.CREATE_QUEUE, packet.name);
-        if (queues.size() == 1) {
-            return new CreateQueueResponsePacket(queues.get(0).id);
+        try {
+
+            List<Queue> queues = db.callQueueProcedure(QueueProcedure.CREATE_QUEUE, packet.name);
+            if (queues.size() == 1) {
+                return new CreateQueueResponsePacket(queues.get(0).id);
+            }
+        } catch (PacketProcessingException e) {
+            if (e.type == ErrorType.UNIQUE_CONSTRAINT) {
+                // produce a more specific error message
+                throw new PacketProcessingException(ErrorType.QUEUE_NAME_NOT_UNIQUE, "There is already a queue with the given name");
+            }
+            throw e;
         }
 
         return new ErrorPacket(ErrorType.INTERNAL_ERROR, "Failed to create new Queue");
