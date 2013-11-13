@@ -14,7 +14,9 @@ public enum MessageProcedure implements StoredProcedure {
             ReturnType.INTEGER_TABLE),
 
     READ_MESSAGE_BY_PRIORITY("read_message_by_priority", new int[] { Types.INTEGER, Types.INTEGER, Types.INTEGER }, ReturnType.MESSAGE_TABLE),
-    READ_MESSAGE_BY_TIMESTAMP("read_message_by_timestamp", new int[] { Types.INTEGER, Types.INTEGER, Types.INTEGER }, ReturnType.MESSAGE_TABLE);
+    READ_MESSAGE_BY_TIMESTAMP("read_message_by_timestamp", new int[] { Types.INTEGER, Types.INTEGER, Types.INTEGER }, ReturnType.MESSAGE_TABLE),
+
+    READ_RESPONSE_MESSAGE("read_response_message", new int[] { Types.INTEGER, Types.INTEGER, Types.INTEGER }, ReturnType.MESSAGE_TABLE);
 
     private final String methodName;
     private final int[] argumentTypes;

@@ -205,8 +205,24 @@ public class ServerProtocolHandler extends ProtocolHandler implements IServerPro
 
     @Override
     public Packet handle(ReadResponsePacket packet) throws PacketProcessingException {
-        // TODO IMPLEMENT in DB and Handler
-        return null;
+
+        List<Message> messages;
+
+        int queueId = packet.queueId;
+        int receiverId = client.id;
+        int context = packet.context;
+
+        if (queueId == 0 || context == 0) {
+            throw new PacketProcessingException(ErrorType.REQUIRED_PARAMETER_MISSING, "QueueId and Context are required parameters to read responses");
+        }
+
+        messages = db.callMessageProcedure(MessageProcedure.READ_RESPONSE_MESSAGE, queueId, receiverId, context);
+
+        if (!messages.isEmpty()) {
+            return new ReadMessageResponsePacket(messages.get(0));
+        }
+
+        return new ErrorPacket(ErrorType.NO_MESSAGES_RETRIEVED, "No corresponding message to the query found");
     }
 
     // methods below are only for testing packet parsing purposes
