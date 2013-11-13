@@ -7,7 +7,8 @@ import ch.ethz.syslab.telesto.server.db.ReturnType;
 public enum ClientProcedure implements StoredProcedure {
 
     IDENTIFY("identify", new int[] { Types.INTEGER }, ReturnType.CLIENT_TABLE),
-    REQUEST_ID("request_id", new int[] { Types.VARCHAR, Types.SMALLINT }, ReturnType.INTEGER);
+    REQUEST_ID("request_id", new int[] { Types.VARCHAR, Types.SMALLINT }, ReturnType.INTEGER),
+    DELETE_CLIENT("delete_client", new int[] { Types.INTEGER }, ReturnType.INTEGER);
 
     private final String methodName;
     private final int[] argumentTypes;

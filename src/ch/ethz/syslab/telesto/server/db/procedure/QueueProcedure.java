@@ -7,10 +7,11 @@ import ch.ethz.syslab.telesto.server.db.ReturnType;
 public enum QueueProcedure implements StoredProcedure {
 
     CREATE_QUEUE("create_queue", new int[] { Types.VARCHAR }, ReturnType.QUEUE_TABLE),
-    DELETE_QUEUE("delete_queue", new int[] { Types.INTEGER }, ReturnType.QUEUE_TABLE),
+    DELETE_QUEUE("delete_queue", new int[] { Types.INTEGER }, ReturnType.INTEGER),
     GET_QUEUE_NAME("get_queue_name", new int[] { Types.INTEGER }, ReturnType.QUEUE_TABLE),
     GET_QUEUE_ID("get_queue_id", new int[] { Types.VARCHAR }, ReturnType.QUEUE_TABLE),
-    LIST_QUEUES("list_queues", new int[0], ReturnType.QUEUE_TABLE);
+    LIST_QUEUES("list_queues", new int[0], ReturnType.QUEUE_TABLE),
+    GET_ACTIVE_QUEUES("get_active_queues", new int[] { Types.INTEGER }, ReturnType.QUEUE_TABLE);
 
     private final String methodName;
     private final int[] argumentTypes;

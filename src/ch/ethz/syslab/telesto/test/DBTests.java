@@ -11,7 +11,7 @@ import java.sql.SQLException;
 import java.sql.Types;
 import java.util.List;
 
-import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.postgresql.ds.PGPoolingDataSource;
 
@@ -29,10 +29,10 @@ public class DBTests {
 
     private static int RUNS = 5000;
 
-    private Database db;
+    private static Database db;
 
-    @Before
-    public void initialize() throws SQLException {
+    @BeforeClass
+    public static void initialize() throws SQLException {
         db = new Database();
         db.initialize();
 
@@ -57,7 +57,7 @@ public class DBTests {
         // request id for user dola with mode 1
         CallableStatement s = c.prepareCall("{ ? = call request_id( ? , ? ) }");
         s.registerOutParameter(1, Types.INTEGER);
-        s.setString(2, "dola");
+        s.setString(2, "blubbedi");
         s.setInt(3, 1);
         s.execute();
 
@@ -98,7 +98,7 @@ public class DBTests {
         List<Client> result = db.callClientProcedure(ClientProcedure.IDENTIFY, id);
         assertEquals(1, result.size());
         assertEquals("dola", result.get(0).name);
-        assertEquals(ClientMode.FULL.getByteValue(), result.get(0).mode);
+        assertEquals(ClientMode.FULL, result.get(0).mode);
     }
 
     @Test

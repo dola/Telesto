@@ -6,9 +6,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.postgresql.ds.PGPoolingDataSource;
 
@@ -24,23 +22,11 @@ import ch.ethz.syslab.telesto.server.db.procedure.ClientProcedure;
 import ch.ethz.syslab.telesto.server.db.procedure.MessageProcedure;
 import ch.ethz.syslab.telesto.server.db.procedure.QueueProcedure;
 import ch.ethz.syslab.telesto.server.db.procedure.StoredProcedure;
-import ch.ethz.syslab.telesto.server.db.result.ClientResultSetHandler;
-import ch.ethz.syslab.telesto.server.db.result.IResultSetHandler;
-import ch.ethz.syslab.telesto.server.db.result.MessageResultSetHandler;
-import ch.ethz.syslab.telesto.server.db.result.QueueResultSetHandler;
 
 public class Database {
     private static Log LOGGER = new Log(Database.class);
 
     private PGPoolingDataSource connectionPool;
-
-    private Map<ReturnType, IResultSetHandler> resultSetHandler = new HashMap<ReturnType, IResultSetHandler>();
-
-    public Database() {
-        resultSetHandler.put(ReturnType.CLIENT_TABLE, new ClientResultSetHandler());
-        resultSetHandler.put(ReturnType.QUEUE_TABLE, new QueueResultSetHandler());
-        resultSetHandler.put(ReturnType.MESSAGE_TABLE, new MessageResultSetHandler());
-    }
 
     public void initialize() {
         if (connectionPool == null) {
@@ -53,7 +39,7 @@ public class Database {
             connectionPool.setPassword(CONFIG.DB_PASSWORD);
             connectionPool.setMaxConnections(CONFIG.DB_MAX_CONNECTIONS);
 
-            // add more?
+            // TODO: add more?
             // e.g. log writer and log level
         }
     }
