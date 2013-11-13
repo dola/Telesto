@@ -93,9 +93,19 @@ public class ConnectionHandler extends Thread {
             while (keyIterator.hasNext()) {
                 SelectionKey key = keyIterator.next();
                 if (key.isReadable()) {
-                    read(key);
+                    try {
+                        read(key);
+                    } catch (IOException e) {
+                        key.cancel();
+                        LOGGER.info("Client disonnected: %s", key.attachment());
+                    }
                 } else if (key.isAcceptable()) {
-                    accept(key);
+                    try {
+                        accept(key);
+                    } catch (IOException e) {
+                        key.cancel();
+                        LOGGER.info("Error while accepting connection: %s", e);
+                    }
                 }
                 keyIterator.remove();
             }

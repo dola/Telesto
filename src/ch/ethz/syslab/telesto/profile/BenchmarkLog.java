@@ -73,8 +73,7 @@ public class BenchmarkLog {
      */
     public void addEntry(Object... entries) {
         try {
-            logWriter.write(StringUtil.joinString(DELIMITER, entries));
-            logWriter.newLine();
+            logWriter.write(StringUtil.joinString(DELIMITER, entries) + "\n");
         } catch (IOException e) {
             LOGGER.severe(e, "Failed to write to log file %s", logFile);
         }
@@ -86,7 +85,7 @@ public class BenchmarkLog {
      * @param entries
      */
     public void addTimedEntry(Object... entries) {
-        long time = System.nanoTime();
+        long time = System.currentTimeMillis();
         if (entries != null && entries.length > 0) {
             entries[0] = StringUtil.joinString(DELIMITER, time, entries[0]);
             addEntry(entries);
