@@ -2,6 +2,10 @@
 -- PostgreSQL database dump
 --
 
+-- Dumped from database version 9.3.1
+-- Dumped by pg_dump version 9.3.1
+-- Started on 2013-11-14 00:48:44
+
 SET statement_timeout = 0;
 SET lock_timeout = 0;
 SET client_encoding = 'UTF8';
@@ -11,6 +15,7 @@ SET client_min_messages = warning;
 
 DROP DATABASE telesto;
 --
+-- TOC entry 1981 (class 1262 OID 16394)
 -- Name: telesto; Type: DATABASE; Schema: -; Owner: -
 --
 
@@ -27,6 +32,7 @@ SET check_function_bodies = false;
 SET client_min_messages = warning;
 
 --
+-- TOC entry 6 (class 2615 OID 2200)
 -- Name: public; Type: SCHEMA; Schema: -; Owner: -
 --
 
@@ -34,6 +40,8 @@ CREATE SCHEMA public;
 
 
 --
+-- TOC entry 1982 (class 0 OID 0)
+-- Dependencies: 6
 -- Name: SCHEMA public; Type: COMMENT; Schema: -; Owner: -
 --
 
@@ -41,6 +49,7 @@ COMMENT ON SCHEMA public IS 'standard public schema';
 
 
 --
+-- TOC entry 176 (class 3079 OID 11750)
 -- Name: plpgsql; Type: EXTENSION; Schema: -; Owner: -
 --
 
@@ -48,6 +57,8 @@ CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
 
 
 --
+-- TOC entry 1983 (class 0 OID 0)
+-- Dependencies: 176
 -- Name: EXTENSION plpgsql; Type: COMMENT; Schema: -; Owner: -
 --
 
@@ -57,6 +68,7 @@ COMMENT ON EXTENSION plpgsql IS 'PL/pgSQL procedural language';
 SET search_path = public, pg_catalog;
 
 --
+-- TOC entry 197 (class 1255 OID 16467)
 -- Name: create_queue(character varying); Type: FUNCTION; Schema: public; Owner: -
 --
 
@@ -68,6 +80,7 @@ $$;
 
 
 --
+-- TOC entry 199 (class 1255 OID 17028)
 -- Name: delete_client(integer); Type: FUNCTION; Schema: public; Owner: -
 --
 
@@ -79,6 +92,7 @@ $$;
 
 
 --
+-- TOC entry 193 (class 1255 OID 17026)
 -- Name: delete_queue(integer); Type: FUNCTION; Schema: public; Owner: -
 --
 
@@ -96,6 +110,7 @@ $$;
 
 
 --
+-- TOC entry 195 (class 1255 OID 16476)
 -- Name: get_active_queues(integer); Type: FUNCTION; Schema: public; Owner: -
 --
 
@@ -107,6 +122,7 @@ $$;
 
 
 --
+-- TOC entry 196 (class 1255 OID 16477)
 -- Name: get_messages_from_queue(integer); Type: FUNCTION; Schema: public; Owner: -
 --
 
@@ -118,6 +134,7 @@ $$;
 
 
 --
+-- TOC entry 189 (class 1255 OID 16469)
 -- Name: get_queue_id(character varying); Type: FUNCTION; Schema: public; Owner: -
 --
 
@@ -129,6 +146,7 @@ $$;
 
 
 --
+-- TOC entry 191 (class 1255 OID 16471)
 -- Name: get_queue_name(integer); Type: FUNCTION; Schema: public; Owner: -
 --
 
@@ -140,6 +158,7 @@ $$;
 
 
 --
+-- TOC entry 192 (class 1255 OID 16464)
 -- Name: identify(integer); Type: FUNCTION; Schema: public; Owner: -
 --
 
@@ -151,6 +170,7 @@ $$;
 
 
 --
+-- TOC entry 194 (class 1255 OID 16472)
 -- Name: list_queues(); Type: FUNCTION; Schema: public; Owner: -
 --
 
@@ -162,6 +182,7 @@ $$;
 
 
 --
+-- TOC entry 203 (class 1255 OID 16488)
 -- Name: put_message(integer, integer, integer, integer, smallint, character varying); Type: FUNCTION; Schema: public; Owner: -
 --
 
@@ -192,6 +213,7 @@ $$;
 
 
 --
+-- TOC entry 202 (class 1255 OID 16489)
 -- Name: put_messages(integer[], integer, integer, integer, smallint, character varying); Type: FUNCTION; Schema: public; Owner: -
 --
 
@@ -227,6 +249,7 @@ $$;
 
 
 --
+-- TOC entry 198 (class 1255 OID 16482)
 -- Name: read_message_by_priority(integer, integer, integer); Type: FUNCTION; Schema: public; Owner: -
 --
 
@@ -245,6 +268,7 @@ $$;
 
 
 --
+-- TOC entry 200 (class 1255 OID 16483)
 -- Name: read_message_by_timestamp(integer, integer, integer); Type: FUNCTION; Schema: public; Owner: -
 --
 
@@ -263,6 +287,7 @@ $$;
 
 
 --
+-- TOC entry 201 (class 1255 OID 17323)
 -- Name: read_response_message(integer, integer, integer); Type: FUNCTION; Schema: public; Owner: -
 --
 
@@ -280,6 +305,7 @@ $$;
 
 
 --
+-- TOC entry 190 (class 1255 OID 16461)
 -- Name: request_id(character varying, integer); Type: FUNCTION; Schema: public; Owner: -
 --
 
@@ -300,6 +326,7 @@ $$;
 SET default_with_oids = false;
 
 --
+-- TOC entry 175 (class 1259 OID 16417)
 -- Name: clients; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -311,6 +338,29 @@ CREATE TABLE clients (
 
 
 --
+-- TOC entry 174 (class 1259 OID 16415)
+-- Name: clients_client_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE clients_client_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- TOC entry 1984 (class 0 OID 0)
+-- Dependencies: 174
+-- Name: clients_client_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE clients_client_id_seq OWNED BY clients.client_id;
+
+
+--
+-- TOC entry 173 (class 1259 OID 16406)
 -- Name: messages; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -327,6 +377,7 @@ CREATE TABLE messages (
 
 
 --
+-- TOC entry 172 (class 1259 OID 16404)
 -- Name: messages_message_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
@@ -339,6 +390,8 @@ CREATE SEQUENCE messages_message_id_seq
 
 
 --
+-- TOC entry 1985 (class 0 OID 0)
+-- Dependencies: 172
 -- Name: messages_message_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
@@ -346,6 +399,7 @@ ALTER SEQUENCE messages_message_id_seq OWNED BY messages.message_id;
 
 
 --
+-- TOC entry 171 (class 1259 OID 16398)
 -- Name: queues; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -356,6 +410,7 @@ CREATE TABLE queues (
 
 
 --
+-- TOC entry 170 (class 1259 OID 16396)
 -- Name: queue_queue_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
@@ -368,6 +423,8 @@ CREATE SEQUENCE queue_queue_id_seq
 
 
 --
+-- TOC entry 1986 (class 0 OID 0)
+-- Dependencies: 170
 -- Name: queue_queue_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
@@ -375,32 +432,15 @@ ALTER SEQUENCE queue_queue_id_seq OWNED BY queues.queue_id;
 
 
 --
--- Name: users_user_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE users_user_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: users_user_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
-ALTER SEQUENCE users_user_id_seq OWNED BY clients.client_id;
-
-
---
+-- TOC entry 1855 (class 2604 OID 17341)
 -- Name: client_id; Type: DEFAULT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY clients ALTER COLUMN client_id SET DEFAULT nextval('users_user_id_seq'::regclass);
+ALTER TABLE ONLY clients ALTER COLUMN client_id SET DEFAULT nextval('clients_client_id_seq'::regclass);
 
 
 --
+-- TOC entry 1853 (class 2604 OID 16409)
 -- Name: message_id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -408,6 +448,7 @@ ALTER TABLE ONLY messages ALTER COLUMN message_id SET DEFAULT nextval('messages_
 
 
 --
+-- TOC entry 1852 (class 2604 OID 16401)
 -- Name: queue_id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -415,6 +456,7 @@ ALTER TABLE ONLY queues ALTER COLUMN queue_id SET DEFAULT nextval('queue_queue_i
 
 
 --
+-- TOC entry 1867 (class 2606 OID 16422)
 -- Name: pk_client_id; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -423,6 +465,7 @@ ALTER TABLE ONLY clients
 
 
 --
+-- TOC entry 1865 (class 2606 OID 16414)
 -- Name: pk_message_id; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -431,6 +474,7 @@ ALTER TABLE ONLY messages
 
 
 --
+-- TOC entry 1857 (class 2606 OID 16424)
 -- Name: pk_queue_id; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -439,6 +483,7 @@ ALTER TABLE ONLY queues
 
 
 --
+-- TOC entry 1869 (class 2606 OID 16498)
 -- Name: unique_client_name; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -447,6 +492,7 @@ ALTER TABLE ONLY clients
 
 
 --
+-- TOC entry 1859 (class 2606 OID 16493)
 -- Name: unique_queue_name; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -455,6 +501,7 @@ ALTER TABLE ONLY queues
 
 
 --
+-- TOC entry 1860 (class 1259 OID 16428)
 -- Name: idx_receiver_queue_priority; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -462,6 +509,7 @@ CREATE INDEX idx_receiver_queue_priority ON messages USING btree (receiver_id, q
 
 
 --
+-- TOC entry 1861 (class 1259 OID 16427)
 -- Name: idx_receiver_queue_priority_sender; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -469,6 +517,7 @@ CREATE INDEX idx_receiver_queue_priority_sender ON messages USING btree (receive
 
 
 --
+-- TOC entry 1862 (class 1259 OID 16431)
 -- Name: idx_receiver_queue_time; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -476,11 +525,14 @@ CREATE INDEX idx_receiver_queue_time ON messages USING btree (receiver_id, queue
 
 
 --
+-- TOC entry 1863 (class 1259 OID 16432)
 -- Name: idx_receiver_queue_time_sender; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX idx_receiver_queue_time_sender ON messages USING btree (receiver_id, queue_id, time_of_arrival, sender_id);
 
+
+-- Completed on 2013-11-14 00:48:44
 
 --
 -- PostgreSQL database dump complete
