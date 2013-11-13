@@ -46,6 +46,7 @@ public class DataHandler extends Thread {
                     LOGGER.info("Packet handler for '%s' returned null", packet);
                     response = new ErrorPacket(ErrorType.INTERNAL_ERROR, "No response from packet handler");
                 }
+                response.packetId = packet.packetId;
                 try {
                     connection.send(response);
                 } catch (IOException e) {
