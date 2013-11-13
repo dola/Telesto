@@ -87,7 +87,7 @@ public class DBTests {
     @Test
     public void testManySimpleProcedures() throws PacketProcessingException {
         for (int i = 2; i < RUNS; i++) {
-            int id = db.callSimpleProcedure(ClientProcedure.REQUEST_ID, "dola " + i, ClientMode.FULL.getByteValue());
+            db.callSimpleProcedure(ClientProcedure.REQUEST_ID, "dola " + i, ClientMode.FULL.getByteValue());
         }
     }
 
