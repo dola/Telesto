@@ -4,10 +4,10 @@ import java.util.Arrays;
 import java.util.List;
 
 import ch.ethz.syslab.telesto.common.model.Client;
+import ch.ethz.syslab.telesto.common.model.ClientMode;
 import ch.ethz.syslab.telesto.common.model.Message;
 import ch.ethz.syslab.telesto.common.model.Queue;
 import ch.ethz.syslab.telesto.common.model.ReadMode;
-import ch.ethz.syslab.telesto.common.protocol.ComplexTestPacket;
 import ch.ethz.syslab.telesto.common.protocol.CreateQueuePacket;
 import ch.ethz.syslab.telesto.common.protocol.CreateQueueResponsePacket;
 import ch.ethz.syslab.telesto.common.protocol.DeleteClientPacket;
@@ -23,12 +23,10 @@ import ch.ethz.syslab.telesto.common.protocol.GetQueueNamePacket;
 import ch.ethz.syslab.telesto.common.protocol.GetQueueNameResponsePacket;
 import ch.ethz.syslab.telesto.common.protocol.GetQueuesPacket;
 import ch.ethz.syslab.telesto.common.protocol.GetQueuesResponsePacket;
-import ch.ethz.syslab.telesto.common.protocol.MessageTestPacket;
 import ch.ethz.syslab.telesto.common.protocol.Packet;
 import ch.ethz.syslab.telesto.common.protocol.PingPacket;
 import ch.ethz.syslab.telesto.common.protocol.PongPacket;
 import ch.ethz.syslab.telesto.common.protocol.PutMessagePacket;
-import ch.ethz.syslab.telesto.common.protocol.QueueTestPacket;
 import ch.ethz.syslab.telesto.common.protocol.ReadMessagePacket;
 import ch.ethz.syslab.telesto.common.protocol.ReadMessageResponsePacket;
 import ch.ethz.syslab.telesto.common.protocol.ReadResponsePacket;
@@ -60,8 +58,7 @@ public class ServerProtocolHandler extends ProtocolHandler implements IServerPro
 
     @Override
     public Packet handle(DeleteClientPacket packet) throws PacketProcessingException {
-        // TODO: clientId missing on packet!!
-        int clientId = db.callSimpleProcedure(ClientProcedure.DELETE_CLIENT, packet.packetId);
+        int clientId = db.callSimpleProcedure(ClientProcedure.DELETE_CLIENT, client.id);
         if (clientId != 0) {
             return new SuccessPacket();
         }
@@ -121,8 +118,7 @@ public class ServerProtocolHandler extends ProtocolHandler implements IServerPro
 
     @Override
     public Packet handle(GetActiveQueuesPacket packet) throws PacketProcessingException {
-        int clientId = 0; // TODO: get this!
-        List<Queue> queues = db.callQueueProcedure(QueueProcedure.GET_ACTIVE_QUEUES, clientId);
+        List<Queue> queues = db.callQueueProcedure(QueueProcedure.GET_ACTIVE_QUEUES, client.id);
 
         if (!queues.isEmpty()) {
             return new GetActiveQueuesResponsePacket(queues.toArray(new Queue[queues.size()]));
@@ -144,6 +140,8 @@ public class ServerProtocolHandler extends ProtocolHandler implements IServerPro
 
     @Override
     public Packet handle(PutMessagePacket packet) throws PacketProcessingException {
+        requireClientMode(ClientMode.FULL); // not accessible for READ_ONLY clients
+
         Message msg = packet.message;
         Integer receiverId = NumberUtil.set0ToNull(msg.receiverId);
         Integer context = NumberUtil.set0ToNull(msg.context);
@@ -180,6 +178,7 @@ public class ServerProtocolHandler extends ProtocolHandler implements IServerPro
 
     @Override
     public Packet handle(ReadMessagePacket packet) throws PacketProcessingException {
+
         List<Message> messages;
 
         Integer queueId = NumberUtil.set0ToNull(packet.queueId);
@@ -225,22 +224,18 @@ public class ServerProtocolHandler extends ProtocolHandler implements IServerPro
         return new ErrorPacket(ErrorType.NO_MESSAGES_RETRIEVED, "No corresponding message to the query found");
     }
 
-    // methods below are only for testing packet parsing purposes
-    @Override
-    public Packet handle(ComplexTestPacket packet) throws PacketProcessingException {
-        // TODO Auto-generated method stub
-        return null;
+    protected void requireClientMode(ClientMode... modes) throws PacketProcessingException {
+        if (!Arrays.asList(modes).contains(client.mode)) {
+            throw new PacketProcessingException(ErrorType.CLIENT_MODE_PERMISSION_VIOLATION, "To use this method the client mode must be one of "
+                    + Arrays.toString(modes));
+        }
     }
 
-    @Override
-    public Packet handle(MessageTestPacket packet) throws PacketProcessingException {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public Packet handle(QueueTestPacket packet) throws PacketProcessingException {
-        // TODO Auto-generated method stub
-        return null;
+    protected void requiredIntFields(int... values) throws PacketProcessingException {
+        for (int v : values) {
+            if (v == 0) {
+                throw new PacketProcessingException(ErrorType.REQUIRED_PARAMETER_MISSING, "A required parameter is missing");
+            }
+        }
     }
 }
