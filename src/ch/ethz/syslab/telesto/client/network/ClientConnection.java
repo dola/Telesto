@@ -8,6 +8,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import ch.ethz.syslab.telesto.client.exception.ProcessingException;
 import ch.ethz.syslab.telesto.common.config.CONFIG;
 import ch.ethz.syslab.telesto.common.network.Connection;
+import ch.ethz.syslab.telesto.common.protocol.ErrorPacket;
 import ch.ethz.syslab.telesto.common.protocol.Packet;
 import ch.ethz.syslab.telesto.common.util.ErrorType;
 import ch.ethz.syslab.telesto.common.util.Log;
@@ -37,6 +38,11 @@ public class ClientConnection extends Connection {
         } else {
             LOGGER.fine("Received packet %s", packet);
         }
+
+        if (packet instanceof ErrorPacket) {
+            throw new ProcessingException(((ErrorPacket) packet).errorType, ((ErrorPacket) packet).details);
+        }
+
         return packet;
     }
 

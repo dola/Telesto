@@ -17,17 +17,20 @@ import ch.ethz.syslab.telesto.common.protocol.handler.ProtocolHandler;
  */
 public class PutMessagePacket extends Packet {
     public Message message;
+    public int[] additionalQueueIds;
 
     public PutMessagePacket() {
     }
 
-    public PutMessagePacket(Message message) {
+    public PutMessagePacket(Message message, int[] additionalQueueIds) {
         this.message = message;
+        this.additionalQueueIds = additionalQueueIds;
     }
     
-    public PutMessagePacket(int packetId, Message message) {
+    public PutMessagePacket(int packetId, Message message, int[] additionalQueueIds) {
         this.packetId = packetId;
         this.message = message;
+        this.additionalQueueIds = additionalQueueIds;
     }
 
     @Override
@@ -42,6 +45,10 @@ public class PutMessagePacket extends Packet {
         buffer.put(methodId());
         buffer.putInt(packetId);
         putMessage(buffer, message);
+        buffer.putInt(additionalQueueIds.length);
+        for (int i = 0; i < additionalQueueIds.length; i++) {
+            buffer.putInt(additionalQueueIds[i]);
+        }
         buffer.putShort(lengthIndex, (short) (buffer.position() - lengthIndex - 2));
     }
 
@@ -49,6 +56,10 @@ public class PutMessagePacket extends Packet {
     public void parse(ByteBuffer buffer) {
         packetId = buffer.getInt();
         message = getMessage(buffer);
+        additionalQueueIds = new int[buffer.getInt()];
+        for (int i = 0; i < additionalQueueIds.length; i++) {
+            additionalQueueIds[i] = buffer.getInt();
+        }
     }
 
     @Override

@@ -5,6 +5,7 @@ public enum ClientMode {
     READ_ONLY(2);
 
     private byte byteValue;
+    private static ClientMode[] modes = new ClientMode[127];
 
     private ClientMode(int b) {
         byteValue = (byte) b;
@@ -12,5 +13,15 @@ public enum ClientMode {
 
     public byte getByteValue() {
         return byteValue;
+    }
+
+    public static ClientMode fromByteValue(int b) {
+        return modes[b];
+    }
+
+    static {
+        for (ClientMode mode : values()) {
+            modes[mode.byteValue] = mode;
+        }
     }
 }

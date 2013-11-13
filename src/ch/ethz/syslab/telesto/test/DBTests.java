@@ -98,7 +98,7 @@ public class DBTests {
         List<Client> result = db.callClientProcedure(ClientProcedure.IDENTIFY, id);
         assertEquals(1, result.size());
         assertEquals("dola", result.get(0).name);
-        assertEquals(ClientMode.FULL.getByteValue(), result.get(0).operationMode);
+        assertEquals(ClientMode.FULL.getByteValue(), result.get(0).mode);
     }
 
     @Test

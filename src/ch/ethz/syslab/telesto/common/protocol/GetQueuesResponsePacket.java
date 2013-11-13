@@ -4,6 +4,7 @@ package ch.ethz.syslab.telesto.common.protocol;
 
 import java.nio.ByteBuffer;
 
+import ch.ethz.syslab.telesto.common.model.Queue;
 import ch.ethz.syslab.telesto.common.protocol.handler.PacketProcessingException;
 import ch.ethz.syslab.telesto.common.protocol.handler.ProtocolHandler;
 
@@ -15,16 +16,16 @@ import ch.ethz.syslab.telesto.common.protocol.handler.ProtocolHandler;
  * Edit the template at tools/protocol/telesto/templates/packet.java instead.
  */
 public class GetQueuesResponsePacket extends Packet {
-    public int[] queues;
+    public Queue[] queues;
 
     public GetQueuesResponsePacket() {
     }
 
-    public GetQueuesResponsePacket(int[] queues) {
+    public GetQueuesResponsePacket(Queue[] queues) {
         this.queues = queues;
     }
     
-    public GetQueuesResponsePacket(int packetId, int[] queues) {
+    public GetQueuesResponsePacket(int packetId, Queue[] queues) {
         this.packetId = packetId;
         this.queues = queues;
     }
@@ -42,7 +43,7 @@ public class GetQueuesResponsePacket extends Packet {
         buffer.putInt(packetId);
         buffer.putInt(queues.length);
         for (int i = 0; i < queues.length; i++) {
-            buffer.putInt(queues[i]);
+            putQueue(buffer, queues[i]);
         }
         buffer.putShort(lengthIndex, (short) (buffer.position() - lengthIndex - 2));
     }
@@ -50,9 +51,9 @@ public class GetQueuesResponsePacket extends Packet {
     @Override
     public void parse(ByteBuffer buffer) {
         packetId = buffer.getInt();
-        queues = new int[buffer.getInt()];
+        queues = new Queue[buffer.getInt()];
         for (int i = 0; i < queues.length; i++) {
-            queues[i] = buffer.getInt();
+            queues[i] = getQueue(buffer);
         }
     }
 

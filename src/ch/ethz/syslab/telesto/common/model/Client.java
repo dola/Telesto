@@ -6,15 +6,15 @@ public class Client implements DatabaseResultEntry {
 
     public int id;
     public String name;
-    public byte operationMode;
+    public ClientMode mode;
 
     public Client() {
 
     }
 
-    public Client(int clientId, String clientName, byte operationMode) {
-        id = clientId;
-        name = clientName;
-        this.operationMode = operationMode;
+    public Client(int id, String name, ClientMode mode) {
+        this.id = id;
+        this.name = name;
+        this.mode = mode;
     }
 }

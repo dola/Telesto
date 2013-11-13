@@ -1,6 +1,7 @@
 package ch.ethz.syslab.telesto.client;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 
 import ch.ethz.syslab.telesto.client.exception.ProcessingException;
@@ -11,18 +12,27 @@ import ch.ethz.syslab.telesto.common.model.Message;
 import ch.ethz.syslab.telesto.common.model.Queue;
 import ch.ethz.syslab.telesto.common.model.ReadMode;
 import ch.ethz.syslab.telesto.common.protocol.CreateQueuePacket;
+import ch.ethz.syslab.telesto.common.protocol.CreateQueueResponsePacket;
 import ch.ethz.syslab.telesto.common.protocol.DeleteQueuePacket;
 import ch.ethz.syslab.telesto.common.protocol.GetActiveQueuesPacket;
+import ch.ethz.syslab.telesto.common.protocol.GetActiveQueuesResponsePacket;
 import ch.ethz.syslab.telesto.common.protocol.GetMessagesPacket;
+import ch.ethz.syslab.telesto.common.protocol.GetMessagesResponsePacket;
 import ch.ethz.syslab.telesto.common.protocol.GetQueueIdPacket;
+import ch.ethz.syslab.telesto.common.protocol.GetQueueIdResponsePacket;
 import ch.ethz.syslab.telesto.common.protocol.GetQueueNamePacket;
+import ch.ethz.syslab.telesto.common.protocol.GetQueueNameResponsePacket;
 import ch.ethz.syslab.telesto.common.protocol.GetQueuesPacket;
+import ch.ethz.syslab.telesto.common.protocol.GetQueuesResponsePacket;
 import ch.ethz.syslab.telesto.common.protocol.IdentifyClientPacket;
+import ch.ethz.syslab.telesto.common.protocol.IdentifyClientResponsePacket;
 import ch.ethz.syslab.telesto.common.protocol.Packet;
 import ch.ethz.syslab.telesto.common.protocol.PingPacket;
 import ch.ethz.syslab.telesto.common.protocol.PutMessagePacket;
 import ch.ethz.syslab.telesto.common.protocol.ReadMessagePacket;
+import ch.ethz.syslab.telesto.common.protocol.ReadMessageResponsePacket;
 import ch.ethz.syslab.telesto.common.protocol.RegisterClientPacket;
+import ch.ethz.syslab.telesto.common.protocol.RegisterClientResponsePacket;
 
 public class TelestoClient {
     ClientConnection connection;
@@ -56,9 +66,9 @@ public class TelestoClient {
      * @throws ProcessingException
      */
     public Client connect(String name, ClientMode mode) throws ProcessingException {
-        Packet p = new RegisterClientPacket(name, mode.getByteValue());
-        // send
-        return null;
+        Packet packet = new RegisterClientPacket(name, mode.getByteValue());
+        RegisterClientResponsePacket response = (RegisterClientResponsePacket) connection.sendPacket(packet);
+        return new Client(response.clientId, name, mode);
     }
 
     /**
@@ -71,9 +81,9 @@ public class TelestoClient {
      * @throws ProcessingException
      */
     public Client connect(int clientId) throws ProcessingException {
-        Packet p = new IdentifyClientPacket(clientId);
-
-        return null;
+        Packet packet = new IdentifyClientPacket(clientId);
+        IdentifyClientResponsePacket response = (IdentifyClientResponsePacket) connection.sendPacket(packet);
+        return new Client(clientId, response.name, ClientMode.fromByteValue(response.mode));
     }
 
     /**
@@ -85,8 +95,9 @@ public class TelestoClient {
      * @throws ProcessingException
      */
     public Queue createQueue(String queueName) throws ProcessingException {
-        Packet p = new CreateQueuePacket(queueName);
-        return null;
+        Packet packet = new CreateQueuePacket(queueName);
+        CreateQueueResponsePacket response = (CreateQueueResponsePacket) connection.sendPacket(packet);
+        return new Queue(response.queueId, queueName);
     }
 
     /**
@@ -97,8 +108,8 @@ public class TelestoClient {
      * @throws ProcessingException
      */
     public void deleteQueue(int queueId) throws ProcessingException {
-        Packet p = new DeleteQueuePacket(queueId);
-
+        Packet packet = new DeleteQueuePacket(queueId);
+        connection.sendPacket(packet);
     }
 
     /**
@@ -110,9 +121,9 @@ public class TelestoClient {
      * @throws ProcessingException
      */
     public Queue getQueueByName(String queueName) throws ProcessingException {
-        Packet p = new GetQueueIdPacket(queueName);
-
-        return null;
+        Packet packet = new GetQueueIdPacket(queueName);
+        GetQueueIdResponsePacket response = (GetQueueIdResponsePacket) connection.sendPacket(packet);
+        return new Queue(response.queueId, queueName);
     }
 
     /**
@@ -124,8 +135,9 @@ public class TelestoClient {
      * @throws ProcessingException
      */
     public Queue getQueueById(int queueId) throws ProcessingException {
-        Packet p = new GetQueueNamePacket(queueId);
-        return null;
+        Packet packet = new GetQueueNamePacket(queueId);
+        GetQueueNameResponsePacket response = (GetQueueNameResponsePacket) connection.sendPacket(packet);
+        return new Queue(queueId, response.name);
     }
 
     /**
@@ -135,8 +147,9 @@ public class TelestoClient {
      * @throws ProcessingException
      */
     public List<Queue> getQueues() throws ProcessingException {
-        Packet p = new GetQueuesPacket();
-        return null;
+        Packet packet = new GetQueuesPacket();
+        GetQueuesResponsePacket response = (GetQueuesResponsePacket) connection.sendPacket(packet);
+        return Arrays.asList(response.queues);
     }
 
     /**
@@ -146,8 +159,9 @@ public class TelestoClient {
      * @throws ProcessingException
      */
     public List<Queue> getActiveQueues() throws ProcessingException {
-        Packet p = new GetActiveQueuesPacket();
-        return null;
+        Packet packet = new GetActiveQueuesPacket();
+        GetActiveQueuesResponsePacket response = (GetActiveQueuesResponsePacket) connection.sendPacket(packet);
+        return Arrays.asList(response.queues);
     }
 
     /**
@@ -161,8 +175,9 @@ public class TelestoClient {
      * @throws ProcessingException
      */
     public List<Message> readMessages(int queueId) throws ProcessingException {
-        Packet p = new GetMessagesPacket(queueId);
-        return null;
+        Packet packet = new GetMessagesPacket(queueId);
+        GetMessagesResponsePacket response = (GetMessagesResponsePacket) connection.sendPacket(packet);
+        return Arrays.asList(response.messages);
     }
 
     /**
@@ -183,8 +198,8 @@ public class TelestoClient {
      * @see {@link #sendRequestResponseMessage(Message)}
      */
     public void putMessage(Message message) throws ProcessingException {
-        Packet p = new PutMessagePacket(message);
-
+        Packet packet = new PutMessagePacket(message, new int[0]);
+        connection.sendPacket(packet);
     }
 
     /**
@@ -207,7 +222,10 @@ public class TelestoClient {
      * @see {@link #sendRequestResponseMessage(Message)}
      */
     public void putMessage(Message message, int[] queueIds) throws ProcessingException {
-        // TODO: multiqueue support
+        int[] additionalQueues = new int[queueIds.length - 1];
+        System.arraycopy(queueIds, 1, additionalQueues, 0, queueIds.length - 1);
+        Packet packet = new PutMessagePacket(message, additionalQueues);
+        connection.sendPacket(packet);
     }
 
     /**
@@ -236,8 +254,9 @@ public class TelestoClient {
      * @see {@link #retrieveMessage(int, int, ReadMode)}
      */
     public Message retrieveMessage(int queueId) throws ProcessingException {
-        // Packet p = new ReadMessagePacket();
-        return null;
+        Packet packet = new ReadMessagePacket(queueId, 0, ReadMode.TIME.getByteValue());
+        ReadMessageResponsePacket response = (ReadMessageResponsePacket) connection.sendPacket(packet);
+        return response.message;
     }
 
     /**
@@ -254,8 +273,9 @@ public class TelestoClient {
      * @see {@link #retrieveMessage(int, int, ReadMode)}
      */
     public Message retrieveMessage(int queueId, ReadMode mode) throws ProcessingException {
-        // Packet p = new ReadMessagePacket();
-        return null;
+        Packet packet = new ReadMessagePacket(queueId, 0, mode.getByteValue());
+        ReadMessageResponsePacket response = (ReadMessageResponsePacket) connection.sendPacket(packet);
+        return response.message;
     }
 
     /**
@@ -272,8 +292,9 @@ public class TelestoClient {
      * @see {@link #retrieveMessage(int, int, ReadMode)}
      */
     public Message retrieveMessage(int queueId, int sender) throws ProcessingException {
-        // Packet p = new ReadMessagePacket(queueId);
-        return null;
+        Packet packet = new ReadMessagePacket(queueId, sender, ReadMode.TIME.getByteValue());
+        ReadMessageResponsePacket response = (ReadMessageResponsePacket) connection.sendPacket(packet);
+        return response.message;
     }
 
     /**
@@ -293,8 +314,9 @@ public class TelestoClient {
      * @see {@link #retrieveMessage(int, ReadMode)}
      */
     public Message retrieveMessage(int queueId, int sender, ReadMode mode) throws ProcessingException {
-        Packet p = new ReadMessagePacket(queueId, sender, mode.getByteValue());
-        return null;
+        Packet packet = new ReadMessagePacket(queueId, sender, mode.getByteValue());
+        ReadMessageResponsePacket response = (ReadMessageResponsePacket) connection.sendPacket(packet);
+        return response.message;
     }
 
 }

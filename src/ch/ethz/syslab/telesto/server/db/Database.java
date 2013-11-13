@@ -14,6 +14,7 @@ import org.postgresql.ds.PGPoolingDataSource;
 
 import ch.ethz.syslab.telesto.common.config.CONFIG;
 import ch.ethz.syslab.telesto.common.model.Client;
+import ch.ethz.syslab.telesto.common.model.ClientMode;
 import ch.ethz.syslab.telesto.common.model.Message;
 import ch.ethz.syslab.telesto.common.model.Queue;
 import ch.ethz.syslab.telesto.common.protocol.handler.PacketProcessingException;
@@ -292,7 +293,7 @@ public class Database {
                 // [client_id, client_name, operation_mode]
 
                 while (dbResults.next()) {
-                    Client r = new Client(dbResults.getInt(1), dbResults.getString(2), dbResults.getByte(3));
+                    Client r = new Client(dbResults.getInt(1), dbResults.getString(2), ClientMode.fromByteValue(dbResults.getByte(3)));
                     result.add(r);
                 }
 

@@ -48,6 +48,7 @@ with protocol.version(0):
     class IdentifyClientResponse(ServerMessage):
         method_id = 0x14
         mode = Byte()
+        name = String()
 
     # Queues
     class CreateQueue(ClientMessage):
@@ -83,7 +84,7 @@ with protocol.version(0):
 
     class GetQueuesResponse(ServerMessage):
         method_id = 0x2a
-        queues = List(Int())
+        queues = List(TelestoQueue())
 
     class GetActiveQueues(ClientMessage):
         method_id = 0x2b
@@ -104,6 +105,7 @@ with protocol.version(0):
     class PutMessage(ClientMessage):
         method_id = 0x31
         message = TelestoMessage()
+        additional_queue_ids = List(Int())
 
     class ReadMessage(ClientMessage):
         method_id = 0x33

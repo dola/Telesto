@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ch.ethz.syslab.telesto.common.model.Client;
+import ch.ethz.syslab.telesto.common.model.ClientMode;
 
 public class ClientResultSetHandler implements IResultSetHandler {
 
@@ -17,7 +18,7 @@ public class ClientResultSetHandler implements IResultSetHandler {
         List<DatabaseResultEntry> res = new ArrayList<>(1);
 
         while (dbResults.next()) {
-            Client r = new Client(dbResults.getInt(1), dbResults.getString(2), dbResults.getByte(3));
+            Client r = new Client(dbResults.getInt(1), dbResults.getString(2), ClientMode.fromByteValue(dbResults.getByte(3)));
             res.add(r);
         }
 

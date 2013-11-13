@@ -16,17 +16,20 @@ import ch.ethz.syslab.telesto.common.protocol.handler.ProtocolHandler;
  */
 public class IdentifyClientResponsePacket extends Packet {
     public byte mode;
+    public String name;
 
     public IdentifyClientResponsePacket() {
     }
 
-    public IdentifyClientResponsePacket(byte mode) {
+    public IdentifyClientResponsePacket(byte mode, String name) {
         this.mode = mode;
+        this.name = name;
     }
     
-    public IdentifyClientResponsePacket(int packetId, byte mode) {
+    public IdentifyClientResponsePacket(int packetId, byte mode, String name) {
         this.packetId = packetId;
         this.mode = mode;
+        this.name = name;
     }
 
     @Override
@@ -41,6 +44,7 @@ public class IdentifyClientResponsePacket extends Packet {
         buffer.put(methodId());
         buffer.putInt(packetId);
         buffer.put(mode);
+        putString(buffer, name);
         buffer.putShort(lengthIndex, (short) (buffer.position() - lengthIndex - 2));
     }
 
@@ -48,6 +52,7 @@ public class IdentifyClientResponsePacket extends Packet {
     public void parse(ByteBuffer buffer) {
         packetId = buffer.getInt();
         mode = buffer.get();
+        name = getString(buffer);
     }
 
     @Override

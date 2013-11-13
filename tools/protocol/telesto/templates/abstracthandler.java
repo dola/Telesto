@@ -16,6 +16,6 @@ public abstract class {{ handler }} {
     }
     {% endfor %}
     private void unhandledPacket(Packet packet) throws PacketProcessingException {
-        throw new PacketProcessingException(ErrorType.UnexpectedPacket, "Received unexpected packet " + packet.toString());
+        throw new PacketProcessingException(ErrorType.UNEXPECTED_PACKET, "Received unexpected packet " + packet.toString());
     }
 }
