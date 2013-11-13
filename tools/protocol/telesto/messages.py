@@ -122,6 +122,7 @@ with protocol.version(0):
 
     class ReadResponse(ClientMessage):
         method_id = 0x35
+        queue_id = Int()
         context = Int()
 
     # Test

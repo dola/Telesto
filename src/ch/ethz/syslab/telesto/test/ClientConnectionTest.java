@@ -10,6 +10,7 @@ import org.junit.Test;
 
 import ch.ethz.syslab.telesto.client.exception.ProcessingException;
 import ch.ethz.syslab.telesto.client.network.ClientConnection;
+import ch.ethz.syslab.telesto.common.config.CONFIG;
 import ch.ethz.syslab.telesto.common.protocol.PingPacket;
 import ch.ethz.syslab.telesto.common.protocol.PongPacket;
 
@@ -31,6 +32,13 @@ public class ClientConnectionTest {
     @Test
     public void testPacketMethod() throws ProcessingException {
         assertTrue(connection.sendPacket(new PingPacket()) instanceof PongPacket);
+    }
+
+    @Test
+    public void testBufferRewind() throws ProcessingException {
+        for (int i = 1; i < CONFIG.CLI_WRITE_BUFFER_SIZE / 5; i++) {
+            assertEquals(i, connection.sendPacket(new PingPacket()).packetId);
+        }
     }
 
 }

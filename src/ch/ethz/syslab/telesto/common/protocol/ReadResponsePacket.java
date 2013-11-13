@@ -15,17 +15,20 @@ import ch.ethz.syslab.telesto.common.protocol.handler.ProtocolHandler;
  * Edit the template at tools/protocol/telesto/templates/packet.java instead.
  */
 public class ReadResponsePacket extends Packet {
+    public int queueId;
     public int context;
 
     public ReadResponsePacket() {
     }
 
-    public ReadResponsePacket(int context) {
+    public ReadResponsePacket(int queueId, int context) {
+        this.queueId = queueId;
         this.context = context;
     }
     
-    public ReadResponsePacket(int packetId, int context) {
+    public ReadResponsePacket(int packetId, int queueId, int context) {
         this.packetId = packetId;
+        this.queueId = queueId;
         this.context = context;
     }
 
@@ -40,6 +43,7 @@ public class ReadResponsePacket extends Packet {
         buffer.position(lengthIndex + 2);
         buffer.put(methodId());
         buffer.putInt(packetId);
+        buffer.putInt(queueId);
         buffer.putInt(context);
         buffer.putShort(lengthIndex, (short) (buffer.position() - lengthIndex - 2));
     }
@@ -47,6 +51,7 @@ public class ReadResponsePacket extends Packet {
     @Override
     public void parse(ByteBuffer buffer) {
         packetId = buffer.getInt();
+        queueId = buffer.getInt();
         context = buffer.getInt();
     }
 

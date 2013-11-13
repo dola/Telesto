@@ -243,7 +243,7 @@ public class TelestoClient {
         // TODO: Block until message is available
         Packet packet = new PutMessagePacket(message, new int[0]);
         connection.sendPacket(packet);
-        packet = new ReadResponsePacket(message.context);
+        packet = new ReadResponsePacket(message.queueId, message.context);
         ReadMessageResponsePacket response = (ReadMessageResponsePacket) connection.sendPacket(packet);
         return response.message;
     }
