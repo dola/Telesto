@@ -23,7 +23,8 @@ public final class CONFIG {
     public static final int MW_READ_BUFFER_SIZE = 32768;
 
     /* CLIENT CONFIG */
-    public static int CLI_WRITE_BUFFER_SIZE = 32768;
-    public static String CLI_MW_HOST = "localhost";
+    public static final int CLI_WRITE_BUFFER_SIZE = 32768;
+    public static final String CLI_MW_HOST = "localhost";
+    public static final int CLI_RETRY_DELAY = 50;
 
 }

@@ -6,6 +6,7 @@ import java.util.List;
 
 import ch.ethz.syslab.telesto.client.exception.ProcessingException;
 import ch.ethz.syslab.telesto.client.network.ClientConnection;
+import ch.ethz.syslab.telesto.common.config.CONFIG;
 import ch.ethz.syslab.telesto.common.model.Client;
 import ch.ethz.syslab.telesto.common.model.ClientMode;
 import ch.ethz.syslab.telesto.common.model.Message;
@@ -31,9 +32,9 @@ import ch.ethz.syslab.telesto.common.protocol.PingPacket;
 import ch.ethz.syslab.telesto.common.protocol.PutMessagePacket;
 import ch.ethz.syslab.telesto.common.protocol.ReadMessagePacket;
 import ch.ethz.syslab.telesto.common.protocol.ReadMessageResponsePacket;
-import ch.ethz.syslab.telesto.common.protocol.ReadResponsePacket;
 import ch.ethz.syslab.telesto.common.protocol.RegisterClientPacket;
 import ch.ethz.syslab.telesto.common.protocol.RegisterClientResponsePacket;
+import ch.ethz.syslab.telesto.common.util.ErrorType;
 
 public class TelestoClient {
     ClientConnection connection;
@@ -240,12 +241,8 @@ public class TelestoClient {
      * @see {@link #putMessage(Message, int[])}
      */
     public Message sendRequestResponseMessage(Message message) throws ProcessingException {
-        // TODO: Block until message is available
         Packet packet = new PutMessagePacket(message, new int[0]);
-        connection.sendPacket(packet);
-        packet = new ReadResponsePacket(message.queueId, message.context);
-        ReadMessageResponsePacket response = (ReadMessageResponsePacket) connection.sendPacket(packet);
-        return response.message;
+        return retryUntilMessageAvailable(packet);
     }
 
     /**
@@ -322,6 +319,27 @@ public class TelestoClient {
     public Message retrieveMessage(int queueId, int sender, ReadMode mode) throws ProcessingException {
         Packet packet = new ReadMessagePacket(queueId, sender, mode.getByteValue());
         ReadMessageResponsePacket response = (ReadMessageResponsePacket) connection.sendPacket(packet);
+        return response.message;
+    }
+
+    private Message retryUntilMessageAvailable(Packet packet) throws ProcessingException {
+        ReadMessageResponsePacket response;
+        while (true) {
+            try {
+                response = (ReadMessageResponsePacket) connection.sendPacket(packet);
+                break;
+            } catch (ProcessingException e) {
+                if (e.type == ErrorType.NO_MESSAGES_RETRIEVED) {
+                    try {
+                        Thread.sleep(CONFIG.CLI_RETRY_DELAY);
+                    } catch (InterruptedException e1) {
+                        // Ignore
+                    }
+                    continue;
+                }
+                throw e;
+            }
+        }
         return response.message;
     }
 
