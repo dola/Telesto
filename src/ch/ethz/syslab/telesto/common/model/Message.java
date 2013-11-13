@@ -19,6 +19,27 @@ public class Message implements DatabaseResultEntry {
 
     }
 
+    public Message(int queueId, byte priority, String message) {
+        this(0, queueId, 0, 0, 0, priority, null, message);
+    }
+
+    public Message(int queueId, int receiverId, byte priority, String message) {
+        this(0, queueId, 0, receiverId, 0, priority, null, message);
+    }
+
+    /**
+     * Create a response message that takes care of setting the same queueId, context and priority and setting the right
+     * receiver.
+     * 
+     * @param request
+     *            Message to create a response for
+     * @param message
+     *            content of the new message
+     */
+    public Message(Message request, String message) {
+        this(0, request.queueId, 0, request.senderId, request.context, request.priority, null, message);
+    }
+
     public Message(int id, int queueId, int senderId, int receiverId, int context, byte priority, Timestamp timeOfArrival, String message) {
         this.id = id;
         this.queueId = queueId;

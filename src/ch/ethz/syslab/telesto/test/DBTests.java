@@ -36,8 +36,18 @@ public class DBTests {
         db = new Database();
         db.initialize();
 
-        PreparedStatement s = db.getConnection().prepareStatement("TRUNCATE clients, queues, messages");
-        s.execute();
+        String[] stms = new String[] {
+                "ALTER SEQUENCE clients_client_id_seq RESTART",
+                "ALTER SEQUENCE queue_queue_id_seq RESTART",
+                "ALTER SEQUENCE messages_message_id_seq RESTART",
+                "TRUNCATE clients, queues, messages"
+        };
+
+        PreparedStatement s = null;
+        for (String stm : stms) {
+            s = db.getConnection().prepareStatement(stm);
+            s.execute();
+        }
         s.getConnection().close();
     }
 
@@ -63,7 +73,6 @@ public class DBTests {
 
         Integer client_id = s.getInt(1);
         s.close();
-        System.out.println(client_id);
         assertNotNull("returned client id is null", client_id);
     }
 
@@ -103,11 +112,13 @@ public class DBTests {
 
     @Test
     public void testQueueCreation() throws PacketProcessingException {
+        String[] names = new String[] { "oneWayQueue", "requestResponsePairQueue", "seviceQueue" };
+
         // queue_id, queue_name
-        for (int i = 1; i < 4; i++) {
-            List<Queue> queues = db.callQueueProcedure(QueueProcedure.CREATE_QUEUE, "queue" + i);
+        for (int i = 1; i < names.length; i++) {
+            List<Queue> queues = db.callQueueProcedure(QueueProcedure.CREATE_QUEUE, names[i]);
             assertEquals(1, queues.size());
-            assertEquals("queue" + i, queues.get(0).name);
+            assertEquals(names[i], queues.get(0).name);
         }
     }
 

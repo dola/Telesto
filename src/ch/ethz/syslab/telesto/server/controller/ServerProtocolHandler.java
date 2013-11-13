@@ -160,7 +160,7 @@ public class ServerProtocolHandler extends ProtocolHandler implements IServerPro
 
             int queueId = db.callSimpleProcedure(MessageProcedure.PUT_MESSAGE, msg.queueId, client.id, receiverId, context, msg.priority,
                     msg.message);
-            if (queueId != msg.queueId) {
+            if (queueId == msg.queueId) {
                 return new SuccessPacket();
             }
             return new ErrorPacket(ErrorType.QUEUE_NOT_EXISTING, "Message was not inserted because Queue does not exist");

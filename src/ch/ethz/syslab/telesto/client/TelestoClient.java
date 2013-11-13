@@ -3,6 +3,7 @@ package ch.ethz.syslab.telesto.client;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import ch.ethz.syslab.telesto.client.exception.ProcessingException;
 import ch.ethz.syslab.telesto.client.network.ClientConnection;
@@ -32,6 +33,7 @@ import ch.ethz.syslab.telesto.common.protocol.PingPacket;
 import ch.ethz.syslab.telesto.common.protocol.PutMessagePacket;
 import ch.ethz.syslab.telesto.common.protocol.ReadMessagePacket;
 import ch.ethz.syslab.telesto.common.protocol.ReadMessageResponsePacket;
+import ch.ethz.syslab.telesto.common.protocol.ReadResponsePacket;
 import ch.ethz.syslab.telesto.common.protocol.RegisterClientPacket;
 import ch.ethz.syslab.telesto.common.protocol.RegisterClientResponsePacket;
 import ch.ethz.syslab.telesto.common.util.ErrorType;
@@ -39,13 +41,18 @@ import ch.ethz.syslab.telesto.profile.BenchmarkLog;
 
 public class TelestoClient {
     ClientConnection connection;
+    private AtomicInteger context = new AtomicInteger(1);
 
-    public TelestoClient() throws IOException {
+    public TelestoClient() throws ProcessingException {
         this(new BenchmarkLog("client"));
     }
 
-    public TelestoClient(BenchmarkLog log) throws IOException {
-        connection = new ClientConnection(log);
+    public TelestoClient(BenchmarkLog log) throws ProcessingException {
+        try {
+            connection = new ClientConnection(log);
+        } catch (IOException e) {
+            throw new ProcessingException(ErrorType.IO_ERROR, "Error while establishing connection", e);
+        }
     }
 
     /**
@@ -194,6 +201,7 @@ public class TelestoClient {
      * <ul>
      * <li>{@link Message#queueId}
      * <li>{@link Message#receiverId}
+     * <li>{@link Message#context}
      * <li>{@link Message#priority}
      * <li>{@link Message#message}
      * </ul>
@@ -216,6 +224,7 @@ public class TelestoClient {
      * This method considers the following fields of the Message instance:
      * <ul>
      * <li>{@link Message#receiverId}
+     * <li>{@link Message#context}
      * <li>{@link Message#priority}
      * <li>{@link Message#message}
      * </ul>
@@ -246,12 +255,18 @@ public class TelestoClient {
      * @see {@link #putMessage(Message, int[])}
      */
     public Message sendRequestResponseMessage(Message message) throws ProcessingException {
-        Packet packet = new PutMessagePacket(message, new int[0]);
-        return retryUntilMessageAvailable(packet);
+        message.context = context.getAndIncrement();
+        Packet request = new PutMessagePacket(message, new int[0]);
+        connection.sendPacket(request);
+        // wait for response
+        Packet response = new ReadResponsePacket(message.queueId, message.context);
+        return retryUntilMessageAvailable(response);
     }
 
     /**
-     * retrieve (and remove) a single Message from the specified queue by priority
+     * retrieve (and remove) a single Message from the specified queue by priority.
+     * 
+     * This method is blocking until a message is available.
      * 
      * @param queueId
      *            the queue to read from
@@ -263,12 +278,13 @@ public class TelestoClient {
      */
     public Message retrieveMessage(int queueId) throws ProcessingException {
         Packet packet = new ReadMessagePacket(queueId, 0, ReadMode.TIME.getByteValue());
-        ReadMessageResponsePacket response = (ReadMessageResponsePacket) connection.sendPacket(packet);
-        return response.message;
+        return retryUntilMessageAvailable(packet);
     }
 
     /**
      * retrieve (and remove) a single Message from the specified queue using the given {@link ReadMode}
+     * 
+     * This method is blocking until a message is available.
      * 
      * @param queueId
      *            the queue to read from
@@ -282,12 +298,13 @@ public class TelestoClient {
      */
     public Message retrieveMessage(int queueId, ReadMode mode) throws ProcessingException {
         Packet packet = new ReadMessagePacket(queueId, 0, mode.getByteValue());
-        ReadMessageResponsePacket response = (ReadMessageResponsePacket) connection.sendPacket(packet);
-        return response.message;
+        return retryUntilMessageAvailable(packet);
     }
 
     /**
      * retrieve (and remove) a single Message from the specified queue that was sent by the specified sender
+     * 
+     * This method is blocking until a message is available.
      * 
      * @param queueId
      *            the queue to read from
@@ -301,13 +318,14 @@ public class TelestoClient {
      */
     public Message retrieveMessage(int queueId, int sender) throws ProcessingException {
         Packet packet = new ReadMessagePacket(queueId, sender, ReadMode.TIME.getByteValue());
-        ReadMessageResponsePacket response = (ReadMessageResponsePacket) connection.sendPacket(packet);
-        return response.message;
+        return retryUntilMessageAvailable(packet);
     }
 
     /**
      * retrieve (and remove) a single Message from the specified queue that was sent by the specified sender using the
      * given {@link ReadMode}
+     * 
+     * This method is blocking until a message is available.
      * 
      * @param queueId
      *            the queue to read from
@@ -323,8 +341,7 @@ public class TelestoClient {
      */
     public Message retrieveMessage(int queueId, int sender, ReadMode mode) throws ProcessingException {
         Packet packet = new ReadMessagePacket(queueId, sender, mode.getByteValue());
-        ReadMessageResponsePacket response = (ReadMessageResponsePacket) connection.sendPacket(packet);
-        return response.message;
+        return retryUntilMessageAvailable(packet);
     }
 
     private Message retryUntilMessageAvailable(Packet packet) throws ProcessingException {

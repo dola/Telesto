@@ -68,5 +68,7 @@ public final class CONFIG {
     public static final int CLI_WRITE_BUFFER_SIZE = Integer.parseInt(prop.getProperty("cliWriteBufferSize"));
     public static final String CLI_MW_HOST = prop.getProperty("cliMwHost");
     public static final int CLI_RETRY_DELAY = Integer.parseInt(prop.getProperty("cliRetryDelay"));
+    public static final int CLI_ONE_WAY_COUNT = Integer.parseInt(prop.getProperty("cliOneWayCount"));
+    public static final int CLI_REQUEST_RESPONSE_COUNT = Integer.parseInt(prop.getProperty("cliRequestResponseCount"));
 
 }

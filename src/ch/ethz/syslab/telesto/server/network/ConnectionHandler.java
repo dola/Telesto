@@ -55,6 +55,7 @@ public class ConnectionHandler extends Thread {
         try {
             eventLoop();
         } catch (IOException e) {
+            e.printStackTrace();
             LOGGER.severe(e, "Error while selecting active channels");
         }
     }

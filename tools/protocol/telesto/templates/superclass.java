@@ -79,7 +79,7 @@ public abstract class {{ superclass }} {
         buffer.putInt(message.receiverId);
         buffer.putInt(message.context);
         buffer.put(message.priority);
-        buffer.putLong(message.timeOfArrival.getTime());
+        buffer.putLong(message.timeOfArrival == null ? 0 : message.timeOfArrival.getTime());
         putString(buffer, message.message);
     }
 
