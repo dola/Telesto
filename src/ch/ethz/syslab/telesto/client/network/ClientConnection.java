@@ -38,6 +38,7 @@ public class ClientConnection extends Connection {
             }
             packet = readPacket();
         }
+        stopwatch.setReceivedPacket(packet);
         stopwatch.enterPhase(Phase.WAITING);
         if (packet == null) {
             LOGGER.info("Disconnected");
@@ -54,7 +55,7 @@ public class ClientConnection extends Connection {
 
     public Packet sendPacket(Packet packet) throws ProcessingException {
         packet.packetId = packetId.incrementAndGet();
-        stopwatch.setLastPacket(packet);
+        stopwatch.setSentPacket(packet);
         stopwatch.enterPhase(Phase.DATABASE);
         try {
             send(packet);

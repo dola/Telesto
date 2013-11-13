@@ -9,16 +9,22 @@ public class ClientStopwatch extends Stopwatch {
         super(log);
     }
 
-    private long lastMethodId;
+    private long sentMethodId;
+    private long receivedMethodId;
 
-    public void setLastPacket(Packet packet) {
-        lastMethodId = packet.methodId();
+    public void setReceivedPacket(Packet packet) {
+        receivedMethodId = packet.methodId();
+    }
+
+    public void setSentPacket(Packet packet) {
+        sentMethodId = packet.methodId();
     }
 
     @Override
     protected void flush() {
-        // The parsing phase is misused as an easy way to store method IDs in the log file.
-        measurements[Phase.PARSING.ordinal()] = lastMethodId;
+        // These phases are misused as an easy way to store method IDs in the log file.
+        measurements[Phase.PARSING.ordinal()] = sentMethodId;
+        measurements[Phase.RESPONSE.ordinal()] = receivedMethodId;
         super.flush();
     }
 }
