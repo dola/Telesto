@@ -26,7 +26,7 @@ public final class SimpleProfiler {
     }
 
     public void startSection(String name) {
-        long time = System.currentTimeMillis();
+        long time = System.nanoTime();
 
         ProfileSection s = new ProfileSection(name, time);
         if (sections.containsKey(name)) {
@@ -38,14 +38,13 @@ public final class SimpleProfiler {
     }
 
     public long endSection(String name) {
-        long time = System.currentTimeMillis();
+        long time = System.nanoTime();
 
         if (sections.containsKey(name)) {
             ProfileSection s = sections.remove(name);
             s.endTime = time;
             String out = String.format("ending section %s @ %s: total time was %d", name, time, s.getTotalTime());
             LOGGER.fine(out);
-            System.out.println(out);
             return s.getTotalTime();
         }
         return 0;

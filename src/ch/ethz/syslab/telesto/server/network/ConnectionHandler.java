@@ -9,15 +9,11 @@ import java.nio.channels.SocketChannel;
 import java.util.Iterator;
 import java.util.concurrent.ArrayBlockingQueue;
 
-import ch.ethz.syslab.telesto.common.config.CONFIG;
 import ch.ethz.syslab.telesto.common.network.Connection;
 import ch.ethz.syslab.telesto.common.util.Log;
 import ch.ethz.syslab.telesto.server.db.Database;
 
 public class ConnectionHandler extends Thread {
-    public static final void main(String[] args) throws IOException {
-        new ConnectionHandler(new InetSocketAddress(CONFIG.MW_HOST, CONFIG.MW_PORT), CONFIG.MW_WORKER_POOL_SIZE).start();
-    }
 
     private static Log LOGGER = new Log(ConnectionHandler.class);
 
@@ -27,9 +23,7 @@ public class ConnectionHandler extends Thread {
     private Selector selector = Selector.open();
     private ArrayBlockingQueue<Connection> clientQueue = new ArrayBlockingQueue<Connection>(100);
 
-    ConnectionHandler(InetSocketAddress address, int workerCount) throws IOException {
-        LOGGER.config("Listening on %s:%d", address.getHostName(), address.getPort());
-
+    public ConnectionHandler(InetSocketAddress address, int workerCount) throws IOException {
         // Setting up data workers
         workers = new DataHandler[workerCount];
         for (int i = 0; i < workerCount; i++) {
@@ -40,6 +34,7 @@ public class ConnectionHandler extends Thread {
         socket = ServerSocketChannel.open().bind(address);
         socket.configureBlocking(false);
         socket.register(selector, SelectionKey.OP_ACCEPT);
+        LOGGER.config("Listening on %s:%d", address.getHostName(), address.getPort());
 
         // Setting up database
         database.initialize();

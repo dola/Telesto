@@ -30,6 +30,7 @@ public class Database {
 
     public void initialize() {
         if (connectionPool == null) {
+            LOGGER.config("Setting up database %s at %s:%s", CONFIG.DB_NAME, CONFIG.DB_SERVER_NAME, CONFIG.DB_PORT_NUMBER);
             connectionPool = new PGPoolingDataSource();
             connectionPool.setApplicationName(CONFIG.DB_SERVER_NAME);
             connectionPool.setServerName(CONFIG.DB_SERVER_NAME);
@@ -38,9 +39,6 @@ public class Database {
             connectionPool.setUser(CONFIG.DB_USER);
             connectionPool.setPassword(CONFIG.DB_PASSWORD);
             connectionPool.setMaxConnections(CONFIG.DB_MAX_CONNECTIONS);
-
-            // TODO: add more?
-            // e.g. log writer and log level
         }
     }
 

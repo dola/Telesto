@@ -86,7 +86,7 @@ public class BenchmarkLog {
      * @param entries
      */
     public void addTimedEntry(Object... entries) {
-        String time = Long.toString(System.currentTimeMillis());
+        String time = Long.toString(System.nanoTime());
         if (entries != null && entries.length > 0) {
             entries[0] = StringUtil.joinString(DELIMITER, time, entries[0]);
             addEntry(entries);
