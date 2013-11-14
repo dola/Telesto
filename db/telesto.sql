@@ -221,14 +221,14 @@ INSERT INTO messages (
 	message
 ) 
 SELECT 
-	p_queue_id, 
-	p_sender_id, 
-	p_receiver_id, 
-	p_context, 
-	p_priority, 
-	p_message
+	$1, 
+	$2, 
+	$3, 
+	$4, 
+	$5, 
+	$6
 WHERE EXISTS (
-	SELECT queue_id FROM queues q WHERE q.queue_id = p_queue_id
+	SELECT queue_id FROM queues q WHERE q.queue_id = $1
 ) RETURNING messages.queue_id;
 
 $$;
@@ -284,9 +284,9 @@ CREATE FUNCTION read_message_by_priority(p_queue_id integer, p_sender_id integer
     AS $$  
 	DELETE FROM messages m WHERE m.message_id = (
 		SELECT m.message_id FROM messages m 
-		WHERE 	m.queue_id = p_queue_id 
-		AND 	coalesce(p_sender_id, m.sender_id) = m.sender_id 
-		AND 	coalesce(m.receiver_id, p_receiver_id) = p_receiver_id 
+		WHERE 	m.queue_id = $1 
+		AND 	coalesce($2, m.sender_id) = m.sender_id 
+		AND 	coalesce(m.receiver_id, $3) = $3 
 		ORDER BY m.priority DESC 
 		LIMIT 1
 	) RETURNING m.message_id, m.queue_id, m.sender_id, m.receiver_id, m.context, m.priority, m.time_of_arrival, m.message;
@@ -305,9 +305,9 @@ CREATE FUNCTION read_message_by_timestamp(p_queue_id integer, p_sender_id intege
     AS $$  
 	DELETE FROM messages m WHERE m.message_id = (
 		SELECT m.message_id FROM messages m 
-		WHERE 	m.queue_id = p_queue_id 
-		AND 	coalesce(p_sender_id, m.sender_id) = m.sender_id 
-		AND 	coalesce(m.receiver_id, p_receiver_id) = p_receiver_id 
+		WHERE 	m.queue_id = $1 
+		AND 	coalesce($2, m.sender_id) = m.sender_id 
+		AND 	coalesce(m.receiver_id, $3) = $3 
 		ORDER BY m.time_of_arrival DESC 
 		LIMIT 1
 	) RETURNING m.message_id, m.queue_id, m.sender_id, m.receiver_id, m.context, m.priority, m.time_of_arrival, m.message;
@@ -326,9 +326,9 @@ CREATE FUNCTION read_response_message(p_queue_id integer, p_receiver_id integer,
     AS $$  
 	DELETE FROM messages m WHERE m.message_id = (
 		SELECT m.message_id FROM messages m 
-		WHERE 	m.queue_id = p_queue_id 
-		AND 	m.receiver_id = p_receiver_id 
-		AND     m.context = p_context 
+		WHERE 	m.queue_id = $1 
+		AND 	m.receiver_id = $2 
+		AND     m.context = $3 
 		LIMIT 1
 	) RETURNING m.message_id, m.queue_id, m.sender_id, m.receiver_id, m.context, m.priority, m.time_of_arrival, m.message;
 $$;
@@ -349,8 +349,8 @@ CREATE FUNCTION request_id(p_client_name character varying, p_operation_mode int
 		operation_mode
 	) VALUES (
 		DEFAULT, 
-		p_client_name, 
-		p_operation_mode
+		$1, 
+		$2
 	) RETURNING client_id;
 $$;
 
