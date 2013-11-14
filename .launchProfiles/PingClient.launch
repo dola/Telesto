@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <launchConfiguration type="org.eclipse.jdt.launching.localJavaApplication">
 <listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_PATHS">
-<listEntry value="/Telesto/src/ch/ethz/syslab/telesto/client/Main.java"/>
+<listEntry value="/Telesto/src/ch/ethz/syslab/telesto/client/PingMain.java"/>
 </listAttribute>
 <listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_TYPES">
 <listEntry value="1"/>
@@ -11,8 +11,7 @@
 <listEntry value="org.eclipse.debug.ui.launchGroup.run"/>
 </listAttribute>
 <booleanAttribute key="org.eclipse.jdt.launching.ATTR_USE_START_ON_FIRST_THREAD" value="true"/>
-<stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="ch.ethz.syslab.telesto.client.Main"/>
-<stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="id 5 test REQUEST_RESPONSE_PAIR_CLIENT"/>
+<stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="ch.ethz.syslab.telesto.client.PingMain"/>
 <stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="Telesto"/>
 <stringAttribute key="org.eclipse.jdt.launching.VM_ARGUMENTS" value="-Djava.util.logging.config.file=${resource_loc:/Telesto/logging.properties}"/>
 </launchConfiguration>
