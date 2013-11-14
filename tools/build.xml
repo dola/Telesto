@@ -40,7 +40,7 @@
 		<mkdir dir="release" />
 		<jar destfile="release/Telesto.raw.jar">
 			<manifest>
-				<attribute name="Main-Class" value="ch.ethz.syslab.telesto.server.network.ConnectionHandler" />
+				<attribute name="Main-Class" value="ch.ethz.syslab.telesto.Main" />
 				<attribute name="Class-Path" value="." />
 			</manifest>
 
