@@ -112,13 +112,13 @@ public class DBTests {
 
     @Test
     public void testQueueCreation() throws PacketProcessingException {
-        String[] names = new String[] { "oneWayQueue", "requestResponsePairQueue", "seviceQueue" };
+        String[] names = new String[] { "oneWayQueue", "requestResponsePairQueue", "serviceQueue" };
 
         // queue_id, queue_name
-        for (int i = 1; i < names.length; i++) {
-            List<Queue> queues = db.callQueueProcedure(QueueProcedure.CREATE_QUEUE, names[i]);
+        for (String name : names) {
+            List<Queue> queues = db.callQueueProcedure(QueueProcedure.CREATE_QUEUE, name);
             assertEquals(1, queues.size());
-            assertEquals(names[i], queues.get(0).name);
+            assertEquals(name, queues.get(0).name);
         }
     }
 

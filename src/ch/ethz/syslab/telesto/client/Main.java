@@ -40,7 +40,9 @@ public class Main {
         }
 
         ClientTestExecutor c;
-        log = new BenchmarkLog("client");
+
+        String logName = arguments.containsKey("id") ? "client-" + arguments.get("id") : "client-" + arguments.get("name");
+        log = new BenchmarkLog(logName);
         if (arguments.containsKey("id")) {
             // identify by id
             c = new ClientTestExecutor(Integer.parseInt(arguments.get("id")), log);
