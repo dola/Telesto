@@ -10,7 +10,7 @@ import ch.ethz.syslab.telesto.common.model.Queue;
  * Send message to a queue for a particular other client (id+1) that has a serving role and responses to the message.
  * 
  */
-public class RequestResponsePairClientTest implements IClientTest {
+public class RequestResponsePairClientTest extends AbstractClientTest {
 
     String queueName = "requestResponsePairQueue";
     Queue queue;
@@ -21,7 +21,7 @@ public class RequestResponsePairClientTest implements IClientTest {
 
         // send score around. Client always increments first part, server second one
         Message request = new Message(queue.id, self.id + 1, (byte) 1, "1-0");
-        while (true) {
+        while (running) {
             Message response = c.sendRequestResponseMessage(request);
             String[] parts = response.message.split("-");
             parts[0] = String.valueOf(Integer.parseInt(parts[0]) + 1);

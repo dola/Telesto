@@ -6,4 +6,6 @@ import ch.ethz.syslab.telesto.common.model.Client;
 
 public interface IClientTest {
     void executeTest(TelestoClient c, Client self) throws ProcessingException;
+
+    void shutdown();
 }

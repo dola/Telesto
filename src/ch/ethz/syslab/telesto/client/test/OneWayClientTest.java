@@ -20,7 +20,7 @@ import ch.ethz.syslab.telesto.common.model.Queue;
  * <li>repeat endlessly
  * </ol>
  */
-public class OneWayClientTest implements IClientTest {
+public class OneWayClientTest extends AbstractClientTest {
     private final static String queueName = "oneWayQueue";
     private Random r = new Random();
 
@@ -31,7 +31,7 @@ public class OneWayClientTest implements IClientTest {
 
         Message r = new Message(q.id, (byte) 1, "0");
 
-        while (true) {
+        while (running) {
             r.receiverId = generateRecipientId(self.id);
             c.putMessage(r);
             r = c.retrieveMessage(q.id);

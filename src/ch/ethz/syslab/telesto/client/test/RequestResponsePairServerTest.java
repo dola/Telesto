@@ -10,7 +10,7 @@ import ch.ethz.syslab.telesto.common.model.Queue;
  * Retrieve messages from a queue and send back a response.
  * 
  */
-public class RequestResponsePairServerTest implements IClientTest {
+public class RequestResponsePairServerTest extends AbstractClientTest {
 
     String queueName = "requestResponsePairQueue";
     Queue queue;
@@ -20,7 +20,7 @@ public class RequestResponsePairServerTest implements IClientTest {
         queue = c.getQueueByName(queueName);
 
         // send score around. Client always increments first part, server second one
-        while (true) {
+        while (running) {
             // retrieve request
             Message request = c.retrieveMessage(queue.id);
 

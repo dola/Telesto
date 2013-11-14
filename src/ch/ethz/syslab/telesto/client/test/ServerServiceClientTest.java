@@ -6,7 +6,7 @@ import ch.ethz.syslab.telesto.common.model.Client;
 import ch.ethz.syslab.telesto.common.model.Message;
 import ch.ethz.syslab.telesto.common.model.Queue;
 
-public class ServerServiceClientTest implements IClientTest {
+public class ServerServiceClientTest extends AbstractClientTest {
     String queueName = "serviceQueue";
     Queue queue;
 
@@ -15,7 +15,7 @@ public class ServerServiceClientTest implements IClientTest {
         queue = c.getQueueByName(queueName);
 
         int msgServed = 0;
-        while (true) {
+        while (running) {
             // retrieve request
             Message request = c.retrieveMessage(queue.id);
 

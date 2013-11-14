@@ -14,7 +14,8 @@ import ch.ethz.syslab.telesto.profile.BenchmarkLog;
 public class Main {
     private static Log LOGGER = new Log(Main.class);
     private static BenchmarkLog log;
-    private static boolean running = true;
+
+    private static ClientTestExecutor c = null;
 
     /**
      * Command line args:
@@ -38,8 +39,6 @@ public class Main {
             System.err.println("No parameter test supplied");
             System.exit(1);
         }
-
-        ClientTestExecutor c;
 
         String logName = arguments.containsKey("id") ? "client-" + arguments.get("id") : "client-" + arguments.get("name");
         log = new BenchmarkLog(logName);
@@ -90,8 +89,8 @@ public class Main {
     private static class ShutdownHook extends Thread {
         @Override
         public void run() {
-            running = false;
             log.closeFile();
+            c.shutdown();
             ShutdownLogManager.resetFinally();
         }
     }

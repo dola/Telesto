@@ -10,6 +10,8 @@ public class ClientTestExecutor {
     TelestoClient client;
     Client self;
 
+    IClientTest test;
+
     public ClientTestExecutor(String name, ClientMode mode, BenchmarkLog log) throws ProcessingException {
         client = new TelestoClient(log);
         self = client.connect(name, ClientMode.FULL);
@@ -21,7 +23,14 @@ public class ClientTestExecutor {
     }
 
     public void runTest(IClientTest test) throws ProcessingException {
+        this.test = test;
         test.executeTest(client, self);
+    }
+
+    public void shutdown() {
+        if (test != null) {
+            test.shutdown();
+        }
     }
 
 }
