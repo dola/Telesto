@@ -17,25 +17,29 @@ public class PacketProcessingException extends Exception {
     }
 
     public PacketProcessingException(Throwable e) {
-        super(e);
+        super(e.toString(), e);
     }
 
     public PacketProcessingException(ErrorType type, Throwable e) {
-        super(e);
+        super(e.toString(), e);
         this.type = type;
     }
 
     public PacketProcessingException(String message, Throwable e) {
-        super(message, e);
+        super(message + ": " + e, e);
     }
 
     public PacketProcessingException(ErrorType type, String message, Throwable e) {
-        super(message, e);
+        super(message + ": " + e, e);
         this.type = type;
     }
 
     @Override
     public String toString() {
-        return super.toString() + ", ErrorCode = " + type;
+        String repr = super.toString() + ", ErrorCode = " + type;
+        if (getCause() != null) {
+            repr += ", Cause: " + getCause();
+        }
+        return repr;
     }
 }

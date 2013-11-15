@@ -58,7 +58,10 @@
 			<libraryjar path="${java.home}/lib/rt.jar" />
 			<libraryjar path="${java.home}/lib/jce.jar" />
 			<dontnote filter="org.postgresql.ssl.jdbc4.AbstractJdbc4MakeSSL" />
-			<keep name="ch.ethz.syslab.telesto.server.network.ConnectionHandler" />
+			<keep name="ch.ethz.syslab.telesto.Main">
+				<method name="main" />
+			</keep>
+			<keep name="ch.ethz.syslab.telesto.common.util.ShutdownLogManager" />
 		</proguard>
 	</target>
 

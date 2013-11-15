@@ -79,7 +79,7 @@ SET search_path = public, pg_catalog;
 CREATE FUNCTION create_queue(p_queue_name character varying) RETURNS TABLE(queue_id integer, queue_name character varying)
     LANGUAGE sql
     AS $$  
-    INSERT INTO queues (queue_id, queue_name) VALUES (DEFAULT, p_queue_name) RETURNING queue_id, queue_name;
+    INSERT INTO queues (queue_id, queue_name) VALUES (DEFAULT, $1) RETURNING queue_id, $1;
 $$;
 
 
@@ -93,7 +93,7 @@ ALTER FUNCTION public.create_queue(p_queue_name character varying) OWNER TO tele
 CREATE FUNCTION delete_client(p_client_id integer) RETURNS integer
     LANGUAGE sql
     AS $$  
-    DELETE FROM clients WHERE client_id = p_client_id RETURNING client_id
+    DELETE FROM clients WHERE client_id = $1 RETURNING client_id
 $$;
 
 
@@ -110,8 +110,8 @@ CREATE FUNCTION delete_queue(p_queue_id integer) RETURNS integer
 DECLARE 
 	d_queue_id integer;
 BEGIN
-    DELETE FROM queues WHERE queue_id = p_queue_id RETURNING queue_id INTO d_queue_id;
-    DELETE FROM messages WHERE queue_id = p_queue_id;
+    DELETE FROM queues WHERE queue_id = $1 RETURNING queue_id INTO d_queue_id;
+    DELETE FROM messages WHERE queue_id = $1;
     RETURN d_queue_id;
 END
 $$;
@@ -127,7 +127,7 @@ ALTER FUNCTION public.delete_queue(p_queue_id integer) OWNER TO telesto;
 CREATE FUNCTION get_active_queues(p_client_id integer) RETURNS TABLE(queue_id integer, queue_name character varying)
     LANGUAGE sql
     AS $$  
-    SELECT q.queue_id, q.queue_name FROM messages m JOIN queues q ON q.queue_id = m.queue_id WHERE coalesce(m.receiver_id, p_client_id) = p_client_id;
+    SELECT q.queue_id, q.queue_name FROM messages m JOIN queues q ON q.queue_id = m.queue_id WHERE coalesce(m.receiver_id, $1) = $1;
 $$;
 
 
@@ -141,7 +141,7 @@ ALTER FUNCTION public.get_active_queues(p_client_id integer) OWNER TO telesto;
 CREATE FUNCTION get_messages_from_queue(p_queue_id integer) RETURNS TABLE(message_id integer, queue_id integer, sender_id integer, receiver_id integer, context integer, priority smallint, time_of_arrival timestamp without time zone, message character varying)
     LANGUAGE sql
     AS $$  
-    SELECT m.message_id, m.queue_id, m.sender_id, m.receiver_id, m.context, m.priority, m.time_of_arrival, m.message FROM messages m WHERE m.queue_id = p_queue_id;
+    SELECT m.message_id, m.queue_id, m.sender_id, m.receiver_id, m.context, m.priority, m.time_of_arrival, m.message FROM messages m WHERE m.queue_id = $1;
 $$;
 
 
@@ -155,7 +155,7 @@ ALTER FUNCTION public.get_messages_from_queue(p_queue_id integer) OWNER TO teles
 CREATE FUNCTION get_queue_id(p_queue_name character varying) RETURNS TABLE(queue_id integer, queue_name character varying)
     LANGUAGE sql
     AS $$  
-    SELECT queue_id, queue_name FROM queues WHERE queue_name = p_queue_name;
+    SELECT queue_id, queue_name FROM queues WHERE queue_name = $1;
 $$;
 
 
@@ -169,7 +169,7 @@ ALTER FUNCTION public.get_queue_id(p_queue_name character varying) OWNER TO tele
 CREATE FUNCTION get_queue_name(p_queue_id integer) RETURNS TABLE(queue_id integer, queue_name character varying)
     LANGUAGE sql
     AS $$  
-    SELECT queue_id, queue_name FROM queues WHERE queue_id = p_queue_id;
+    SELECT queue_id, queue_name FROM queues WHERE queue_id = $1;
 $$;
 
 
@@ -183,7 +183,7 @@ ALTER FUNCTION public.get_queue_name(p_queue_id integer) OWNER TO telesto;
 CREATE FUNCTION identify(p_client_id integer) RETURNS TABLE(client_id integer, client_name character varying, operation_mode smallint)
     LANGUAGE sql
     AS $$   
-    SELECT c.client_id, c.client_name, c.operation_mode FROM clients c WHERE c.client_id = p_client_id;
+    SELECT c.client_id, c.client_name, c.operation_mode FROM clients c WHERE c.client_id = $1;
 $$;
 
 

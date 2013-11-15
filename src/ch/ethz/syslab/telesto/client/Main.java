@@ -62,6 +62,7 @@ public class Main {
             System.err.println("Test not found by id " + testId);
             System.exit(0);
         }
+        log.closeFile();
     }
 
     private static void runTest(ClientTestExecutor c, ClientTest t) throws ProcessingException {
@@ -70,7 +71,9 @@ public class Main {
         try {
             c.runTest(t.getTestClass().newInstance());
         } catch (InstantiationException | IllegalAccessException e) {
-            LOGGER.severe("Could not create Test instance %s", t.getTestClass().getName(), e);
+            LOGGER.severe(e, "Could not create Test instance %s", t.getTestClass().getName());
+        } catch (ProcessingException e) {
+            LOGGER.severe("Error while running test: %s", e);
         }
     }
 
@@ -89,8 +92,8 @@ public class Main {
     private static class ShutdownHook extends Thread {
         @Override
         public void run() {
-            log.closeFile();
             c.shutdown();
+            log.flush();
             ShutdownLogManager.resetFinally();
         }
     }

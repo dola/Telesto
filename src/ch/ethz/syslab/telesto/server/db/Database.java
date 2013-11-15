@@ -172,8 +172,6 @@ public class Database {
         return result;
     }
 
-    // TODO: optimize methods below share more code
-
     public List<Message> callMessageProcedure(MessageProcedure proc, Object... arguments) throws PacketProcessingException {
         if (!proc.hasReturnValue()) {
             throw new PacketProcessingException("Procedure has to have return value to be usable with this method");

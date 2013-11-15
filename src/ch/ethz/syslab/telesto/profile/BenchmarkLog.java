@@ -115,4 +115,12 @@ public class BenchmarkLog {
         closeFile();
     }
 
+    public void flush() {
+        try {
+            logWriter.flush();
+        } catch (IOException e) {
+            LOGGER.warning(e, "Failed to flush log file %s", logFile);
+        }
+    }
+
 }

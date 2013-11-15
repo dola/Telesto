@@ -22,7 +22,7 @@ public class ConnectionHandler extends Thread {
     private ServerSocketChannel socket;
     private DataHandler[] workers;
     private Selector selector = Selector.open();
-    private ArrayBlockingQueue<Connection> clientQueue = new ArrayBlockingQueue<Connection>(100);
+    private ArrayBlockingQueue<Connection> clientQueue = new ArrayBlockingQueue<Connection>(10000);
     private boolean running = true;
 
     public ConnectionHandler(InetSocketAddress address, int workerCount, BenchmarkLog log) throws IOException {
