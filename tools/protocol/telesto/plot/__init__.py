@@ -25,9 +25,12 @@ def parse_client_line(line):
     }
 
 
-def rows(path, parser):
+def rows(path, parser, offset=0):
     with open(path) as f:
         for line in f:
+            if offset > 0:
+                offset -= 1
+                continue
             try:
                 yield parser(line)
             except ValueError:

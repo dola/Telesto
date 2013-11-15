@@ -33,6 +33,9 @@ public class Main {
         } else if (args[0].equals("CL")) {
             // start client
             ch.ethz.syslab.telesto.client.Main.main(remainingArgs);
+        } else if (args[0].equals("MC")) {
+            // start management console
+            ch.ethz.syslab.telesto.console.Main.main(remainingArgs);
         }
 
     }
