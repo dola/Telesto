@@ -1,5 +1,5 @@
 # Telesto
-A Java Message Passing System
+A Java Message Passing System. Also check out the [Report](https://github.com/dola/TelestoReport) of the whole project.
 
 ## How to run
 
